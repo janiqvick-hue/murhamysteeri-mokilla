@@ -1,8 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 // GitHub Pages -polku
 const basePath = "/murhamysteeri-mokilla/";
@@ -12,14 +10,11 @@ export default defineConfig({
 
   plugins: [
     react(),
-    tailwindcss(),
-    runtimeErrorOverlay(),
   ],
 
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
-      "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
     },
     dedupe: ["react", "react-dom"],
   },
@@ -27,7 +22,7 @@ export default defineConfig({
   root: path.resolve(import.meta.dirname),
 
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
   },
 
@@ -35,15 +30,10 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     host: "0.0.0.0",
-    allowedHosts: true,
-    fs: {
-      strict: true,
-    },
   },
 
   preview: {
     port: 5173,
     host: "0.0.0.0",
-    allowedHosts: true,
   },
 });
