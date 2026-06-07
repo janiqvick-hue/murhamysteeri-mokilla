@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { firebaseConfigured } from "./firebase";
 import { useGame } from "./useGame";
 import { loadGameCode } from "./gameCode";
-import LandingScreen from "./screens/LandingScreen";
-import LobbyScreen from "./screens/LobbyScreen";
-import RoleRevealScreen from "./screens/RoleRevealScreen";
-import MapScreen from "./screens/MapScreen";
-import VotingScreen from "./screens/VotingScreen";
-import EndingScreen from "./screens/EndingScreen";
+
+import LandingScreen from "./LandingScreen";
+import LobbyScreen from "./LobbyScreen";
+import RoleRevealScreen from "./RoleRevealScreen";
+import MapScreen from "./MapScreen";
+import VotingScreen from "./VotingScreen";
+import EndingScreen from "./EndingScreen";
 
 function NotConfigured() {
   return (
