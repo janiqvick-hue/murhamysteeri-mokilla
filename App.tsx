@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { firebaseConfigured } from "./firebase";
-import { useGame } from "./hooks/useGame";
+import { useGame } from "./useGame";
 import { loadGameCode } from "./utils/gameCode";
 import LandingScreen from "./screens/LandingScreen";
 import LobbyScreen from "./screens/LobbyScreen";
