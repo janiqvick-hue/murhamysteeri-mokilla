@@ -269,10 +269,13 @@ export default function LandingScreen({ onCreateGame, onJoinGame }: Props) {
       <div className="fog-layer fog-4" />
       <div className="fog-layer fog-5" />
 
-      {/* ── Cottage elements ── */}
-      <div className="cottage-glow" />
-      <div className="window-flicker wf-left" />
-      <div className="window-flicker wf-right" />
+     {/* ── Cottage elements ── */}
+<div className="cottage-glow" />
+<div className="window-flicker wf-left" />
+<div className="window-flicker wf-right" />
+
+{/* Varjohahmo yläkerran ikkunassa */}
+<div className="shadow-figure" />
 
       {/* ── Lake reflection shimmer (soft, blurred, 10-15% opacity max) ── */}
       <div className="lake-reflection lr-1" />
