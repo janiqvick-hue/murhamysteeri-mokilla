@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { CLUES, CATEGORY_LABELS, getCluesForScenario } from "../content/clues";
-import { LOCATION_MAP } from "../content/locations";
-import { ROLE_INFO } from "../content/roles";
-import { SCENARIO_MAP } from "../content/scenarios";
-import type { Role, Game } from "../types";
+import { CLUES, CATEGORY_LABELS, getCluesForScenario } from "./clues";
+import { LOCATION_MAP } from "./locations";
+import { ROLE_INFO } from "./roles";
+import { SCENARIO_MAP } from "./scenarios";
+import type { Role, Game } from "./types";
 
 interface Props {
   myInventory: string[];
