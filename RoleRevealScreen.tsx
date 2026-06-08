@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import type { Game, Mission } from "../types";
-import type { GameActions } from "../hooks/useGame";
-import { ROLE_INFO } from "../content/roles";
-import { SCENARIO_MAP } from "../content/scenarios";
+
+import type { Game, Mission } from "./types";
+import type { GameActions } from "./useGame";
+import { ROLE_INFO } from "./roles";
+import { SCENARIO_MAP } from "./scenarios";
 
 interface Props {
   game: Game;
