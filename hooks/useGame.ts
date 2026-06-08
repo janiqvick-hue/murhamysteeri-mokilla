@@ -6,7 +6,7 @@ import {
   update,
   type Unsubscribe,
 } from "firebase/database";
-import { db, firebaseConfigured } from "./firebase";
+import { db } from "../firebase";
 import type { Game, Role, SabotageAction, WitnessEvent, RedHerringClue, Scenario } from "./types";
 import { assignRoles } from "./roles";
 import { LOCATIONS } from "./locations";
