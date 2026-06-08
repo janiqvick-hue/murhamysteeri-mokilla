@@ -868,21 +868,22 @@ html, body, #root {
   left: 52%;
   width: 34px;
   height: 72px;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.75);
   border-radius: 50% 50% 35% 35%;
-  filter: blur(2px);
+  filter: blur(1px);
   opacity: 0;
-  animation: shadowAppear 18s infinite;
   pointer-events: none;
-  z-index: 5;
+  z-index: 8;
+  animation: shadowAppear 14s infinite;
+}
 }
 
 @keyframes shadowAppear {
-  0%, 75%, 100% {
+  0%,60%,100% {
     opacity: 0;
   }
 
-  78%, 92% {
-    opacity: 0.22;
+  65%,88% {
+    opacity: 0.45;
   }
 }
