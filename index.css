@@ -887,3 +887,28 @@ html, body, #root {
     opacity: 0.45;
   }
 }
+.window-flicker {
+  animation: creepyFlash 14s infinite;
+}
+
+@keyframes creepyFlash {
+  0%,60%,100% {
+    opacity: 1;
+  }
+
+  62% {
+    opacity: 1.8;
+  }
+
+  63% {
+    opacity: 0.3;
+  }
+
+  64% {
+    opacity: 1.6;
+  }
+
+  65% {
+    opacity: 1;
+  }
+}
