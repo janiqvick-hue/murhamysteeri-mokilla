@@ -1005,25 +1005,6 @@ html, body, #root {
   76% {
     opacity: 0;
   }
-/* Yläkerran ikkunan valo */
-
-.window-flicker {
-  position: absolute;
-  top: 24%;
-  left: 50%;
-  width: 90px;
-  height: 55px;
-
-  background: rgba(255,220,120,0.15);
-  filter: blur(12px);
-
-  opacity: 0;
-
-  animation: atticLight 18s infinite;
-  pointer-events: none;
-  z-index: 4;
-}
-
 @keyframes atticLight {
   0%, 70%, 100% {
     opacity: 0;
