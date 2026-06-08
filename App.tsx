@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { firebaseConfigured } from "./firebase";
 import { useGame } from "./hooks/useGame";
-import { loadGameCode } from "./utils/gameCode";
+import { loadGameCode } from "./gameCode";
 import LandingScreen from "./screens/LandingScreen";
 import LobbyScreen from "./screens/LobbyScreen";
 import RoleRevealScreen from "./screens/RoleRevealScreen";
