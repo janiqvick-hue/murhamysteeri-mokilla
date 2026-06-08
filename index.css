@@ -1054,3 +1054,70 @@ height: 86px;
     opacity: 0;
   }
 }
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  background: black;
+  overflow: hidden;
+}
+
+.intro-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: introFade 22s linear forwards;
+}
+
+.slide1 {
+  background-image: url("./intro-laituri.jpg");
+  animation-delay: 0s;
+}
+
+.slide2 {
+  background-image: url("./intro-nuotio.jpg");
+  animation-delay: 4s;
+}
+
+.slide3 {
+  background-image: url("./intro-paivamokki.jpg");
+  animation-delay: 8s;
+}
+
+.slide4 {
+  background-image: url("./intro-yomokki.jpg");
+  animation-delay: 12s;
+}
+
+.slide5 {
+  background-image: url("./intro-yomokki.jpg");
+  animation-delay: 16s;
+}
+
+.intro-text,
+.intro-title {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  transform: translateX(-50%);
+  color: white;
+  text-align: center;
+  text-shadow: 0 0 20px black;
+}
+
+.intro-title {
+  font-size: 4rem;
+  font-weight: 800;
+}
+
+.intro-text {
+  font-size: 2rem;
+}
+
+@keyframes introFade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
