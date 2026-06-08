@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Game, Clue, WitnessEvent, Mission } from "../types";
 import type { GameActions } from "../hooks/useGame";
-import ... from "./locations";
+import { LOCATIONS } from "./locations";
 import { CATEGORY_LABELS, getCluesForScenario } from "../content/clues";
 import { ROLE_INFO } from "../content/roles";
 import { SCENARIO_MAP } from "../content/scenarios";
