@@ -1,11 +1,13 @@
 import { useState } from "react";
-import type { Game, Mission } from "../types";
-import type { GameActions } from "../hooks/useGame";
-import { ROLE_INFO } from "../content/roles";
-import { SCENARIO_MAP } from "../content/scenarios";
-import { MISSION_POOL, getMissionStatus, countCompletedMissions } from "../content/missions";
-import { computeEndingType, computePlayerAchievements } from "../content/achievements";
-import { generateStorybookEnding, getEndingLabel, investigatorsWon } from "../content/endings";
+
+import type { Game, Mission } from "./types";
+import type { GameActions } from "./useGame";
+
+import { ROLE_INFO } from "./roles";
+import { SCENARIO_MAP } from "./scenarios";
+import { MISSION_POOL, getMissionStatus, countCompletedMissions } from "./missions";
+import { computeEndingType, computePlayerAchievements } from "./achievements";
+import { generateStorybookEnding, getEndingLabel, investigatorsWon } from "./endings";
 
 interface Props {
   game: Game;
