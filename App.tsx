@@ -48,6 +48,8 @@ function NotConfigured() {
 }
 
 export default function App() {
+  return <h1>TESTI TOIMII</h1>;
+}
   const [gameCode, setGameCode] = useState<string | null>(() => loadGameCode());
 
   const {
