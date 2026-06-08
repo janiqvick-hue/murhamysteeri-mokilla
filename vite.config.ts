@@ -4,7 +4,6 @@ import path from "path";
 
 // GitHub Pages -polku
 export default defineConfig({
-  base: "/murhamysteeri-mokilla/",
   plugins: [
     react(),
   ],
