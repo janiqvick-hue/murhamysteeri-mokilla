@@ -8,7 +8,7 @@ import RoleRevealScreen from "./RoleRevealScreen";
 import MapScreen from "./MapScreen";
 import VotingScreen from "./VotingScreen";
 import EndingScreen from "./EndingScreen";
-
+import { useRef } from "react";
 function NotConfigured() {
   return (
     <div className="screen screen--center">
