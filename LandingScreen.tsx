@@ -1,3 +1,45 @@
+const [showIntro, setShowIntro] = useState(true);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowIntro(false);
+  }, 22000);
+if (showIntro) {
+  return (
+    <div className="intro-screen">
+
+      <div className="intro-slide slide1">
+        <div className="intro-text">Kesä 2026</div>
+      </div>
+
+      <div className="intro-slide slide2">
+        <div className="intro-text">
+          Kaiken piti olla tavallinen mökkiviikonloppu...
+        </div>
+      </div>
+
+      <div className="intro-slide slide3">
+        <div className="intro-text">
+          Ystävät kokoontuivat järven rannalle.
+        </div>
+      </div>
+
+      <div className="intro-slide slide4">
+        <div className="intro-text">
+          Mutta joku kantoi mukanaan salaisuutta.
+        </div>
+      </div>
+
+      <div className="intro-slide slide5">
+        <div className="intro-title">
+          Murhamysteeri Mökillä
+        </div>
+      </div>
+
+    </div>
+  );
+}
+  return () => clearTimeout(timer);
+}, []);
 import { useState, useEffect, useRef } from "react";
 
 interface Props {
