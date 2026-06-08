@@ -1,5 +1,3 @@
-import { firebaseConfigured } from "./firebase";
-
 export default function App() {
   return (
     <div
@@ -7,11 +5,11 @@ export default function App() {
         background: "white",
         color: "black",
         minHeight: "100vh",
-        padding: "40px",
+        padding: "40px"
       }}
     >
-      <h1>Testi 2</h1>
-      <p>firebaseConfigured = {String(firebaseConfigured)}</p>
+      <h1>MURHAMYSTEERI TESTI</h1>
+      <p>Jos näet tämän, App.tsx toimii.</p>
     </div>
   );
 }
