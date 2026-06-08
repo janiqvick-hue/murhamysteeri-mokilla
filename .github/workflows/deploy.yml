@@ -42,9 +42,9 @@ jobs:
           VITE_FIREBASE_APP_ID: test
 
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/public
+  uses: actions/upload-pages-artifact@v3
+  with:
+    path: dist
 
   deploy:
     needs: build
