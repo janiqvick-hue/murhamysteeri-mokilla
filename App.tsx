@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { firebaseConfigured } from "./firebase";
 import { useGame } from "./hooks/useGame";
 import { loadGameCode } from "./gameCode";
+
 import LandingScreen from "./LandingScreen";
 import LobbyScreen from "./LobbyScreen";
 import RoleRevealScreen from "./RoleRevealScreen";
@@ -12,36 +13,7 @@ import EndingScreen from "./EndingScreen";
 function NotConfigured() {
   return (
     <div className="screen screen--center">
-      <div className="rain-overlay" />
-      <div className="config-card">
-        <div style={{ fontSize: "3rem" }}>⚙️</div>
-        <h2>Firebase ei konfiguroitu</h2>
-        <p>
-          Lisää nämä ympäristömuuttujat Replit-projektiisi ja käynnistä
-          palvelin uudelleen:
-        </p>
-        <ul className="config-list">
-          <li>VITE_FIREBASE_API_KEY</li>
-          <li>VITE_FIREBASE_AUTH_DOMAIN</li>
-          <li>VITE_FIREBASE_DATABASE_URL</li>
-          <li>VITE_FIREBASE_PROJECT_ID</li>
-          <li>VITE_FIREBASE_STORAGE_BUCKET</li>
-          <li>VITE_FIREBASE_MESSAGING_SENDER_ID</li>
-          <li>VITE_FIREBASE_APP_ID</li>
-        </ul>
-        <p className="hint-text">
-          Luo ilmainen Firebase-projekti osoitteessa{" "}
-          <a
-            href="https://console.firebase.google.com"
-            target="_blank"
-            rel="noreferrer"
-            className="link"
-          >
-            console.firebase.google.com
-          </a>{" "}
-          ja ota käyttöön Realtime Database.
-        </p>
-      </div>
+      <h2>Firebase ei konfiguroitu</h2>
     </div>
   );
 }
@@ -67,8 +39,12 @@ export default function App() {
     const handleStorageChange = () => {
       setGameCode(loadGameCode());
     };
+
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const handleLeave = () => {
@@ -76,7 +52,9 @@ export default function App() {
     setGameCode(null);
   };
 
-  if (!firebaseConfigured) return <NotConfigured />;
+  if (!firebaseConfigured) {
+    return <NotConfigured />;
+  }
 
   if (!gameCode) {
     return (
@@ -97,9 +75,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="screen screen--center">
-        <div className="rain-overlay" />
-        <div className="loading-spinner" />
-        <p className="hint-text">Ladataan peliä…</p>
+        <p>Ladataan peliä...</p>
       </div>
     );
   }
@@ -107,18 +83,16 @@ export default function App() {
   if (error || !game) {
     return (
       <div className="screen screen--center">
-        <div className="rain-overlay" />
-        <div className="error-card">
-          <p>⚠️ {error ?? "Peliä ei löydy."}</p>
-          <button className="btn btn-secondary" onClick={handleLeave}>
-            ← Takaisin
-          </button>
-        </div>
+        <p>{error ?? "Peliä ei löydy."}</p>
+        <button onClick={handleLeave}>Takaisin</button>
       </div>
     );
   }
 
-  const wrappedActions = { ...actions, leaveGame: handleLeave };
+  const wrappedActions = {
+    ...actions,
+    leaveGame: handleLeave,
+  };
 
   switch (game.status) {
     case "lobby":
@@ -133,6 +107,7 @@ export default function App() {
           actions={wrappedActions}
         />
       );
+
     case "roleReveal":
       return (
         <RoleRevealScreen
@@ -143,6 +118,7 @@ export default function App() {
           actions={wrappedActions}
         />
       );
+
     case "playing":
       return (
         <MapScreen
@@ -155,6 +131,7 @@ export default function App() {
           actions={wrappedActions}
         />
       );
+
     case "voting":
       return (
         <VotingScreen
@@ -164,6 +141,7 @@ export default function App() {
           actions={wrappedActions}
         />
       );
+
     case "ended":
       return (
         <EndingScreen
@@ -174,6 +152,7 @@ export default function App() {
           actions={wrappedActions}
         />
       );
+
     default:
       return null;
   }
