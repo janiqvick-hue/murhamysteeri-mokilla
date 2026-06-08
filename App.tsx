@@ -1,3 +1,5 @@
+import { firebaseConfigured } from "./firebase";
+
 export default function App() {
   return (
     <div
@@ -8,8 +10,8 @@ export default function App() {
         padding: "40px",
       }}
     >
-      <h1>Murhamysteeri testaa</h1>
-      <p>React toimii.</p>
+      <h1>Testi 2</h1>
+      <p>firebaseConfigured = {String(firebaseConfigured)}</p>
     </div>
   );
 }
