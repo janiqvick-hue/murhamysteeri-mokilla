@@ -776,7 +776,6 @@ html, body, #root {
   font-size: 1.1rem; font-weight: 700; color: #fff;
   padding: .5rem 1rem; background: rgba(239,68,68,.2);
   border: 1px solid rgba(239,68,68,.4); border-radius: .4rem; display: inline-block;
-}
 
 /* ─── missions-score color variant ──────────────────────────────── */
 .missions-score--success { color: var(--green); }
@@ -867,19 +866,15 @@ html, body, #root {
   top: 24%;
   left: 52%;
   width: 42px;
-height: 86px;
-  .shadow-figure {
-  ...
+  height: 86px;
   background: rgba(0,0,0,0.90);
-  ...
-}
+
   border-radius: 50% 50% 35% 35%;
   filter: blur(1px);
   opacity: 0;
   pointer-events: none;
   z-index: 8;
   animation: shadowAppear 14s infinite;
-}
 }
 
 @keyframes shadowAppear {
