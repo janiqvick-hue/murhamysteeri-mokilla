@@ -5,7 +5,7 @@ interface Props {
   onJoinGame: (code: string, name: string) => Promise<void>;
 }
 
-const const BASE = import.meta.env.BASE_URL as string;
+const BASE = import.meta.env.BASE_URL as string;
 const COTTAGE_IMG =
   `${BASE}C236D35D-A8AA-4FC2-B8B5-BE5961AEB200.jpeg`;
 
