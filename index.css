@@ -866,9 +866,13 @@ html, body, #root {
   position: absolute;
   top: 24%;
   left: 52%;
-  width: 34px;
-  height: 72px;
-  background: rgba(0,0,0,0.75);
+  width: 42px;
+height: 86px;
+  .shadow-figure {
+  ...
+  background: rgba(0,0,0,0.90);
+  ...
+}
   border-radius: 50% 50% 35% 35%;
   filter: blur(1px);
   opacity: 0;
