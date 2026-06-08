@@ -115,7 +115,10 @@ export function useGame(code: string | null): UseGameReturn {
   const [countdownSecsLeft, setCountdownSecsLeft] = useState(0);
   const playerId = getOrCreatePlayerId();
   const unsubRef = useRef<Unsubscribe | null>(null);
-  const gameRef = code ? ref(db, `games/${code}`) : null;
+  const gameRef =
+  firebaseConfigured && code
+    ? ref(db, `games/${code}`)
+    : null;
 
   useEffect(() => {
     if (!firebaseConfigured || !code) {
