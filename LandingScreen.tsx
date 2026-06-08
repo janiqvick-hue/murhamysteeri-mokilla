@@ -5,7 +5,7 @@ interface Props {
   onJoinGame: (code: string, name: string) => Promise<void>;
 }
 
-const const COTTAGE_IMG = "./C236D35D-A8AA-4FC2-B8B5-BE5961AEB200.jpeg";
+const COTTAGE_IMG = "./C236D35D-A8AA-4FC2-B8B5-BE5961AEB200.jpeg";
 
 // 18 fireflies, golden-angle distribution
 const FIREFLIES = Array.from({ length: 18 }, (_, i) => ({
