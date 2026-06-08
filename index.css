@@ -860,3 +860,29 @@ html, body, #root {
 .confess-warn { font-size: .84rem; color: var(--red); text-align: center; }
 .confess-btns { display: flex; gap: .5rem; }
 .confess-btns .btn { flex: 1; }
+/* ── Yläkerran varjohahmo ───────────────────────────── */
+
+.shadow-figure {
+  position: absolute;
+  top: 24%;
+  left: 52%;
+  width: 34px;
+  height: 72px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 50% 50% 35% 35%;
+  filter: blur(2px);
+  opacity: 0;
+  animation: shadowAppear 18s infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes shadowAppear {
+  0%, 75%, 100% {
+    opacity: 0;
+  }
+
+  78%, 92% {
+    opacity: 0.22;
+  }
+}
