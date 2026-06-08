@@ -5,8 +5,9 @@ interface Props {
   onJoinGame: (code: string, name: string) => Promise<void>;
 }
 
-const BASE = import.meta.env.BASE_URL as string;
-const COTTAGE_IMG = `${BASE}cottage.jpg`;
+const const BASE = import.meta.env.BASE_URL as string;
+const COTTAGE_IMG =
+  `${BASE}C236D35D-A8AA-4FC2-B8B5-BE5961AEB200.jpeg`;
 
 // 18 fireflies, golden-angle distribution
 const FIREFLIES = Array.from({ length: 18 }, (_, i) => ({
