@@ -6,22 +6,28 @@ import {
   update,
   type Unsubscribe,
 } from "firebase/database";
-import { db } from "../firebase";
-import type { Game, Role, SabotageAction, WitnessEvent, RedHerringClue, Scenario } from "./types";
-import ... from "../roles";
-import ... from "../missions";
-import ... from "../locations";
-import ... from "../types";
-import ... from "../clues";
-import ... from "../scenarios";
-import type { Mission } from "./types";
+import { db, firebaseConfigured } from "../firebase";
+import type {
+  Game,
+  Role,
+  SabotageAction,
+  WitnessEvent,
+  RedHerringClue,
+  Scenario,
+} from "../types";
+import { assignRoles } from "../roles";
+import { LOCATIONS } from "../locations";
+import { CLUE_MAP } from "../clues";
+import { MISSION_POOL, assignMissions } from "../missions";
+import { pickRandomScenario, SCENARIO_MAP } from "../scenarios";
+import type { Mission } from "../types";
 
 import {
   generateGameCode,
   getOrCreatePlayerId,
   saveGameCode,
   clearGameCode,
-} from "./gameCode";
+} from "../gameCode";
 
 export interface GameActions {
   createGame: (playerName: string) => Promise<string>;
