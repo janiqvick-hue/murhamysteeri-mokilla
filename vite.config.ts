@@ -3,11 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // GitHub Pages -polku
-const basePath = "/murhamysteeri-mokilla/";
-
 export default defineConfig({
-  base: basePath,
-
   plugins: [
     react(),
   ],
