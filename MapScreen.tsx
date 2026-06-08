@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import type { Game, Clue, WitnessEvent, Mission } from "../types";
 import type { GameActions } from "../hooks/useGame";
 import { LOCATIONS } from "./locations";
-import { CATEGORY_LABELS, getCluesForScenario } from "../content/clues";
-import { ROLE_INFO } from "../content/roles";
-import { SCENARIO_MAP } from "../content/scenarios";
-import { getMissionStatus } from "../content/missions";
+import { CATEGORY_LABELS, getCluesForScenario } from "./clues";
+import { ROLE_INFO } from "./roles";
+import { SCENARIO_MAP } from "./scenarios";
+import { getMissionStatus } from "./missions";
 import type { Scenario } from "../types";
 import InventoryPanel from "./InventoryPanel";
 
