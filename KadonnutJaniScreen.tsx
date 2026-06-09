@@ -26,7 +26,6 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
-const [showNoteInfo, setShowNoteInfo] = useState(false);
   if (showFolder) {
   return (
     <div className="screen screen--center">
@@ -42,9 +41,9 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
   >
     📱 Janin puhelin
   </button>
-  )}
+)}
 
-  {!hasPhone && (
+{!hasPhone && (
   <p>⬜ Janin puhelin</p>
 )}
         {showPhoneInfo && (
@@ -67,67 +66,42 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 </p>
 
     <button
-  className="btn"
-  onClick={() => setShowPhoneInfo(false)}
->
-  Sulje
-</button>
+      className="btn"
+      onClick={() => setShowPhoneInfo(false)}
+    >
+      Sulje
+    </button>
   </div>
 )}
-        {hasNote && (
-  <button
-    className="btn"
-    onClick={() => setShowNoteInfo(true)}
-  >
-    📄 Märkä muistilappu
-  </button>
-)}
-
-{!hasNote && (
-  <p>⬜ Märkä muistilappu</p>
-)}
-        {showNoteInfo && (
-  <div className="config-card">
-    <h3>📄 Märkä muistilappu</h3>
-
-    <h1
-      style={{
-        letterSpacing: "6px",
-      }}
-    >
-      1952
-    </h1>
-
-    <p>
-      Miksi juuri tämä vuosiluku esiintyy kaikkialla?
-    </p>
-
+        <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
         <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
 
-<br />
+        <br />
 
-<p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
-<p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
+        <p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
+        <p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
 
-<p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
-<p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
+        <br />
 
-<br />
+        <p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
+        <p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
 
-<p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
-<p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
+        <br />
 
-<button
-  className="btn"
-  onClick={() => setShowNoteInfo(false)}
->
-  ⬅️ Takaisin tutkimukseen
-</button>
-</div>
-)}
+        <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
+        <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
+
+        <button
+          className="btn"
+          onClick={() => setShowFolder(false)}
+        >
+          ⬅️ Takaisin tutkimukseen
+        </button>
+      </div>
+    </div>
   );
-
-if (showEnding) {
+}
+  if (showEnding) {
   return (
     <div className="screen screen--center">
       <div className="rain-overlay" />
@@ -435,11 +409,10 @@ if (atTrail) {
           Kuvassa näkyy kolme henkilöä mökin rannassa.
         </p>
 
-        <h3>🏚️ Seuraa jalanjälkiä</h3>
-
-<p>
-  Jäljet päättyvät vanhalle hylätylle vajalle.
-</p>
+        <h3>👣 Jalanjäljet</h3>
+        <p>
+          Jäljet johtavat kohti vanhaa vajaa.
+        </p>
 
         <h3>📓 Päiväkirjan sivu</h3>
         <p>
@@ -447,6 +420,7 @@ if (atTrail) {
         </p>
         <h3>🏚️ Seuraa jalanjälkiä</h3>
 
+<p>
 Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
