@@ -8,6 +8,7 @@ import RoleRevealScreen from "./RoleRevealScreen";
 import MapScreen from "./MapScreen";
 import VotingScreen from "./VotingScreen";
 import EndingScreen from "./EndingScreen";
+import KadonnutJaniScreen from "./KadonnutJaniScreen";
 import { useRef } from "react";
 function NotConfigured() {
   return (
