@@ -7,6 +7,41 @@ export default function KadonnutJaniScreen() {
   const [atShed, setAtShed] = useState(false);
   const [atGuestRoom, setAtGuestRoom] = useState(false);
   const [atSauna, setAtSauna] = useState(false);
+  if (atSauna) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🧖 Sauna</h1>
+
+        <p>
+          Löylyissä tuntuu kuin joku olisi juuri poistunut.
+        </p>
+
+        <h3>📖 Märkä päiväkirjan sivu</h3>
+        <p>
+          "Totuus on piilotettu veden alle."
+        </p>
+
+        <h3>🪙 Vartijoiden merkki</h3>
+        <p>
+          Vanha metallinen tunnus, jossa on sama symboli kuin kaivossa.
+        </p>
+
+        <h3>🔑 Salainen avain</h3>
+        <p>
+          Avaimessa lukee: "Laiturin alle."
+        </p>
+
+        <h3>🌊 Seuraava johtolanka</h3>
+        <p>
+          Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
+        </p>
+      </div>
+    </div>
+  );
+}
   if (atGuestRoom) {
   return (
     <div className="screen screen--center">
