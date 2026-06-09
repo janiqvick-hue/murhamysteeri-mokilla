@@ -188,13 +188,43 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
   🎒 Avaa tutkijan kansio
   </button>
         <button
-          className="btn"
-          onClick={() =>
-            alert("🌲 Järven Vartijat avautuvat seuraavassa osassa...")
-          }
-        >
-          ➡️ Kohti Järven Vartijoita
-        </button>
+  className="btn"
+  onClick={() => {
+    const audio = new AudioContext();
+
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(120, audio.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(
+      40,
+      audio.currentTime + 1.5
+    );
+
+    gain.gain.setValueAtTime(0.001, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.6,
+      audio.currentTime + 0.05
+    );
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audio.currentTime + 1.5
+    );
+
+    osc.connect(gain);
+    gain.connect(audio.destination);
+
+    osc.start();
+    osc.stop(audio.currentTime + 1.5);
+
+    setTimeout(() => {
+      alert("🌲⚡ VARTIJAT OVAT PALANNEET...");
+    }, 1600);
+  }}
+>
+  ➡️ Kohti Järven Vartijoita
+</button>
       </div>
     </div>
   );
