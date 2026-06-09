@@ -445,7 +445,6 @@ if (atTrail) {
         </p>
         <h3>🏚️ Seuraa jalanjälkiä</h3>
 
-<p>
 Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
