@@ -125,7 +125,6 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
         </button>
   </div>
   )}
-  }
   
   if (showEnding) {
   return (
