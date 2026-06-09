@@ -2,16 +2,27 @@ import { useState } from "react";
 
 export default function KadonnutJaniScreen() {
   const [started, setStarted] = useState(false);
-  const [atWell, setAtWell] = useState(false);
-  const [atTrail, setAtTrail] = useState(false);
-  const [atShed, setAtShed] = useState(false);
-  const [atGuestRoom, setAtGuestRoom] = useState(false);
-  const [atSauna, setAtSauna] = useState(false);
-  const [atUnderDock, setAtUnderDock] = useState(false);
-  const [atCellar, setAtCellar] = useState(false);
-  const [hasPhone, setHasPhone] = useState(false);
-  const [hasNote, setHasNote] = useState(false);
-  const [hasPlank, setHasPlank] = useState(false);
+
+const [atWell, setAtWell] = useState(false);
+const [atTrail, setAtTrail] = useState(false);
+const [atShed, setAtShed] = useState(false);
+const [atGuestRoom, setAtGuestRoom] = useState(false);
+const [atSauna, setAtSauna] = useState(false);
+const [atUnderDock, setAtUnderDock] = useState(false);
+const [atCellar, setAtCellar] = useState(false);
+
+const [hasPhone, setHasPhone] = useState(false);
+const [hasNote, setHasNote] = useState(false);
+const [hasPlank, setHasPlank] = useState(false);
+
+const [hasDiary, setHasDiary] = useState(false);
+const [hasRustyKey, setHasRustyKey] = useState(false);
+
+const [hasPhoto, setHasPhoto] = useState(false);
+const [hasLetter, setHasLetter] = useState(false);
+
+const [hasGuardMark, setHasGuardMark] = useState(false);
+const [hasMetalBox, setHasMetalBox] = useState(false);
   if (atCellar) {
   return (
     <div className="screen screen--center">
