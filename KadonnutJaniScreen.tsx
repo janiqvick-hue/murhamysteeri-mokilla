@@ -7,6 +7,43 @@ export default function KadonnutJaniScreen() {
   const [atShed, setAtShed] = useState(false);
   const [atGuestRoom, setAtGuestRoom] = useState(false);
   const [atSauna, setAtSauna] = useState(false);
+  const [atUnderDock, setAtUnderDock] = useState(false);
+  if (atUnderDock) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🌊 Laiturin alla</h1>
+
+        <p>
+          Kylmä vesi paljastaa vanhan metallirasian.
+        </p>
+
+        <h3>📦 Metallirasia</h3>
+        <p>
+          Rasian sisältä löytyy vuoden 1952 valokuva.
+        </p>
+
+        <h3>📷 Valokuva</h3>
+        <p>
+          Kuvassa seisoo neljä henkilöä. Yksi heistä on revitty pois kuvasta.
+        </p>
+
+        <h3>📜 Viimeinen viesti</h3>
+        <p>
+          "Varjelkaa totuutta. Älkää avatko kellaria."
+        </p>
+        <button
+  className="btn"
+  onClick={() => setAtUnderDock(true)}
+>
+  🌊 Tutki laiturin alusta
+</button>
+      </div>
+    </div>
+  );
+}
   if (atSauna) {
   return (
     <div className="screen screen--center">
