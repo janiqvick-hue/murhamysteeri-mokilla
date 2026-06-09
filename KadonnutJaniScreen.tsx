@@ -4,6 +4,42 @@ export default function KadonnutJaniScreen() {
   const [started, setStarted] = useState(false);
   const [atWell, setAtWell] = useState(false);
   const [atTrail, setAtTrail] = useState(false);
+  const [atShed, setAtShed] = useState(false);
+  if (atShed) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🏚️ Hylätty Vaja</h1>
+
+        <p>
+          Vaja näyttää olleen autiona vuosia.
+        </p>
+
+        <h3>📦 Lukittu arkku</h3>
+        <p>
+          Arkun kannessa on numero 1952.
+        </p>
+
+        <h3>🧥 Vanha takki</h3>
+        <p>
+          Taskusta löytyy taiteltu kirje.
+        </p>
+
+        <h3>📜 Kirje</h3>
+        <p>
+          "Jos jotain tapahtuu minulle, älkää luottako kaikkiin."
+        </p>
+
+        <h3>🔑 Yläkerran avain</h3>
+        <p>
+          Avaimessa lukee: Vierashuone.
+        </p>
+      </div>
+    </div>
+  );
+}
 if (atTrail) {
   return (
     <div className="screen screen--center">
@@ -30,6 +66,18 @@ if (atTrail) {
         <p>
           "Joku seurasi meitä metsässä."
         </p>
+        <h3>🏚️ Seuraa jalanjälkiä</h3>
+
+<p>
+Jäljet päättyvät vanhalle hylätylle vajalle.
+</p>
+
+<button
+  className="btn"
+  onClick={() => setAtShed(true)}
+>
+  🏚️ Siirry hylätylle vajalle
+</button>
       </div>
     </div>
   );
