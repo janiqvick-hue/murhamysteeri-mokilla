@@ -8,6 +8,49 @@ export default function KadonnutJaniScreen() {
   const [atGuestRoom, setAtGuestRoom] = useState(false);
   const [atSauna, setAtSauna] = useState(false);
   const [atUnderDock, setAtUnderDock] = useState(false);
+  const [atCellar, setAtCellar] = useState(false);
+  if (atCellar) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🕯️ Kellarin salaisuus</h1>
+
+        <p>
+          Vanhan kellarin ilma on kylmä. Joku on yrittänyt peittää totuuden vuosikymmeniä.
+        </p>
+
+        <h3>📖 Kadonnut päiväkirja</h3>
+        <p>
+          "Syyllinen ei ollut ulkopuolinen. Hän oli yksi meistä."
+        </p>
+
+        <h3>🗝️ Viimeinen avain</h3>
+        <p>
+          Avain avaa metallikaapin kellarin nurkassa.
+        </p>
+
+        <h3>👤 Totuus</h3>
+        <p>
+          Jani ei kadonnut sattumalta. Hän sai tietää vartijoiden salaisuuden.
+        </p>
+
+        <h3>🏆 Murhamysteeri ratkaistu</h3>
+        <p>
+          Olet paljastanut mökin vuosikymmeniä kätkemän totuuden.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => alert("Onneksi olkoon! Ratkaisit Murhamysteeri Mökillä -pelin!")}
+        >
+          🎉 Päätä tutkimus
+        </button>
+      </div>
+    </div>
+  );
+}
   if (atUnderDock) {
   return (
     <div className="screen screen--center">
@@ -77,7 +120,7 @@ export default function KadonnutJaniScreen() {
         </p>
         <button
   className="btn"
-  onClick={() => alert("Jatkuu seuraavassa luvussa...")}
+  onClick={() => setAtCellar(true)}
 >
   🔐 Avaa kellarin salaisuus
 </button>
