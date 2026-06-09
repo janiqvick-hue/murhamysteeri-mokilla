@@ -124,8 +124,7 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
           ⬅️ Takaisin tutkimukseen
         </button>
       </div>
-  }
-  );
+  )}
         
   if (showEnding) {
   return (
