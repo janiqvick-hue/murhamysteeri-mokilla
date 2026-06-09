@@ -50,9 +50,20 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
   <div className="config-card">
     <h3>📱 Janin puhelin</h3>
 
-    <p>
-      Puhelimen galleriassa on kuva vanhasta kaivosta.
-    </p>
+    <img
+  src="/IMG_1083.jpeg"
+  alt="Vanha kaivo"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem"
+  }}
+/>
+
+<p>
+  Jani otti tämän kuvan juuri ennen katoamistaan.
+</p>
 
     <button
       className="btn"
