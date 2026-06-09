@@ -28,6 +28,7 @@ const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
 const [showCinematic, setShowCinematic] = useState(false);
 const [notification, setNotification] = useState("");
+const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
   if (showFolder) {
   return (
   <div className="screen screen--center">
@@ -110,8 +111,12 @@ const [notification, setNotification] = useState("");
 
         <br />
 
-        {hasPhoto && (
-  <button className="evidence-card">
+  
+  {hasPhoto && (
+  <button
+    className="evidence-card"
+    onClick={() => setShowPhotoEvidence(true)}
+  >
     📷 Vanha valokuva
   </button>
 )}
@@ -146,6 +151,33 @@ const [notification, setNotification] = useState("");
     </div>
   );
 }
+  {showPhotoEvidence && (
+  <div className="config-card">
+    <h2>📷 Vanha valokuva</h2>
+
+    <img
+      src="/IMG_1083.jpeg"
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        marginTop: "1rem",
+        marginBottom: "1rem",
+      }}
+    />
+
+    <p>
+      Kuvassa näkyy kolme henkilöä mökin rannassa.
+      Yksi heistä näyttää katsovan suoraan kameraan...
+    </p>
+
+    <button
+      className="btn"
+      onClick={() => setShowPhotoEvidence(false)}
+    >
+      Sulje
+    </button>
+  </div>
+)}
   if (showEnding) {
   return (
     <div className="screen screen--center">
