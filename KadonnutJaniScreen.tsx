@@ -82,8 +82,17 @@ const [notification, setNotification] = useState("");
     </button>
   </div>
 )}
-        <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
-        <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
+        {hasNote && (
+  <button className="evidence-card">
+    📄 Märkä muistilappu
+  </button>
+)}
+
+{hasPlank && (
+  <button className="evidence-card">
+    🪵 Irtonainen lankku
+  </button>
+)}
 
         <br />
 
