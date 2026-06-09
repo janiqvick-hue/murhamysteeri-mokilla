@@ -25,6 +25,7 @@ const [hasGuardMark, setHasGuardMark] = useState(false);
 const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
+const [showPhoneInfo, setShowPhoneInfo] = useState(false);
   if (showFolder) {
   return (
     <div className="screen screen--center">
@@ -33,7 +34,34 @@ const [showFolder, setShowFolder] = useState(false);
       <div className="config-card">
         <h1>🎒 Tutkijan kansio</h1>
 
-        <p>{hasPhone ? "☑️" : "⬜"} Janin puhelin</p>
+        {hasPhone && (
+  <button
+    className="btn"
+    onClick={() => setShowPhoneInfo(true)}
+  >
+    📱 Janin puhelin
+  </button>
+)}
+
+{!hasPhone && (
+  <p>⬜ Janin puhelin</p>
+)}
+        {showPhoneInfo && (
+  <div className="config-card">
+    <h3>📱 Janin puhelin</h3>
+
+    <p>
+      Puhelimen galleriassa on kuva vanhasta kaivosta.
+    </p>
+
+    <button
+      className="btn"
+      onClick={() => setShowPhoneInfo(false)}
+    >
+      Sulje
+    </button>
+  </div>
+)}
         <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
         <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
 
