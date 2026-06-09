@@ -123,8 +123,11 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
         >
           ⬅️ Takaisin tutkimukseen
         </button>
-  </div>
-  )}
+    </div>
+  );
+}
+  
+if (showEnding) {
   
   if (showEnding) {
   return (
@@ -434,10 +437,11 @@ if (atTrail) {
           Kuvassa näkyy kolme henkilöä mökin rannassa.
         </p>
 
-        <h3>👣 Jalanjäljet</h3>
-        <p>
-          Jäljet johtavat kohti vanhaa vajaa.
-        </p>
+        <h3>🏚️ Seuraa jalanjälkiä</h3>
+
+<p>
+  Jäljet päättyvät vanhalle hylätylle vajalle.
+</p>
 
         <h3>📓 Päiväkirjan sivu</h3>
         <p>
