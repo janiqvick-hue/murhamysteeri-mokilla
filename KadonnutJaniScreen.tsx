@@ -8,6 +8,7 @@ export default function KadonnutJaniScreen() {
   const [atGuestRoom, setAtGuestRoom] = useState(false);
   const [atSauna, setAtSauna] = useState(false);
   const [atUnderDock, setAtUnderDock] = useState(false);
+  const [atUnderDock, setAtUnderDock] = useState(false);
   if (atUnderDock) {
   return (
     <div className="screen screen--center">
