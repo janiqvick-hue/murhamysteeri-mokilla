@@ -135,6 +135,12 @@ const [showFolder, setShowFolder] = useState(false);
   "Vartijat ovat palanneet."
 </p>
         <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+>
+  🎒 Avaa tutkijan kansio
+  </button>
+        <button
           className="btn"
           onClick={() =>
             alert("🌲 Järven Vartijat avautuvat seuraavassa osassa...")
