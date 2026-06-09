@@ -192,11 +192,6 @@ const [showEnding, setShowEnding] = useState(false);
   Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
 </p>
 
-<h3>🌊 Seuraava johtolanka</h3>
-<p>
-  Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
-</p>
-
 <button
   className="btn"
   onClick={() => setAtUnderDock(true)}
