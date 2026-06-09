@@ -272,7 +272,23 @@ export default function EndingScreen({ game, playerId, isHost, activeMissions, a
           <div className="ending-secret-text">{game.secretRevealed}</div>
         </div>
       )}
-
+<div className="ending-secret">
+  <div className="ending-secret-label">
+    👤 Ratkaisematon mysteeri
+  </div>
+  <div className="ending-secret-text">
+    Murha ratkaistiin.
+    <br /><br />
+    Mutta yksi kysymys jäi vastaamatta...
+    <br /><br />
+    Missä Jani on?
+    <br /><br />
+    Hänen puhelimensa löydettiin laiturilta.
+    Häntä ei nähty enää koskaan sinä yönä.
+    <br /><br />
+    Jatkuu...
+  </div>
+</div>
       <div className="ending-actions">
         {isHost && (
           <button className="btn btn-primary" onClick={() => actions.resetGame().catch(() => {})}>
