@@ -56,6 +56,15 @@ const [showEnding, setShowEnding] = useState(false);
         <p>
           <strong>Ja Järven Vartijat odottavat...</strong>
         </p>
+        <p
+  style={{
+    marginTop: "2rem",
+    fontStyle: "italic",
+    opacity: 0.8,
+  }}
+>
+  Mökillä, syksyllä 1952
+</p>
 
         <p style={{ marginTop: "2rem" }}>
           – Jani
@@ -69,7 +78,32 @@ const [showEnding, setShowEnding] = useState(false);
           JÄRVEN VARTIJAT<br />
           Varjojen Perintö
         </p>
+        <p
+  style={{
+    marginTop: "1rem",
+    fontStyle: "italic",
+  }}
+>
+  "Totuus lepää järven pohjassa."
+</p>
+<p
+  style={{
+    marginTop: "2rem",
+    opacity: 0.7,
+    fontStyle: "italic",
+  }}
+>
+  Järveltä kuuluu kaukainen huuto...
+</p>
 
+<p
+  style={{
+    fontWeight: "bold",
+    letterSpacing: "2px",
+  }}
+>
+  "Vartijat ovat palanneet."
+</p>
         <button
           className="btn"
           onClick={() =>
