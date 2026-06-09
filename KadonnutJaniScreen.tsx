@@ -220,6 +220,7 @@ const [showCinematic, setShowCinematic] = useState(false);
     osc.stop(audio.currentTime + 1.5);
 
     setTimeout(() => {
+  setShowEnding(false);
   setShowCinematic(true);
 }, 1600);
 
@@ -249,9 +250,13 @@ const [showCinematic, setShowCinematic] = useState(false);
           🌲 JATKUU Järven Vartijoissa...
         </h3>
 
-        <button className="btn" style={{ marginTop: "2rem" }}>
-          ➡️ Avaa Järven Vartijat
-        </button>
+        <button
+  className="btn"
+  style={{ marginTop: "2rem" }}
+  onClick={() => window.location.reload()}
+>
+  ➡️ Avaa Järven Vartijat
+</button>
       </div>
     </div>
   );
