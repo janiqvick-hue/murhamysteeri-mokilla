@@ -117,17 +117,19 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
 <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
 
-        <button
+                <button
           className="btn"
           onClick={() => setShowFolder(false)}
         >
           ⬅️ Takaisin tutkimukseen
         </button>
-    </div>
-  );
-}
-  
-if (showEnding) {
+      </div>
+    )}
+    
+    );
+  }
+
+  if (showEnding) {
   
   if (showEnding) {
   return (
