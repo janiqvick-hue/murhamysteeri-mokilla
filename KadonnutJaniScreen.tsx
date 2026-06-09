@@ -2,8 +2,39 @@ import { useState } from "react";
 
 export default function KadonnutJaniScreen() {
   const [started, setStarted] = useState(false);
+  const [atWell, setAtWell] = useState(false);
 
   if (started) {
+    if (atWell) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🕳️ Vanha Kaivo</h1>
+
+        <p>
+          Kaivon reunaan on kaiverrettu sama symboli kuin laiturin lankussa.
+        </p>
+
+        <h3>📜 Repeytynyt päiväkirjan sivu</h3>
+        <p>
+          "Kesä 1952. Emme ole enää turvassa."
+        </p>
+
+        <h3>🔑 Ruostunut avain</h3>
+        <p>
+          Avaimeen on kaiverrettu numero: 1952
+        </p>
+
+        <h3>🧭 Kartan kulma</h3>
+        <p>
+          Metsäpolku
+        </p>
+      </div>
+    </div>
+  );
+}
     return (
       <div className="screen screen--center">
         <div className="rain-overlay" />
@@ -38,7 +69,7 @@ export default function KadonnutJaniScreen() {
           </p>
           <button
   className="btn"
-  onClick={() => alert("Vanha Kaivo - seuraava luku")}
+  onClick={() => setAtWell(true)
 >
   🕳️ Siirry vanhalle kaivolle
 </button>
