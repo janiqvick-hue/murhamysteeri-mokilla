@@ -124,10 +124,12 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
   ⬅️ Takaisin tutkimukseen
 </button>
 
-  </div>
-)}
-  
-  if (showEnding) {
+</div>
+  );
+}
+
+if (showEnding) {
+  return (
   return (
     <div className="screen screen--center">
       <div className="rain-overlay" />
