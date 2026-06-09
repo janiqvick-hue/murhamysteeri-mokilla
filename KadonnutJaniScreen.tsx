@@ -96,18 +96,45 @@ const [notification, setNotification] = useState("");
 
         <br />
 
-        <p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
-        <p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
+        {hasDiary && (
+  <button className="evidence-card">
+    📖 Päiväkirjan sivu
+  </button>
+)}
+
+{hasRustyKey && (
+  <button className="evidence-card">
+    🔑 Ruostunut avain
+  </button>
+)}
 
         <br />
 
-        <p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
-        <p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
+        {hasPhoto && (
+  <button className="evidence-card">
+    📷 Vanha valokuva
+  </button>
+)}
+
+{hasLetter && (
+  <button className="evidence-card">
+    📄 Kirje
+  </button>
+)}
 
         <br />
 
-        <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
-        <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
+        {hasGuardMark && (
+  <button className="evidence-card">
+    🌲 Vartijoiden merkki
+  </button>
+)}
+
+{hasMetalBox && (
+  <button className="evidence-card">
+    📦 Metallirasia
+  </button>
+)}
 
         <button
           className="btn"
