@@ -118,14 +118,15 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
 
                 <button
-          className="btn"
-          onClick={() => setShowFolder(false)}
-        >
-          ⬅️ Takaisin tutkimukseen
-        </button>
-        </div>
-    );
-  }
+  className="btn"
+  onClick={() => setShowFolder(false)}
+>
+  ⬅️ Takaisin tutkimukseen
+</button>
+
+</div>
+)}
+}
   
   if (showEnding) {
   return (
