@@ -9,6 +9,7 @@ export default function KadonnutJaniScreen() {
   const [atSauna, setAtSauna] = useState(false);
   const [atUnderDock, setAtUnderDock] = useState(false);
   const [atCellar, setAtCellar] = useState(false);
+  const [hasPhone, setHasPhone] = useState(false);
   if (atCellar) {
   return (
     <div className="screen screen--center">
@@ -292,6 +293,15 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 
         <div className="config-card">
           <h1>🌊 Laituri</h1>
+          <div style={{ marginBottom: "20px" }}>
+  <h3>🎒 Tutkijan kansio</h3>
+
+  {hasPhone ? (
+    <p>☑️ 📱 Janin puhelin</p>
+  ) : (
+    <p>☐ 📱 Janin puhelin</p>
+  )}
+</div>
 
           <p>
             Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
@@ -307,6 +317,15 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
           <p>
             Näytöllä näkyy kuva vanhasta kaivosta.
           </p>
+          <button
+  className="btn"
+  onClick={() => {
+    setHasPhone(true);
+    alert("🎒 Uusi todiste lisätty: Janin puhelin");
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
 
           <h3>📄 Märkä muistilappu</h3>
           <p>
