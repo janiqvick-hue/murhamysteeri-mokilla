@@ -5,6 +5,34 @@ export default function KadonnutJaniScreen() {
   const [atWell, setAtWell] = useState(false);
   const [atTrail, setAtTrail] = useState(false);
   const [atShed, setAtShed] = useState(false);
+  const [atGuestRoom, setAtGuestRoom] = useState(false);
+  const [atSauna, setAtSauna] = useState(false);
+  if (atGuestRoom) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🚪 Vierashuone</h1>
+
+        <h3>📷 Vanha valokuva</h3>
+        <p>Kuvassa näkyy neljä henkilöä mökin portailla vuonna 1952.</p>
+
+        <h3>📓 Päiväkirja</h3>
+        <p>"Vartija katosi sinä yönä."</p>
+
+        <h3>🗺️ Kartan pala</h3>
+        <p>Kartta osoittaa kohti saunaa.</p>
+        <button
+  className="btn"
+  onClick={() => setAtSauna(true)}
+>
+  🔥 Siirry saunalle
+</button>
+      </div>
+    </div>
+  );
+}
   if (atShed) {
   return (
     <div className="screen screen--center">
@@ -36,6 +64,18 @@ export default function KadonnutJaniScreen() {
         <p>
           Avaimessa lukee: Vierashuone.
         </p>
+        <h3>🚪 Vierashuone</h3>
+
+<p>
+Yläkerran avain sopii vanhan vierashuoneen oveen.
+</p>
+
+<button
+  className="btn"
+  onClick={() => setAtGuestRoom(true)}
+>
+  🚪 Siirry vierashuoneeseen
+</button>
       </div>
     </div>
   );
