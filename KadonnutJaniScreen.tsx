@@ -67,11 +67,11 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 </p>
 
     <button
-      className="btn"
-      onClick={() => setShowPhoneInfo(false)}
-    >
-      Sulje
-    </button>
+  className="btn"
+  onClick={() => setShowPhoneInfo(false)}
+>
+  Sulje
+</button>
   </div>
 )}
         {hasNote && (
@@ -117,14 +117,12 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
 <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
 
-                <button
+<button
   className="btn"
-  onClick={() => setShowFolder(false)}
+  onClick={() => setShowNoteInfo(false)}
 >
   ⬅️ Takaisin tutkimukseen
 </button>
-</div>
-)}
 
 if (showEnding) {
   return (
