@@ -71,7 +71,7 @@ export default function KadonnutJaniScreen() {
   className="btn"
   onClick={() => setAtWell(true)
 >
-  🕳️ Siirry vanhalle kaivolle
+  Siirry vanhalle kaivolle
 </button>
 
         </div>
