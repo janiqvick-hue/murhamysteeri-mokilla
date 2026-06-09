@@ -31,6 +31,18 @@ export default function KadonnutJaniScreen() {
         <p>
           Metsäpolku
         </p>
+        <h3>🌲 Seuraava johtolanka</h3>
+
+<p>
+  Kartan kulma osoittaa metsään johtavalle polulle.
+</p>
+
+<button
+  className="btn"
+  onClick={() => alert("Metsäpolku – seuraava luku")}
+>
+  🌲 Siirry metsäpolulle
+</button>
       </div>
     </div>
   );
