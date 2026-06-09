@@ -357,9 +357,13 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 
 <button
   className="btn"
-  onClick={() => setAtWell(true)}
+  onClick={() => {
+    setHasPlank(true);
+    alert("🎒 Uusi todiste lisätty: Irtonainen lankku");
+    setAtWell(true);
+  }}
 >
-  Siirry vanhalle kaivolle
+  🕳️ Siirry vanhalle kaivolle
 </button>
 
         </div>
