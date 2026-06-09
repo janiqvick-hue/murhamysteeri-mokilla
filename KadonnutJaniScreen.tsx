@@ -91,11 +91,11 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
         <p>
           "Varjelkaa totuutta. Älkää avatko kellaria."
         </p>
-        <button
+       <button
   className="btn"
-  onClick={() => setAtUnderDock(true)}
+  onClick={() => setAtCellar(true)}
 >
-  🌊 Tutki laiturin alusta
+  🔐 Avaa kellarin salaisuus
 </button>
       </div>
     </div>
@@ -129,10 +129,16 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
         </p>
 
         <h3>🌊 Seuraava johtolanka</h3>
-        <p>
-          Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
-        </p>
-        <button
+<p>
+  Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
+</p>
+
+<button
+  className="btn"
+  onClick={() => setAtUnderDock(true)}
+>
+  🌊 Tutki laiturin alusta
+</button>
   className="btn"
   onClick={() => setAtCellar(true)}
 >
