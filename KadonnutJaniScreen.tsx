@@ -219,8 +219,10 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
     osc.stop(audio.currentTime + 1.5);
 
     setTimeout(() => {
-      alert("🌲⚡ VARTIJAT OVAT PALANNEET...");
-    }, 1600);
+  alert("🌲⚡ VARTIJAT OVAT PALANNEET...");
+  alert("📖 JÄRVEN VARTIJAT\nVarjojen Perintö");
+  alert("🌊 Totuus lepää järven pohjassa.");
+}, 1600);
   }}
 >
   ➡️ Kohti Järven Vartijoita
