@@ -29,6 +29,13 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
 const [showCinematic, setShowCinematic] = useState(false);
 const [notification, setNotification] = useState("");
 const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
+const [showNoteEvidence, setShowNoteEvidence] = useState(false);
+const [showPlankEvidence, setShowPlankEvidence] = useState(false);
+const [showDiaryEvidence, setShowDiaryEvidence] = useState(false);
+const [showKeyEvidence, setShowKeyEvidence] = useState(false);
+const [showLetterEvidence, setShowLetterEvidence] = useState(false);
+const [showMarkEvidence, setShowMarkEvidence] = useState(false);
+const [showMetalEvidence, setShowMetalEvidence] = useState(false);
   if (showFolder) {
   return (
   <div className="screen screen--center">
@@ -84,13 +91,19 @@ const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
   </div>
 )}
         {hasNote && (
-  <button className="evidence-card">
+  <button
+    className="evidence-card"
+    onClick={() => setShowNoteEvidence(true)}
+  >
     📄 Märkä muistilappu
   </button>
 )}
 
 {hasPlank && (
-  <button className="evidence-card">
+  <button
+    className="evidence-card"
+    onClick={() => setShowPlankEvidence(true)}
+  >
     🪵 Irtonainen lankku
   </button>
 )}
@@ -178,6 +191,57 @@ const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
     </button>
   </div>
 )}
+  if (showPlankEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>🪵 Irtonainen lankku</h2>
+
+        <p>
+          Lankun alta löytyi vanha kangaspussi.
+        </p>
+
+        <p>
+          Sen sisällä oli pieni metallinen avain
+          ja outo symboli.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setShowPlankEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
+  if (showNoteEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📄 Märkä muistilappu</h2>
+
+        <p>Lapussa lukee vain yksi numero:</p>
+
+        <h1>1952</h1>
+
+        <p>Muste näyttää levinneen sateessa.</p>
+
+        <button
+          className="btn"
+          onClick={() => setShowNoteEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
   if (showEnding) {
   return (
     <div className="screen screen--center">
