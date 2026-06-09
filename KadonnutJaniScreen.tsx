@@ -42,7 +42,7 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
   >
     📱 Janin puhelin
   </button>
-)}
+
 
 {!hasPhone && (
   <p>⬜ Janin puhelin</p>
@@ -123,8 +123,9 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
         >
           ⬅️ Takaisin tutkimukseen
         </button>
-      </div>
-  );
+  </div>
+);
+}
   
   if (showEnding) {
   return (
