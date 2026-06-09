@@ -23,6 +23,65 @@ const [hasLetter, setHasLetter] = useState(false);
 
 const [hasGuardMark, setHasGuardMark] = useState(false);
 const [hasMetalBox, setHasMetalBox] = useState(false);
+const [showEnding, setShowEnding] = useState(false);
+  if (showEnding) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="parchment">
+        <h2>📜 JANIN VIIMEINEN KIRJE</h2>
+
+        <p><i>
+          Jos luet tätä, onnistuit siellä missä minä epäonnistuin.
+        </i></p>
+
+        <p>
+          Seurasit jälkiäni laiturilta kaivolle,
+          metsäpolulle ja kellarin pimeyteen asti.
+        </p>
+
+        <p>
+          Sinä ratkaisit Janin katoamisen.
+        </p>
+
+        <p>
+          Mutta totuus ei pääty tähän.
+        </p>
+
+        <p>
+          Järvi kätkee edelleen vastauksia.
+        </p>
+
+        <p>
+          <strong>Ja Järven Vartijat odottavat...</strong>
+        </p>
+
+        <p style={{ marginTop: "2rem" }}>
+          – Jani
+        </p>
+
+        <hr />
+
+        <h3>🌲 JATKUU...</h3>
+
+        <p>
+          JÄRVEN VARTIJAT<br />
+          Varjojen Perintö
+        </p>
+
+        <button
+          className="btn"
+          onClick={() =>
+            alert("🌲 Järven Vartijat avautuvat seuraavassa osassa...")
+          }
+        >
+          ➡️ Kohti Järven Vartijoita
+        </button>
+      </div>
+    </div>
+  );
+}
   if (atCellar) {
   return (
     <div className="screen screen--center">
@@ -56,11 +115,11 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
         </p>
 
         <button
-          className="btn"
-          onClick={() => alert("Onneksi olkoon! Ratkaisit Murhamysteeri Mökillä -pelin!")}
-        >
-          🎉 Päätä tutkimus
-        </button>
+  className="btn"
+  onClick={() => setShowEnding(true)}
+>
+  🔎 Paljasta Janin kohtalo
+</button>
       </div>
     </div>
   );
