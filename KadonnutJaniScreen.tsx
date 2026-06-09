@@ -75,6 +75,12 @@ export default function KadonnutJaniScreen() {
         <p>
           Vanhan laiturin alla on jotain, mitä ei koskaan löydetty.
         </p>
+        <button
+  className="btn"
+  onClick={() => alert("Jatkuu seuraavassa luvussa...")}
+>
+  🔐 Avaa kellarin salaisuus
+</button>
       </div>
     </div>
   );
