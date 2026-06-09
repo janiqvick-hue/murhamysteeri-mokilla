@@ -27,12 +27,20 @@ const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
 const [showCinematic, setShowCinematic] = useState(false);
+const [notification, setNotification] = useState("");
   if (showFolder) {
   return (
-    <div className="screen screen--center">
-      <div className="rain-overlay" />
+  <div className="screen screen--center">
 
-      <div className="config-card">
+    {notification && (
+      <div className="notification">
+        {notification}
+      </div>
+    )}
+
+    <div className="rain-overlay" />
+
+    <div className="config-card">
         <h1>🎒 Tutkijan kansio</h1>
 
         {hasPhone && (
@@ -565,7 +573,12 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => {
     setHasPhone(true);
-    alert("🎒 Uusi todiste lisätty: Janin puhelin");
+
+    setNotification("🎒 Uusi todiste: Janin puhelin");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
   }}
 >
   🎒 Lisää tutkijan kansioon
@@ -582,7 +595,12 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => {
     setHasNote(true);
-    alert("🎒 Uusi todiste lisätty: Märkä muistilappu");
+
+setNotification("🎒 Uusi todiste: Märkä muistilappu");
+
+setTimeout(() => {
+  setNotification("");
+}, 2500);
   }}
 >
   🎒 Lisää tutkijan kansioon
@@ -598,8 +616,14 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => {
     setHasPlank(true);
-    alert("🎒 Uusi todiste lisätty: Irtonainen lankku");
-    setAtWell(true);
+
+setNotification("🎒 Uusi todiste: Irtonainen lankku");
+
+setTimeout(() => {
+  setNotification("");
+}, 2500);
+
+setAtWell(true);
   }}
 >
   🕳️ Siirry vanhalle kaivolle
