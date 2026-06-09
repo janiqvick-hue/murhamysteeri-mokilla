@@ -24,6 +24,36 @@ const [hasLetter, setHasLetter] = useState(false);
 const [hasGuardMark, setHasGuardMark] = useState(false);
 const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
+const [showFolder, setShowFolder] = useState(false);
+  if (showFolder) {
+  return (
+    <div className="screen screen--center">
+      <div className="config-card">
+        <h1>🎒 Tutkijan kansio</h1>
+
+        <p>{hasPhone ? "☑️" : "⬜"} Janin puhelin</p>
+        <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
+        <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
+
+        <p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
+        <p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
+
+        <p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
+        <p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
+
+        <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
+        <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
+
+        <button
+          className="btn"
+          onClick={() => setShowFolder(false)}
+        >
+          🔙 Takaisin tutkimukseen
+        </button>
+      </div>
+    </div>
+  );
+}
   if (showEnding) {
   return (
     <div className="screen screen--center">
