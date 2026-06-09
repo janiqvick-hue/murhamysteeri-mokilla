@@ -123,9 +123,7 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
         >
           ⬅️ Takaisin tutkimukseen
         </button>
-      </div>
-    )}
-    
+        </div>
     );
   }
 
