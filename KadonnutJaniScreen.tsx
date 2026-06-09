@@ -10,6 +10,8 @@ export default function KadonnutJaniScreen() {
   const [atUnderDock, setAtUnderDock] = useState(false);
   const [atCellar, setAtCellar] = useState(false);
   const [hasPhone, setHasPhone] = useState(false);
+  const [hasNote, setHasNote] = useState(false);
+  const [hasPlank, setHasPlank] = useState(false);
   if (atCellar) {
   return (
     <div className="screen screen--center">
@@ -292,32 +294,24 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
         <div className="rain-overlay" />
 
         <div className="config-card">
-          <h1>🌊 Laituri</h1>
-          <div style={{ marginBottom: "20px" }}>
-  <h3>🎒 Tutkijan kansio</h3>
+         <h1>🌊 Laituri</h1>
 
-  {hasPhone ? (
-    <p>☑️ 📱 Janin puhelin</p>
-  ) : (
-    <p>☐ 📱 Janin puhelin</p>
-  )}
-</div>
+<p>
+  Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
+</p>
 
-          <p>
-            Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
-          </p>
+<p>
+  Tutki ympäristöä löytääksesi ensimmäiset vihjeet.
+</p>
 
-          <p>
-            Tutki ympäristöä löytääksesi ensimmäiset vihjeet.
-          </p>
+<hr />
 
-          <hr />
+<h3>📱 Janin puhelin</h3>
+<p>
+  Näytöllä näkyy kuva vanhasta kaivosta.
+</p>
 
-          <h3>📱 Janin puhelin</h3>
-          <p>
-            Näytöllä näkyy kuva vanhasta kaivosta.
-          </p>
-          <button
+<button
   className="btn"
   onClick={() => {
     setHasPhone(true);
@@ -327,17 +321,30 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   🎒 Lisää tutkijan kansioon
 </button>
 
-          <h3>📄 Märkä muistilappu</h3>
-          <p>
-            Lapussa lukee vain yksi numero:
-            <strong> 1952 </strong>
-          </p>
+<h3>📄 Märkä muistilappu</h3>
 
-          <h3>🪵 Irtonainen lankku</h3>
-          <p>
-            Sen alle on kaiverrettu outo symboli: 🌲
-          </p>
-          <button
+<p>
+  Lapussa lukee vain yksi numero:
+  <strong>1952</strong>
+</p>
+
+<button
+  className="btn"
+  onClick={() => {
+    setHasNote(true);
+    alert("🎒 Uusi todiste lisätty: Märkä muistilappu");
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
+
+<h3>🪵 Irtonainen lankku</h3>
+
+<p>
+  Sen alle on kaiverrettu outo symboli: 🌲
+</p>
+
+<button
   className="btn"
   onClick={() => setAtWell(true)}
 >
