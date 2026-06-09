@@ -26,6 +26,7 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
+const [showCinematic, setShowCinematic] = useState(false);
   if (showFolder) {
   return (
     <div className="screen screen--center">
@@ -219,14 +220,38 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
     osc.stop(audio.currentTime + 1.5);
 
     setTimeout(() => {
-  alert("🌲⚡ VARTIJAT OVAT PALANNEET...");
-  alert("📖 JÄRVEN VARTIJAT\nVarjojen Perintö");
-  alert("🌊 Totuus lepää järven pohjassa.");
+  setShowCinematic(true);
 }, 1600);
+
   }}
 >
   ➡️ Kohti Järven Vartijoita
 </button>
+      </div>
+    </div>
+  );
+}
+  if (showCinematic) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="parchment" style={{ textAlign: "center" }}>
+        <h1>🌧️</h1>
+
+        <h2>Totuus lepää järven pohjassa.</h2>
+
+        <p style={{ marginTop: "2rem", opacity: 0.8 }}>
+          Vartijat ovat palanneet.
+        </p>
+
+        <h3 style={{ marginTop: "3rem" }}>
+          🌲 JATKUU Järven Vartijoissa...
+        </h3>
+
+        <button className="btn" style={{ marginTop: "2rem" }}>
+          ➡️ Avaa Järven Vartijat
+        </button>
       </div>
     </div>
   );
