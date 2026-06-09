@@ -276,12 +276,8 @@ export default function EndingScreen({ game, playerId, isHost, activeMissions, a
   <div className="ending-secret-label">
     👤 Ratkaisematon mysteeri
   </div>
-  <div className="ending-secret">
-  <div className="ending-secret-label">
-    👤 Ratkaisematon mysteeri
-  </div>
 
-  <div className="ending-secret-text">
+<div className="ending-secret-text">
     Murha ratkaistiin.
 
     <br /><br />
