@@ -26,6 +26,7 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
+const [showNoteInfo, setShowNoteInfo] = useState(false);
   if (showFolder) {
   return (
     <div className="screen screen--center">
@@ -73,23 +74,48 @@ const [showPhoneInfo, setShowPhoneInfo] = useState(false);
     </button>
   </div>
 )}
-        <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
+        {hasNote && (
+  <button
+    className="btn"
+    onClick={() => setShowNoteInfo(true)}
+  >
+    📄 Märkä muistilappu
+  </button>
+)}
+
+{!hasNote && (
+  <p>⬜ Märkä muistilappu</p>
+)}
+        {showNoteInfo && (
+  <div className="config-card">
+    <h3>📄 Märkä muistilappu</h3>
+
+    <h1
+      style={{
+        letterSpacing: "6px",
+      }}
+    >
+      1952
+    </h1>
+
+    <p>
+      Miksi juuri tämä vuosiluku esiintyy kaikkialla?
+    </p>
+
         <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
 
-        <br />
+<br />
 
-        <p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
-        <p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
+<p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
+<p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
 
-        <br />
+<p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
+<p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
 
-        <p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
-        <p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
+<br />
 
-        <br />
-
-        <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
-        <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
+<p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
+<p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
 
         <button
           className="btn"
