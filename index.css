@@ -1149,3 +1149,74 @@ html, body, #root {
     transform: translateY(0);
   }
 }
+/* ─── Janin katoaminen – Todistetaulu ───────────────────── */
+
+.evidence-board {
+  background: #2f2418;
+  border: 6px solid #5a4025;
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+
+  box-shadow:
+    0 0 30px rgba(0,0,0,.6),
+    inset 0 0 20px rgba(0,0,0,.3);
+}
+
+.evidence-title {
+  text-align: center;
+  color: #f5deb3;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 1rem;
+}
+
+.evidence-item {
+  background: #f1e1b8;
+  color: #3a2a18;
+
+  padding: 1rem;
+
+  border-radius: 10px;
+
+  border: 2px solid #c9b07b;
+
+  transform: rotate(-2deg);
+
+  box-shadow:
+    3px 3px 10px rgba(0,0,0,.35);
+
+  transition: all .2s ease;
+
+  cursor: pointer;
+}
+
+.evidence-item:hover {
+  transform: scale(1.05) rotate(0deg);
+
+  box-shadow:
+    0 0 18px rgba(245,158,11,.45);
+}
+
+.evidence-item.found {
+  border-color: #22c55e;
+}
+
+.evidence-icon {
+  font-size: 2rem;
+  margin-bottom: .5rem;
+}
+
+.evidence-name {
+  font-weight: 700;
+  margin-bottom: .3rem;
+}
+
+.evidence-status {
+  font-size: .8rem;
+}
