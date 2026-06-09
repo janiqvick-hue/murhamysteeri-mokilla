@@ -3,7 +3,37 @@ import { useState } from "react";
 export default function KadonnutJaniScreen() {
   const [started, setStarted] = useState(false);
   const [atWell, setAtWell] = useState(false);
+  const [atTrail, setAtTrail] = useState(false);
+if (atTrail) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
 
+      <div className="config-card">
+        <h1>🌲 Metsäpolku</h1>
+
+        <p>
+          Polulta löytyy tuoreita jalanjälkiä.
+        </p>
+
+        <h3>📷 Rikkinäinen valokuva</h3>
+        <p>
+          Kuvassa näkyy kolme henkilöä mökin rannassa.
+        </p>
+
+        <h3>👣 Jalanjäljet</h3>
+        <p>
+          Jäljet johtavat kohti vanhaa vajaa.
+        </p>
+
+        <h3>📓 Päiväkirjan sivu</h3>
+        <p>
+          "Joku seurasi meitä metsässä."
+        </p>
+      </div>
+    </div>
+  );
+}
   if (started) {
     if (atWell) {
   return (
@@ -39,7 +69,7 @@ export default function KadonnutJaniScreen() {
 
 <button
   className="btn"
-  onClick={() => alert("Metsäpolku – seuraava luku")}
+  onClick={() => setAtTrail(true)}
 >
   🌲 Siirry metsäpolulle
 </button>
