@@ -130,7 +130,6 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
 
 if (showEnding) {
   return (
-  return (
     <div className="screen screen--center">
       <div className="rain-overlay" />
 
