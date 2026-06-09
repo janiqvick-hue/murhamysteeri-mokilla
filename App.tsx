@@ -166,16 +166,16 @@ export default function App() {
         />
       );
     case "ended":
-      return (
-        <EndingScreen
-          game={game}
-          playerId={playerId}
-          isHost={isHost}
-          activeMissions={activeMissions}
-          actions={wrappedActions}
-        />
-      );
-    default:
-      return null;
-  }
-}
+  return (
+    <>
+      <EndingScreen
+        game={game}
+        playerId={playerId}
+        isHost={isHost}
+        activeMissions={activeMissions}
+        actions={wrappedActions}
+      />
+
+      <KadonnutJaniScreen />
+    </>
+  );
