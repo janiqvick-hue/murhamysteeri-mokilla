@@ -28,6 +28,8 @@ const [showFolder, setShowFolder] = useState(false);
   if (showFolder) {
   return (
     <div className="screen screen--center">
+      <div className="rain-overlay" />
+
       <div className="config-card">
         <h1>🎒 Tutkijan kansio</h1>
 
@@ -35,11 +37,17 @@ const [showFolder, setShowFolder] = useState(false);
         <p>{hasNote ? "☑️" : "⬜"} Märkä muistilappu</p>
         <p>{hasPlank ? "☑️" : "⬜"} Irtonainen lankku</p>
 
+        <br />
+
         <p>{hasDiary ? "☑️" : "⬜"} Päiväkirjan sivu</p>
         <p>{hasRustyKey ? "☑️" : "⬜"} Ruostunut avain</p>
 
+        <br />
+
         <p>{hasPhoto ? "☑️" : "⬜"} Vanha valokuva</p>
         <p>{hasLetter ? "☑️" : "⬜"} Kirje</p>
+
+        <br />
 
         <p>{hasGuardMark ? "☑️" : "⬜"} Vartijoiden merkki</p>
         <p>{hasMetalBox ? "☑️" : "⬜"} Metallirasia</p>
@@ -48,7 +56,7 @@ const [showFolder, setShowFolder] = useState(false);
           className="btn"
           onClick={() => setShowFolder(false)}
         >
-          🔙 Takaisin tutkimukseen
+          ⬅️ Takaisin tutkimukseen
         </button>
       </div>
     </div>
