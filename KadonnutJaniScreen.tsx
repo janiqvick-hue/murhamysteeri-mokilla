@@ -42,6 +42,7 @@ export default function KadonnutJaniScreen() {
 >
   🕳️ Siirry vanhalle kaivolle
 </button>
+
         </div>
       </div>
     );
