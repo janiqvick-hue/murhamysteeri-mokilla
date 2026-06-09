@@ -1076,3 +1076,64 @@ html, body, #root {
   90% { opacity: 1; }
   100% { opacity: 0; }
 }
+.parchment {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 3rem 2.5rem;
+  background: linear-gradient(180deg, #f5e6b8 0%, #ecd39b 100%);
+  color: #4a3215;
+  border: 4px solid #8b6b3d;
+  border-radius: 12px;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(120, 80, 30, 0.2);
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+  position: relative;
+}
+
+.parchment::before,
+.parchment::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  height: 2px;
+  background: rgba(90, 60, 20, 0.3);
+}
+
+.parchment::before {
+  top: 20px;
+}
+
+.parchment::after {
+  bottom: 20px;
+}
+
+.parchment h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  color: #5a3c18;
+  letter-spacing: 2px;
+}
+
+.parchment p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin: 1rem 0;
+}
+
+.parchment hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 2px solid rgba(90, 60, 20, 0.3);
+}
+
+.parchment h3 {
+  margin-top: 2rem;
+  color: #5a3c18;
+}
+
+.parchment .btn {
+  margin-top: 2rem;
+}
