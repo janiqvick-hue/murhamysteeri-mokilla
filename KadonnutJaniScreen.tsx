@@ -36,6 +36,12 @@ export default function KadonnutJaniScreen() {
           <p>
             Sen alle on kaiverrettu outo symboli: 🌲
           </p>
+          <button
+  className="btn"
+  onClick={() => alert("Vanha Kaivo - seuraava luku")}
+>
+  🕳️ Siirry vanhalle kaivolle
+</button>
         </div>
       </div>
     );
