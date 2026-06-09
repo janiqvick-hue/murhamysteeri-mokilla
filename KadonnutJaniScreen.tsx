@@ -42,9 +42,9 @@ const [showNoteInfo, setShowNoteInfo] = useState(false);
   >
     📱 Janin puhelin
   </button>
+  )}
 
-
-{!hasPhone && (
+  {!hasPhone && (
   <p>⬜ Janin puhelin</p>
 )}
         {showPhoneInfo && (
