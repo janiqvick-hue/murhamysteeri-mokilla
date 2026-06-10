@@ -685,9 +685,23 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   );
 }
   if (started) {
-    if (atWell) {
+   if (atWell) {
   return (
     <div className="screen screen--center">
+
+      <button
+        className="btn"
+        onClick={() => setShowFolder(true)}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          zIndex: 1000,
+        }}
+      >
+        🎒 Tutkijan kansio
+      </button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
