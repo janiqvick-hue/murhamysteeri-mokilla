@@ -940,6 +940,20 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 >
   📱 Tutki Janin puhelinta
 </button>
+      <button
+  className="btn"
+  onClick={() => {
+    setHasPlank(true);
+
+    setNotification("🪵 Uusi todiste: Irtonainen lankku");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
+  }}
+>
+  🪵 Tutki irtonaista lankkua
+</button>
 
         </div>
       </div>
