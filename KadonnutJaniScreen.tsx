@@ -36,6 +36,9 @@ const [showKeyEvidence, setShowKeyEvidence] = useState(false);
 const [showLetterEvidence, setShowLetterEvidence] = useState(false);
 const [showMarkEvidence, setShowMarkEvidence] = useState(false);
 const [showMetalEvidence, setShowMetalEvidence] = useState(false);
+const [checkedPhone, setCheckedPhone] = useState(false);
+const [checkedPlanks, setCheckedPlanks] = useState(false);
+const [checkedWater, setCheckedWater] = useState(false);
   if (showFolder) {
   return (
   <div className="screen screen--center">
@@ -761,75 +764,20 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
 </p>
 
+768
 <p>
   Tutki ympäristöä löytääksesi ensimmäiset vihjeet.
 </p>
 
 <hr />
-
-<h3>📱 Janin puhelin</h3>
-<p>
-  Näytöllä näkyy kuva vanhasta kaivosta.
-</p>
-
 <button
   className="btn"
   onClick={() => {
-    setHasPhone(true);
-
-    setNotification("🎒 Uusi todiste: Janin puhelin");
-
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
+  setHasPhone(true);
+  setNotification("📱 Löysit Janin puhelimen!");
+}}
 >
-  🎒 Lisää tutkijan kansioon
-</button>
-
-<h3>📄 Märkä muistilappu</h3>
-
-<p>
-  Lapussa lukee vain yksi numero:
-  <strong>1952</strong>
-</p>
-
-<button
-  className="btn"
-  onClick={() => {
-    setHasNote(true);
-
-setNotification("🎒 Uusi todiste: Märkä muistilappu");
-
-setTimeout(() => {
-  setNotification("");
-}, 2500);
-  }}
->
-  🎒 Lisää tutkijan kansioon
-</button>
-
-<h3>🪵 Irtonainen lankku</h3>
-
-<p>
-  Sen alle on kaiverrettu outo symboli: 🌲
-</p>
-
-<button
-  className="btn"
-  onClick={() => {
-
-setNotification("🎒 Uusi todiste: Irtonainen lankku");
-
-setTimeout(() => {
-  setNotification("");
-}, 2500);
-
-setHasPlank(true);
-setAtWell(true);
-  }}
->
-  🕳️ Siirry vanhalle kaivolle
+  📱 Tutki Janin puhelinta
 </button>
 
         </div>
