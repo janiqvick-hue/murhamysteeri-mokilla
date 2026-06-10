@@ -71,7 +71,6 @@ const [checkedWater, setCheckedWater] = useState(false);
   <div className="config-card">
     <h3>📱 Janin puhelin</h3>
 
-    <img
   <img
   src="/janipuhelin.png"
   alt="Janin puhelin"
