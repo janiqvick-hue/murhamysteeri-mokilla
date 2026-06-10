@@ -40,7 +40,14 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
 const [checkedPhone, setCheckedPhone] = useState(false);
 const [checkedPlanks, setCheckedPlanks] = useState(false);
 const [checkedWater, setCheckedWater] = useState(false);
-  if (showFolder) {
+  if (
+  showFolder &&
+  !showPhoneInfo &&
+  !showNoteEvidence &&
+  !showPlankEvidence &&
+  !showPhotoEvidence &&
+  !showMarkEvidence
+) {
   return (
   <div className="screen screen--center">
 
