@@ -149,12 +149,6 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
 
         <br />
 
-        {hasGuardMark && (
-  <button className="evidence-card">
-    🌲 Vartijoiden merkki
-  </button>
-)}
-
 {hasMetalBox && (
   <button className="evidence-card">
     📦 Metallirasia
