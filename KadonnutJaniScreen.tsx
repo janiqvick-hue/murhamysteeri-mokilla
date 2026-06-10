@@ -709,7 +709,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
         <h1>📱 Janin puhelin</h1>
 
         <img
-          src="/IMG_1083.jpeg"
+          src="/janipuhelin.png?v=2"
           alt="Rikkinäinen puhelin"
           style={{
             width: "100%",
