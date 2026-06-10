@@ -219,6 +219,16 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
 
       <div className="config-card">
         <h2>🪵 Irtonainen lankku</h2>
+        <img
+  src="/irtonainenlankku.png"
+  alt="Irtonainen lankku"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }}
+/>
 
         <p>
           Lankun alta löytyi vanha kangaspussi.
