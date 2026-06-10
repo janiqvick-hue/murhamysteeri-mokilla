@@ -105,7 +105,7 @@ const [checkedWater, setCheckedWater] = useState(false);
 
 {hasPlank && (
   <button
-    className="evidence-card"
+    className="btn"
     onClick={() => setShowPlankEvidence(true)}
   >
     🪵 Irtonainen lankku
