@@ -72,7 +72,7 @@ const [checkedWater, setCheckedWater] = useState(false);
     <h3>📱 Janin puhelin</h3>
 
   <img
-  src="/janipuhelin.png"
+  src="/janipuhelin.png?v=2"
   alt="Janin puhelin"
   style={{
     width: "100%",
