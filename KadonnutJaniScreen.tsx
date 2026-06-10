@@ -99,7 +99,7 @@ const [checkedWater, setCheckedWater] = useState(false);
     className="btn"
     onClick={() => setShowNoteEvidence(true)}
   >
-    📄 Märkä muistilappu
+    📄 Märkä muistilappu ✨ UUSI!
   </button>
 )}
 
