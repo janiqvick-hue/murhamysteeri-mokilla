@@ -764,7 +764,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
 </p>
 
-768
 <p>
   Tutki ympäristöä löytääksesi ensimmäiset vihjeet.
 </p>
