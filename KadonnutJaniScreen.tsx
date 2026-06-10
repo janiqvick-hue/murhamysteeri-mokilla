@@ -215,7 +215,6 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
     </div>
   </div>
 );
-}
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
