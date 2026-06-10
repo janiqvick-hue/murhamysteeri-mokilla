@@ -757,21 +757,21 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
         </p>
 
         <button
-          className="btn"
-          onClick={() => {
-            setHasPhone(true);
+  className="btn"
+  onClick={() => {
+    setHasPhone(true);
 
-            setNotification("📱 Janin puhelin lisätty kansioon");
+    setNotification("📱 Janin puhelin lisätty kansioon");
 
-            setTimeout(() => {
-              setNotification("");
-            }, 2500);
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
 
-            setShowDockPhone(false);
-          }}
-        >
-          🎒 Lisää tutkijan kansioon
-        </button>
+    setShowDockPhone(false);
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
 
         <br /><br />
 
