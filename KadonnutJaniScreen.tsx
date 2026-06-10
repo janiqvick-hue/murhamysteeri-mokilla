@@ -165,7 +165,12 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
     </div>
   );
 }
-  {showPhotoEvidence && (
+  if (showPhotoEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
   <div className="config-card">
     <h2>📷 Vanha valokuva</h2>
 
@@ -206,8 +211,11 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
     >
       Sulje
     </button>
+
+    </div>
   </div>
-)}
+);
+}
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
