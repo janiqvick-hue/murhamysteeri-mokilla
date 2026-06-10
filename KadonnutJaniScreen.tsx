@@ -284,13 +284,26 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
 />
 
         <p>
-          Lankun alta löytyi vanha kangaspussi.
-        </p>
+  Lankun alla oli vanha kangaspussi.
+</p>
 
-        <p>
-          Sen sisällä oli pieni metallinen avain
-          ja outo symboli.
-        </p>
+<p>
+  Sen sisältä löytyi pieni ruostunut avain,
+  metallinen symboli ja repäisty paperinpala.
+</p>
+
+<p>
+  Kangaspussia ei ole koskettu vuosikymmeniin.
+</p>
+
+<blockquote>
+  "...kolmas symboli osoittaa tien."
+</blockquote>
+
+<p>
+  Kuka piilotti nämä? Ja miksi ne oli tarkoitettu
+  löydettäväksi vasta nyt?
+</p>
 
         <button
           className="btn"
