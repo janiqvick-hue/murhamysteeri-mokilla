@@ -188,7 +188,7 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
   onClick={() => {
     setHasPhoto(true);
 
-    setNotification("📷 Uusi todiste: Vanha valokuva");
+setNotification("📷 Uusi todiste: Vanha valokuva");
 
     setTimeout(() => {
       setNotification("");
