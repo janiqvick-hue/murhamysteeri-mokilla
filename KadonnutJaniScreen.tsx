@@ -40,6 +40,49 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
 const [checkedPhone, setCheckedPhone] = useState(false);
 const [checkedPlanks, setCheckedPlanks] = useState(false);
 const [checkedWater, setCheckedWater] = useState(false);
+
+  if (showNoteEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📝 Märkä muistilappu</h2>
+
+        <img
+  src="/märkämuistilappu.png?v=1"
+  alt="Märkä muistilappu"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }}
+/>
+
+<p>
+  Muste on levinnyt sateessa.
+  Suurin osa tekstistä on muuttunut lukukelvottomaksi.
+</p>
+
+<p>Vain yksi numero erottuu selvästi:</p>
+
+<h2>1952</h2>
+
+<blockquote>
+  "Tämä ei alkanut Janista."
+</blockquote>
+
+        <button
+          className="btn"
+          onClick={() => setShowNoteEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
   if (
   showFolder &&
   !showPhoneInfo &&
@@ -259,48 +302,7 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
     </div>
   );
 }
-  if (showNoteEvidence) {
-  return (
-    <div className="screen screen--center">
-      <div className="rain-overlay" />
-
-      <div className="config-card">
-        <h2>📝 Märkä muistilappu</h2>
-
-        <img
-  src="/märkämuistilappu.png?v=1"
-  alt="Märkä muistilappu"
-  style={{
-    width: "100%",
-    borderRadius: "12px",
-    marginTop: "1rem",
-    marginBottom: "1rem",
-  }}
-/>
-
-<p>
-  Muste on levinnyt sateessa.
-  Suurin osa tekstistä on muuttunut lukukelvottomaksi.
-</p>
-
-<p>Vain yksi numero erottuu selvästi:</p>
-
-<h2>1952</h2>
-
-<blockquote>
-  "Tämä ei alkanut Janista."
-</blockquote>
-
-        <button
-          className="btn"
-          onClick={() => setShowNoteEvidence(false)}
-        >
-          Sulje
-        </button>
-      </div>
-    </div>
-  );
-}
+  
   if (showMarkEvidence) {
   return (
     <div className="screen screen--center">
