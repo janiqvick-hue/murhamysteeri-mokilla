@@ -213,8 +213,8 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
     </button>
 
     </div>
-  </div>
 );
+}
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
