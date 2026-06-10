@@ -934,26 +934,28 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
 <hr />
-<button
-  className="btn"
-  onClick={() => setShowDockPhone(true)}
->
-  📱 Tutki Janin puhelinta
-</button>
-      <button
-  className="btn"
-  onClick={() => {
-    setHasPlank(true);
+      
+  {!hasPlank && (
+  <button
+    className="btn"
+    onClick={() => {
+      setHasPlank(true);
 
-    setNotification("🎒 Uusi todiste lisätty tutkijan kansioon. Tarkista kansio!");
+      setNotification("🎒 Uusi todiste lisätty tutkijan kansioon!");
 
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
->
-  🪵 Tutki irtonaista lankkua
-</button>
+      setTimeout(() => {
+        setNotification("");
+      }, 2500);
+    }}
+  >
+    🪵 Tutki irtonaista lankkua
+  </button>
+)}
+      {notification && (
+  <div className="notification">
+    {notification}
+  </div>
+)}
 
         </div>
       </div>
