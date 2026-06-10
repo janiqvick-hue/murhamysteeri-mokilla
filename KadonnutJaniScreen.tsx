@@ -945,7 +945,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   onClick={() => {
     setHasPlank(true);
 
-    setNotification("🪵 Uusi todiste: Irtonainen lankku");
+    setNotification("🎒 Uusi todiste lisätty tutkijan kansioon. Tarkista kansio!");
 
     setTimeout(() => {
       setNotification("");
