@@ -26,6 +26,7 @@ const [hasMetalBox, setHasMetalBox] = useState(false);
 const [showEnding, setShowEnding] = useState(false);
 const [showFolder, setShowFolder] = useState(false);
 const [showPhoneInfo, setShowPhoneInfo] = useState(false);
+const [showDockPhone, setShowDockPhone] = useState(false);sethasphone
 const [showCinematic, setShowCinematic] = useState(false);
 const [notification, setNotification] = useState("");
 const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
@@ -685,6 +686,87 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   );
 }
   if (started) {
+    if (showDockPhone) {
+  return (
+    <div className="screen screen--center">
+
+      <button
+        className="btn"
+        onClick={() => setShowFolder(true)}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          zIndex: 1000,
+        }}
+      >
+        🎒 Tutkijan kansio
+      </button>
+
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>📱 Janin puhelin</h1>
+
+        <img
+          src="/IMG_1083.jpeg"
+          alt="Rikkinäinen puhelin"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Puhelimen näyttö on pahasti haljennut.
+        </p>
+
+        <p>
+          Viimeinen tallennettu kuva on otettu vain
+          muutamia minuutteja ennen Janin katoamista.
+        </p>
+
+        <p>
+          Kuvassa näkyy vanha sammaloitunut kaivo.
+        </p>
+
+        <h3>🕚 23:47</h3>
+
+        <p>
+          Miksi Jani oli siellä keskellä yötä?
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => {
+            setHasPhone(true);
+
+            setNotification("📱 Janin puhelin lisätty kansioon");
+
+            setTimeout(() => {
+              setNotification("");
+            }, 2500);
+
+            setShowDockPhone(false);
+          }}
+        >
+          🎒 Lisää tutkijan kansioon
+        </button>
+
+        <br /><br />
+
+        <button
+          className="btn"
+          onClick={() => setShowDockPhone(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
    if (atWell) {
   return (
     <div className="screen screen--center">
@@ -799,10 +881,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 <hr />
 <button
   className="btn"
-  onClick={() => {
-  setHasPhone(true);
-  setNotification("📱 Löysit Janin puhelimen!");
-}}
+  onClick={() => setShowDockPhone(true)}
 >
   📱 Tutki Janin puhelinta
 </button>
