@@ -97,7 +97,10 @@ const [checkedWater, setCheckedWater] = useState(false);
         {hasNote && (
   <button
     className="btn"
-    onClick={() => setShowNoteEvidence(true)}
+    onClick={() => {
+  alert("Muistilappua klikattu!");
+  setShowNoteEvidence(true);
+}}
   >
     📄 Märkä muistilappu ✨ UUSI!
   </button>
