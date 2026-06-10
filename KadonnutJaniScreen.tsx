@@ -782,7 +782,6 @@ setTimeout(() => {
 <button
   className="btn"
   onClick={() => {
-    setHasPlank(true);
 
 setNotification("🎒 Uusi todiste: Irtonainen lankku");
 
@@ -790,6 +789,7 @@ setTimeout(() => {
   setNotification("");
 }, 2500);
 
+setHasPlank(true);
 setAtWell(true);
   }}
 >
