@@ -245,13 +245,31 @@ setNotification("📷 Uusi todiste: Vanha valokuva");
       <div className="rain-overlay" />
 
       <div className="config-card">
-        <h2>📄 Märkä muistilappu</h2>
+        <h2>📝 Märkä muistilappu</h2>
 
-        <p>Lapussa lukee vain yksi numero:</p>
+        <img
+  src="/märkämuistilappu.png?v=1"
+  alt="Märkä muistilappu"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }}
+/>
 
-        <h1>1952</h1>
+<p>
+  Muste on levinnyt sateessa.
+  Suurin osa tekstistä on muuttunut lukukelvottomaksi.
+</p>
 
-        <p>Muste näyttää levinneen sateessa.</p>
+<p>Vain yksi numero erottuu selvästi:</p>
+
+<h2>1952</h2>
+
+<blockquote>
+  "Tämä ei alkanut Janista."
+</blockquote>
 
         <button
           className="btn"
