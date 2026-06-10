@@ -96,7 +96,7 @@ const [checkedWater, setCheckedWater] = useState(false);
 )}
         {hasNote && (
   <button
-    className="evidence-card"
+    className="btn"
     onClick={() => setShowNoteEvidence(true)}
   >
     📄 Märkä muistilappu
@@ -761,6 +761,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   onClick={() => {
     setHasPhone(true);
     setHasNote(true);
+    setShowNoteEvidence(true);
 
     setNotification("📱 Janin puhelin lisätty kansioon");
 
