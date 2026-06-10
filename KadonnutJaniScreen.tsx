@@ -754,11 +754,25 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   );
 }
     return (
-      <div className="screen screen--center">
-        <div className="rain-overlay" />
+  <div className="screen screen--center">
 
-        <div className="config-card">
-         <h1>🌊 Laituri</h1>
+    <button
+      className="btn"
+      onClick={() => setShowFolder(true)}
+      style={{
+        position: "absolute",
+        top: "20px",
+        right: "20px",
+        zIndex: 1000,
+      }}
+    >
+      🎒 Tutkijan kansio
+    </button>
+
+    <div className="rain-overlay" />
+
+    <div className="config-card">
+      <h1>🌊 Laituri</h1>
 
 <p>
   Janin puhelimen viimeinen sijainti osoittaa vanhalle laiturille.
