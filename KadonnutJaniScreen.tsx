@@ -115,7 +115,14 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
     📖 Päiväkirjan sivu
   </button>
 )}
-
+{hasGuardMark && (
+  <button
+    className="evidence-card"
+    onClick={() => setShowMarkEvidence(true)}
+  >
+    🛡️ Vartijoiden merkki
+  </button>
+)}
 {hasRustyKey && (
   <button className="evidence-card">
     🔑 Ruostunut avain
@@ -235,6 +242,34 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
         <button
           className="btn"
           onClick={() => setShowNoteEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
+  if (showMarkEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>🛡️ Vartijoiden merkki</h2>
+
+        <p>
+          Vanha metallinen tunnusmerkki.
+        </p>
+
+        <p>
+          Taakse on kaiverrettu sanat:
+        </p>
+
+        <h3>"Vartija ei koskaan jätä jälkiä."</h3>
+
+        <button
+          className="btn"
+          onClick={() => setShowMarkEvidence(false)}
         >
           Sulje
         </button>
