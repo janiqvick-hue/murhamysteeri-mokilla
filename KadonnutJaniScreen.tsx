@@ -760,6 +760,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => {
     setHasPhone(true);
+    setHasNote(true);
 
     setNotification("📱 Janin puhelin lisätty kansioon");
 
