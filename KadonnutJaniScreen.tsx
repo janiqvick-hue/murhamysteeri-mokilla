@@ -785,10 +785,24 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   }
 
   return (
-    <div className="screen screen--center">
-      <div className="rain-overlay" />
+  <div className="screen screen--center">
 
-      <div className="config-card">
+    <button
+      className="btn"
+      onClick={() => setShowFolder(true)}
+      style={{
+        position: "absolute",
+        top: "20px",
+        right: "20px",
+        zIndex: 1000,
+      }}
+    >
+      🎒 Tutkijan kansio
+    </button>
+
+    <div className="rain-overlay" />
+
+    <div className="config-card">
         <h1>🔎 Kadonnut Jani</h1>
 
         <p>
