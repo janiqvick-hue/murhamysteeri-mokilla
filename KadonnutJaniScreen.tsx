@@ -682,11 +682,37 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
         <p>
           "Kesä 1952. Emme ole enää turvassa."
         </p>
+        <button
+  className="btn"
+  onClick={() => {
+    setHasDiary(true);
+    setNotification("📜 Uusi todiste: Päiväkirjan sivu");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
 
         <h3>🔑 Ruostunut avain</h3>
         <p>
           Avaimeen on kaiverrettu numero: 1952
         </p>
+        <button
+  className="btn"
+  onClick={() => {
+    setHasRustyKey(true);
+    setNotification("🔑 Uusi todiste: Ruostunut avain");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
 
         <h3>🧭 Kartan kulma</h3>
         <p>
