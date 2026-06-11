@@ -428,12 +428,14 @@ if (showPhotoEvidence) {
           Paperi on kellastunut ja reunat ovat repeytyneet.
         </p>
 
-        <blockquote>
-          "Kesä 1952.
-          Emme ole enää turvassa.
-          Joku tarkkailee meitä.
-          Vartijat eivät saa tietää totuutta."
-        </blockquote>
+       <blockquote>
+  Kesä 1952.<br />
+  Emme ole enää turvassa.<br /><br />
+
+  Joku tarkkailee meitä.<br /><br />
+
+  Vartijat eivät saa tietää totuutta.
+</blockquote> 
 
         <p>
           Viimeinen rivi on kirjoitettu kiireellä:
