@@ -948,17 +948,17 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     <div className="screen screen--center">
 
       <button
-        className="btn"
-        onClick={() => setShowFolder(true)}
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          zIndex: 1000,
-        }}
-      >
-        🎒 Tutkijan kansio
-      </button>
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
 
       <div className="rain-overlay" />
 
@@ -1029,17 +1029,20 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   <div className="screen screen--center">
 
     <button
-      className="btn"
-      onClick={() => setShowFolder(true)}
-      style={{
-        position: "absolute",
-        top: "20px",
-        right: "20px",
-        zIndex: 1000,
-      }}
-    >
-      🎒 Tutkijan kansio
-    </button>
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+    padding: "0.5rem 0.8rem",
+    fontSize: "0.9rem",
+    width: "auto",
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
 
     <div className="rain-overlay" />
 
@@ -1100,18 +1103,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   return (
   <div className="screen screen--center">
 
-    <button
-      className="btn"
-      onClick={() => setShowFolder(true)}
-      style={{
-        position: "absolute",
-        top: "20px",
-        right: "20px",
-        zIndex: 1000,
-      }}
-    >
-      🎒 Tutkijan kansio
-    </button>
 
     <div className="rain-overlay" />
 
