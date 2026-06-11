@@ -238,11 +238,11 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
           ⬅️ Takaisin tutkimukseen
         </button>
     </div>
-  );
+    );
   }
-    
-if (showPhotoEvidence) {
-  return (
+
+  if (showPhotoEvidence) {
+    return (
     <div className="screen screen--center">
       <div className="rain-overlay" />
 
