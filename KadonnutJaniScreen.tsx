@@ -423,7 +423,6 @@ if (showPhotoEvidence) {
     </div>
   );
 }
-        />
 
         <p>
           Paperi on kellastunut ja reunat ovat repeytyneet.
