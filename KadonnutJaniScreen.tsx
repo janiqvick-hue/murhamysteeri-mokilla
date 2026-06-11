@@ -233,7 +233,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         >
           ⬅️ Takaisin tutkimukseen
         </button>
-      </div>
     </div>
   );
 }
