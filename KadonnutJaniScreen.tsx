@@ -188,7 +188,9 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     marginTop: "0.5rem",
     marginBottom: "0.5rem",
     padding: "1rem",
-  }}
+    cursor: "pointer",
+display: "block",
+    )}
 >
   🔑 Ruostunut avain
 </button>
@@ -361,7 +363,7 @@ if (showPhotoEvidence) {
         <h2>🔑 Ruostunut avain</h2>
 
         <img
-          src="/ruostunut avain.png"
+          src="/ruostunutavain.png"
           alt="Ruostunut avain"
           style={{
             width: "100%",
