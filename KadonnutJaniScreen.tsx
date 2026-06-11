@@ -185,7 +185,10 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
       {hasRustyKey && (
   <button
   className="evidence-card"
-  onClick={() => setShowKeyEvidence(true)}
+  onClick={() => {
+    setShowFolder(false);
+    setShowKeyEvidence(true);
+  }}
   style={{
     width: "100%",
     marginTop: "0.5rem",
