@@ -1123,7 +1123,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
         background: "rgba(0,0,0,0.55)",
       }}
     >
-      <h1>Murhamysteeri Mökillä</h1>
+      <h1>🔦 Kadonnut Jani</h1>
 
       <p>
         Jani katosi kolme päivää sitten.
