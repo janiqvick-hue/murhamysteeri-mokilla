@@ -149,7 +149,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
   <button
     className="btn"
     onClick={() => {
-  alert("Muistilappua klikattu!");
   setShowNoteEvidence(true);
 }}
   >
