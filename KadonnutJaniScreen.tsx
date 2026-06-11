@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function KadonnutJaniScreen() {
-const [started, setStarted] = useState(true);
+const [started, setStarted] = useState(false);
 
 const [atWell, setAtWell] = useState(false);
 const [atTrail, setAtTrail] = useState(false);
@@ -1146,17 +1146,11 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
       <button
-        className="btn"
-        onClick={() => {
-          const audio = new Audio("/intro_jani.m4a");
-
-          audio.play().catch(() => {});
-
-          setStarted(true);
-        }}
-      >
-        🔦 Aloita tutkimus
-      </button>
+  className="btn"
+  onClick={() => setStarted(true)}
+>
+  🔦 Aloita tutkimus
+</button>
     </div>
   </div>
 );
