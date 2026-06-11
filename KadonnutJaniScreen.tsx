@@ -90,7 +90,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
   !showNoteEvidence &&
   !showPlankEvidence &&
   !showPhotoEvidence &&
-  !showMarkEvidence
+  !showMarkEvidence &&
   !showDiaryEvidence
 ) {
   return (
