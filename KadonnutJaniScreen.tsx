@@ -33,6 +33,7 @@ const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
 const [showNoteEvidence, setShowNoteEvidence] = useState(false);
 const [showPlankEvidence, setShowPlankEvidence] = useState(false);
 const [showDiaryEvidence, setShowDiaryEvidence] = useState(false);
+const [showDiaryEvidence, setShowDiaryEvidence] = useState(false);
 const [showKeyEvidence, setShowKeyEvidence] = useState(false);
 const [showLetterEvidence, setShowLetterEvidence] = useState(false);
 const [showMarkEvidence, setShowMarkEvidence] = useState(false);
@@ -175,6 +176,9 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     📖 Päiväkirjan sivu
   </button>
 )}
+    📖 Päiväkirjan sivu
+  </button>
+)}
 {hasGuardMark && (
   <button
     className="evidence-card"
@@ -302,6 +306,52 @@ if (showPhotoEvidence) {
         <button
           className="btn"
           onClick={() => setShowPlankEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
+  if (showDiaryEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📖 Päiväkirjan sivu</h2>
+
+        <img
+          src="/paivakirjansivu.png"
+          alt="Päiväkirjan sivu"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Paperi on kellastunut ja reunat ovat repeytyneet.
+        </p>
+
+        <blockquote>
+          "Kesä 1952.
+          Emme ole enää turvassa.
+          Joku tarkkailee meitä.
+          Vartijat eivät saa tietää totuutta."
+        </blockquote>
+
+        <p>
+          Viimeinen rivi on kirjoitettu kiireellä:
+        </p>
+
+        <h3>"Älä luota kaikkiin."</h3>
+
+        <button
+          className="btn"
+          onClick={() => setShowDiaryEvidence(false)}
         >
           Sulje
         </button>
