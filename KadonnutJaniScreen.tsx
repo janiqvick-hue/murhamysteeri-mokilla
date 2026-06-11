@@ -651,7 +651,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
           Jani ei kadonnut sattumalta. Hän sai tietää vartijoiden salaisuuden.
         </p>
 
-        <h3>🏆 Murhamysteeri ratkaistu</h3>
+        <h1>🔦 Kadonnut Jani</h1>
         <p>
           Olet paljastanut mökin vuosikymmeniä kätkemän totuuden.
         </p>
