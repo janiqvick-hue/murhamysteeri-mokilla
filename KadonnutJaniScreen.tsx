@@ -1104,8 +1104,9 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   <div className="screen screen--center">
 
     <img
-      src="/01_aloitusnakyma_vartijat_valvovat.png"
-      alt="Murhamysteeri Mökillä"
+      <img
+  src="/01_aloitusnakyma_vartijat_valvovat.png"
+  alt="Kadonnut Jani"
       style={{
         position: "absolute",
         inset: 0,
