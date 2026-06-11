@@ -1103,33 +1103,49 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   return (
   <div className="screen screen--center">
 
+    <img
+      src="/01_aloitusnakyma_vartijat_valvovat.png"
+      alt="Murhamysteeri Mökillä"
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
+    />
 
     <div className="rain-overlay" />
 
-    <div className="config-card">
-        <h1>🔎 Kadonnut Jani</h1>
+    <div
+      className="config-card"
+      style={{
+        background: "rgba(0,0,0,0.55)",
+      }}
+    >
+      <h1>Murhamysteeri Mökillä</h1>
 
-        <p>
-          Kolme kuukautta murhan ratkaisemisen jälkeen
-          Janin puhelin löytyy uudelleen.
-        </p>
+      <p>
+        Jani katosi kolme päivää sitten.
+      </p>
 
-        <p>
-          Puhelimessa on yksi uusi viesti:
-        </p>
+      <p>
+        Mitä mökillä tapahtui?
+      </p>
 
-        <blockquote>
-          "Jos luette tämän, olen löytänyt jotain.
-          Älkää tulko etsimään minua."
-        </blockquote>
+      <button
+        className="btn"
+        onClick={() => {
+          const audio = new Audio("/intro_jani.m4a");
 
-        <button
-          className="btn"
-          onClick={() => setStarted(true)}
-        >
-          Aloita tutkimus
-        </button>
-      </div>
+          audio.play().catch(() => {});
+
+          setStarted(true);
+        }}
+      >
+        🔦 Aloita tutkimus
+      </button>
     </div>
-  );
+  </div>
+);
 }
