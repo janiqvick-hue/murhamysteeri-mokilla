@@ -33,7 +33,6 @@ const [showPhotoEvidence, setShowPhotoEvidence] = useState(false);
 const [showNoteEvidence, setShowNoteEvidence] = useState(false);
 const [showPlankEvidence, setShowPlankEvidence] = useState(false);
 const [showDiaryEvidence, setShowDiaryEvidence] = useState(false);
-const [showDiaryEvidence, setShowDiaryEvidence] = useState(false);
 const [showKeyEvidence, setShowKeyEvidence] = useState(false);
 const [showLetterEvidence, setShowLetterEvidence] = useState(false);
 const [showMarkEvidence, setShowMarkEvidence] = useState(false);
@@ -173,9 +172,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     className="evidence-card"
     onClick={() => setShowDiaryEvidence(true)}
   >
-    📖 Päiväkirjan sivu
-  </button>
-)}
     📖 Päiväkirjan sivu
   </button>
 )}
