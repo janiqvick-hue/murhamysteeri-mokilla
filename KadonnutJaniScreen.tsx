@@ -53,7 +53,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 
         <img
   src="/märkämuistilappu.png?v=1"
-  alt="Märkä muistilappu"
+  alt="Märkämuistilappu"
   style={{
     width: "100%",
     borderRadius: "12px",
@@ -254,7 +254,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         <h2>📷 Vanha valokuva</h2>
 
         <img
-          src="/vanha valokuva.png"
+          src="/vanhavalokuva.png"
           alt="Vanha valokuva"
           style={{
             width: "100%",
