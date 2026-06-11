@@ -189,12 +189,12 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     marginBottom: "0.5rem",
     padding: "1rem",
     cursor: "pointer",
-display: "block",
+    display: "block",
     }}
 >
   🔑 Ruostunut avain
 </button>
-)}
+    
         <br />
 
   
