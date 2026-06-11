@@ -423,38 +423,6 @@ if (showPhotoEvidence) {
     </div>
   );
 }
-
-        <p>
-          Paperi on kellastunut ja reunat ovat repeytyneet.
-        </p>
-
-       <blockquote>
-  Kesä 1952.<br />
-  Emme ole enää turvassa.<br /><br />
-
-  Joku tarkkailee meitä.<br /><br />
-
-  Vartijat eivät saa tietää totuutta.
-</blockquote> 
-
-        <p>
-          Viimeinen rivi on kirjoitettu kiireellä:
-        </p>
-
-        <h3>
-          "Älä luota kaikkiin."
-        </h3>
-
-        <button
-          className="btn"
-          onClick={() => setShowDiaryEvidence(false)}
-        >
-          Sulje
-        </button>
-      </div>
-    </div>
-  );
-} 
   
   if (showMarkEvidence) {
   return (
