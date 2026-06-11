@@ -16,7 +16,6 @@ const [hasNote, setHasNote] = useState(false);
 const [hasPlank, setHasPlank] = useState(false);
 const [hasDiary, setHasDiary] = useState(false);
 
-const [hasDiary, setHasDiary] = useState(false);
 const [hasRustyKey, setHasRustyKey] = useState(false);
 
 const [hasPhoto, setHasPhoto] = useState(false);
