@@ -1125,13 +1125,25 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     >
       <h1>🔦 Kadonnut Jani</h1>
 
-      <p>
-        Jani katosi kolme päivää sitten.
-      </p>
+      <p
+  style={{
+    fontFamily: "'Caveat', cursive",
+    fontSize: "2rem",
+    marginBottom: "0.5rem",
+  }}
+>
+  Jani katosi kolme päivää sitten.
+</p>
 
-      <p>
-        Mitä mökillä tapahtui?
-      </p>
+<p
+  style={{
+    fontFamily: "'Caveat', cursive",
+    fontSize: "2rem",
+    marginBottom: "1.5rem",
+  }}
+>
+  Mitä mökillä tapahtui?
+</p>
 
       <button
         className="btn"
