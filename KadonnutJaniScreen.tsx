@@ -198,7 +198,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     display: "block",
     }}
 >
-  🔑 Ruostunut avain
+  🔑 Ruostunutavain
 </button>
   )}
     
@@ -302,7 +302,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 </p>
 
 <p>
-  Sen sisältä löytyi pieni ruostunut avain,
+  Sen sisältä löytyi pieni ruostunutavain,
   metallinen symboli ja repäisty paperinpala.
 </p>
 
@@ -368,11 +368,11 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
       <div className="rain-overlay" />
 
       <div className="config-card">
-        <h2>🔑 Ruostunut avain</h2>
+        <h2>🔑 Ruostunutavain</h2>
 
         <img
           src="/ruostunutavain.png"
-          alt="Ruostunut avain"
+          alt="Ruostunutavain"
           style={{
             width: "100%",
             borderRadius: "12px",
@@ -987,7 +987,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   🎒 Lisää tutkijan kansioon
 </button>
 
-        <h3>🔑 Ruostunut avain</h3>
+        <h3>🔑 Ruostunutavain</h3>
         <p>
           Avaimeen on kaiverrettu numero: 1952
         </p>
@@ -995,7 +995,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => {
     setHasRustyKey(true);
-    setNotification("🔑 Uusi todiste: Ruostunut avain");
+    setNotification("🔑 Uusi todiste: Ruostunutavain");
 
     setTimeout(() => {
       setNotification("");
