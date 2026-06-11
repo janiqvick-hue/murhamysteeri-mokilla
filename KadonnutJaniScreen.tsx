@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function KadonnutJaniScreen() {
-  const [started, setStarted] = useState(false);
+const [started, setStarted] = useState(true);
 
 const [atWell, setAtWell] = useState(false);
 const [atTrail, setAtTrail] = useState(false);
