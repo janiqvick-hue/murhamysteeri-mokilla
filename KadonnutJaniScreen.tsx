@@ -239,6 +239,8 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         </button>
     </div>
   );
+  }
+    
 if (showPhotoEvidence) {
   return (
     <div className="screen screen--center">
