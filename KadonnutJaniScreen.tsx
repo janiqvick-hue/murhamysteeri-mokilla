@@ -333,6 +333,7 @@ if (showPhotoEvidence) {
             marginTop: "1rem",
             marginBottom: "1rem",
           }}
+          />
           if (showKeyEvidence) {
   return (
     <div className="screen screen--center">
