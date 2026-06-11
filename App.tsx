@@ -50,6 +50,8 @@ function NotConfigured() {
 export default function App() {
   const [gameCode, setGameCode] = useState<string | null>(() => loadGameCode());
 
+  const [selectedGame, setSelectedGame] = useState<"murha" | "jani" | null>(null);
+
   const {
     game,
     loading,
@@ -78,7 +80,42 @@ export default function App() {
   };
 
   if (!firebaseConfigured) return <NotConfigured />;
+  if (!selectedGame) {
+  return (
+    <div className="screen screen--center">
+      <div className="config-card">
+        <h1>🎮 Valitse peli</h1>
 
+        <div style={{ marginBottom: "2rem" }}>
+          <h2>🔪 Murhamysteeri Mökillä</h2>
+          <p>Moninpelattava murhamysteeri.</p>
+
+          <button
+            className="btn"
+            onClick={() => setSelectedGame("murha")}
+          >
+            Pelaa
+          </button>
+        </div>
+
+        <div>
+          <h2>🔦 Kadonnut Jani</h2>
+          <p>Yksinpelattava jatkotarina Janin katoamisesta.</p>
+
+          <button
+            className="btn"
+            onClick={() => setSelectedGame("jani")}
+          >
+            Tutki
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+  if (selectedGame === "jani") {
+  return <KadonnutJaniScreen />;
+}
   if (!gameCode) {
     return (
       <LandingScreen
