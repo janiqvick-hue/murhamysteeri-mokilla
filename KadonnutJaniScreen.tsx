@@ -185,11 +185,13 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
   </button>
 )}
 {hasRustyKey && (
-  <button className="evidence-card">
+  <button
+    className="evidence-card"
+    onClick={() => setShowKeyEvidence(true)}
+  >
     🔑 Ruostunut avain
   </button>
 )}
-
         <br />
 
   
@@ -203,7 +205,10 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 )}
 
 {hasLetter && (
-  <button className="evidence-card">
+  <button
+    className="evidence-card"
+    onClick={() => setShowLetterEvidence(true)}
+  >
     📄 Kirje
   </button>
 )}
@@ -211,7 +216,10 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         <br />
 
 {hasMetalBox && (
-  <button className="evidence-card">
+  <button
+    className="evidence-card"
+    onClick={() => setShowMetalBoxEvidence(true)}
+  >
     📦 Metallirasia
   </button>
 )}
