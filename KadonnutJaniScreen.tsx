@@ -258,8 +258,6 @@ if (showPhotoEvidence) {
     </div>
   );
 }
-  </div>
-)}
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
