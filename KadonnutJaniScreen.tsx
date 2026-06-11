@@ -180,6 +180,9 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     onClick={() => setShowMarkEvidence(true)}
   >
     🛡️ Vartijoiden merkki
+  </button>
+)}
+      {hasRustyKey && (
   <button
   className="evidence-card"
   onClick={() => setShowKeyEvidence(true)}
@@ -194,6 +197,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 >
   🔑 Ruostunut avain
 </button>
+  )}
     
         <br />
 
@@ -234,7 +238,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
           ⬅️ Takaisin tutkimukseen
         </button>
     </div>
-  )}
   );
 }
 if (showPhotoEvidence) {
