@@ -334,6 +334,21 @@ if (showPhotoEvidence) {
             marginBottom: "1rem",
           }}
           />
+        <p>
+  "Kesä 1952. Emme ole enää turvassa."
+</p>
+
+<button
+  className="btn"
+  onClick={() => setShowDiaryEvidence(false)}
+>
+  Sulje
+</button>
+
+</div>
+</div>
+);
+}
           if (showKeyEvidence) {
   return (
     <div className="screen screen--center">
