@@ -232,14 +232,15 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 )}
 
         <button
-          className="btn"
-          onClick={() => setShowFolder(false)}
-        >
-          ⬅️ Takaisin tutkimukseen
-        </button>
-    </div>
-    );
-  }
+  className="btn"
+  onClick={() => setShowFolder(false)}
+>
+  ⬅️ Takaisin tutkimukseen
+</button>
+</div>
+</div>
+);
+}
 
   if (showPhotoEvidence) {
     return (
