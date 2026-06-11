@@ -934,6 +934,12 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
 <hr />
+      <button
+  className="btn"
+  onClick={() => setShowDockPhone(true)}
+>
+  📱 Tutki Janin puhelinta
+</button>
       
   {!hasPlank && (
   <button
