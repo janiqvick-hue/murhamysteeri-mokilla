@@ -1010,6 +1010,14 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       </div>
     );
   }
+  {hasPhone && hasPlank && (
+  <button
+    className="btn"
+    onClick={() => setAtWell(true)}
+  >
+    🕳️ Siirry vanhalle kaivolle
+  </button>
+)}
 
   return (
   <div className="screen screen--center">
