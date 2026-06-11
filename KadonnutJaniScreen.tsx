@@ -87,7 +87,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 }
   if (
   showFolder &&
-  !showPhoneInfo &&
   !showNoteEvidence &&
   !showPlankEvidence &&
   !showPhotoEvidence &&
