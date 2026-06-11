@@ -860,6 +860,45 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   );
 }
   if (started) {
+    if (
+  !showDockPhone &&
+  !atWell &&
+  !atTrail &&
+  !atShed &&
+  !atGuestRoom &&
+  !atSauna &&
+  !atUnderDock &&
+  !atCellar
+) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🌊 Laituri</h1>
+
+        <p>
+          Saavut mökin laiturille. Jani on kadonnut.
+          Tutkimus alkaa tästä.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setShowDockPhone(true)}
+        >
+          📱 Tutki Janin puhelinta
+        </button>
+
+        <button
+          className="btn"
+          onClick={() => setAtTrail(true)}
+        >
+          👣 Seuraa jalanjälkiä
+        </button>
+      </div>
+    </div>
+  );
+}
     if (showDockPhone) {
   return (
     <div className="screen screen--center">
