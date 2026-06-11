@@ -169,7 +169,11 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         <br />
 
         {hasDiary && (
-  <button className="evidence-card">
+  {hasDiary && (
+  <button
+    className="evidence-card"
+    onClick={() => setShowDiaryEvidence(true)}
+  >
     📖 Päiväkirjan sivu
   </button>
 )}
@@ -307,6 +311,54 @@ if (showPhotoEvidence) {
     </div>
   );
 }
+ if (showDiaryEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📖 Päiväkirjan sivu</h2>
+
+        <img
+          src="/paivakirjansivu.png"
+          alt="Päiväkirjan sivu"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Paperi on kellastunut ja reunat ovat repeytyneet.
+        </p>
+
+        <blockquote>
+          "Kesä 1952.
+          Emme ole enää turvassa.
+          Joku tarkkailee meitä.
+          Vartijat eivät saa tietää totuutta."
+        </blockquote>
+
+        <p>
+          Viimeinen rivi on kirjoitettu kiireellä:
+        </p>
+
+        <h3>
+          "Älä luota kaikkiin."
+        </h3>
+
+        <button
+          className="btn"
+          onClick={() => setShowDiaryEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+} 
   
   if (showMarkEvidence) {
   return (
