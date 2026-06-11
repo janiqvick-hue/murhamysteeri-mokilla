@@ -180,15 +180,18 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     onClick={() => setShowMarkEvidence(true)}
   >
     🛡️ Vartijoiden merkki
-  </button>
-)}
-{hasRustyKey && (
   <button
-    className="evidence-card"
-    onClick={() => setShowKeyEvidence(true)}
-  >
-    🔑 Ruostunut avain
-  </button>
+  className="evidence-card"
+  onClick={() => setShowKeyEvidence(true)}
+  style={{
+    width: "100%",
+    marginTop: "0.5rem",
+    marginBottom: "0.5rem",
+    padding: "1rem",
+  }}
+>
+  🔑 Ruostunut avain
+</button>
 )}
         <br />
 
@@ -358,7 +361,7 @@ if (showPhotoEvidence) {
         <h2>🔑 Ruostunut avain</h2>
 
         <img
-          src="/ruostunutavain.png"
+          src="/ruostunut avain.png"
           alt="Ruostunut avain"
           style={{
             width: "100%",
