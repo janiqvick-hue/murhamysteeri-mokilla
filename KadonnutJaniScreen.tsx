@@ -1103,7 +1103,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   return (
   <div className="screen screen--center">
 
-    <img
       <img
   src="/01_aloitusnakyma_vartijat_valvovat.png"
   alt="Kadonnut Jani"
