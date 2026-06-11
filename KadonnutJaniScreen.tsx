@@ -14,6 +14,7 @@ const [atCellar, setAtCellar] = useState(false);
 const [hasPhone, setHasPhone] = useState(false);
 const [hasNote, setHasNote] = useState(false);
 const [hasPlank, setHasPlank] = useState(false);
+const [hasDiary, setHasDiary] = useState(false);
 
 const [hasDiary, setHasDiary] = useState(false);
 const [hasRustyKey, setHasRustyKey] = useState(false);
