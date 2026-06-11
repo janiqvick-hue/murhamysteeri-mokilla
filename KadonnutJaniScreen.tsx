@@ -40,6 +40,8 @@ const [showMetalEvidence, setShowMetalEvidence] = useState(false);
 const [checkedPhone, setCheckedPhone] = useState(false);
 const [checkedPlanks, setCheckedPlanks] = useState(false);
 const [checkedWater, setCheckedWater] = useState(false);
+const [showSymbolPuzzle, setShowSymbolPuzzle] = useState(false);
+const [forestUnlocked, setForestUnlocked] = useState(false);
 
   if (showNoteEvidence) {
   return (
