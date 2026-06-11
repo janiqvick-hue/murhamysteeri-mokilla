@@ -176,7 +176,6 @@ export default function App() {
         actions={wrappedActions}
       />
 
-      <KadonnutJaniScreen />
     </>
   );
     default:
