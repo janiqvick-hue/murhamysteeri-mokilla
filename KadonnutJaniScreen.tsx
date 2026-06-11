@@ -1000,6 +1000,14 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     🪵 Tutki irtonaista lankkua
   </button>
 )}
+        {hasPhone && hasPlank && (
+  <button
+    className="btn"
+    onClick={() => setAtWell(true)}
+  >
+    🕳️ Siirry vanhalle kaivolle
+  </button>
+)}
       {notification && (
   <div className="notification">
     {notification}
@@ -1010,14 +1018,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       </div>
     );
   }
-  {hasPhone && hasPlank && (
-  <button
-    className="btn"
-    onClick={() => setAtWell(true)}
-  >
-    🕳️ Siirry vanhalle kaivolle
-  </button>
-)}
 
   return (
   <div className="screen screen--center">
