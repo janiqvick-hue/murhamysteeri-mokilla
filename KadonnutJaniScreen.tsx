@@ -258,34 +258,6 @@ if (showPhotoEvidence) {
     </div>
   );
 }
-
-    <p>
-      Kuvassa näkyy kolme henkilöä mökin rannassa.
-      Yksi heistä näyttää katsovan suoraan kameraan...
-    </p>
-    <button
-  className="btn"
-  onClick={() => {
-    setHasPhoto(true);
-
-setNotification("📷 Uusi todiste: Vanha valokuva");
-
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
->
-  🎒 Lisää tutkijan kansioon
-</button>
-
-<br /><br />
-
-    <button
-      className="btn"
-      onClick={() => setShowPhotoEvidence(false)}
-    >
-      Sulje
-    </button>
   </div>
 )}
   if (showPlankEvidence) {
