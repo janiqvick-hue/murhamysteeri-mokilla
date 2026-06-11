@@ -224,18 +224,40 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
     </div>
   );
 }
-  {showPhotoEvidence && (
-  <div className="config-card">
-    <h2>📷 Vanha valokuva</h2>
+if (showPhotoEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
 
-    <img
-      src="/IMG_1083.jpeg"
-      style={{
-        width: "100%",
-        borderRadius: "12px",
-        marginTop: "1rem",
-        marginBottom: "1rem",
-      }}
+      <div className="config-card">
+        <h2>📷 Vanha valokuva</h2>
+
+        <img
+          src="/vanha valokuva.png"
+          alt="Vanha valokuva"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Kuvassa näkyy kolme henkilöä mökin rannassa.
+          Yksi heistä näyttää katsovan suoraan kameraan...
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setShowPhotoEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
     />
 
     <p>
