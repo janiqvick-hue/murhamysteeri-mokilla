@@ -258,7 +258,6 @@ if (showPhotoEvidence) {
     </div>
   );
 }
-    />
 
     <p>
       Kuvassa näkyy kolme henkilöä mökin rannassa.
