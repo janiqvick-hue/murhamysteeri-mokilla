@@ -109,7 +109,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 
         {hasPhone && (
   <button
-    className="btn"
+    className="evidence-card"
     onClick={() => setShowPhoneInfo(true)}
   >
     📱 Janin puhelin
@@ -148,18 +148,16 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 )}
         {hasNote && (
   <button
-    className="btn"
-    onClick={() => {
-  setShowNoteEvidence(true);
-}}
+    className="evidence-card"
+    onClick={() => setShowNoteEvidence(true)}
   >
     📄 Märkä muistilappu ✨ UUSI!
   </button>
 )}
 
-{hasPlank && (
+  {hasPlank && (
   <button
-    className="btn"
+    className="evidence-card"
     onClick={() => setShowPlankEvidence(true)}
   >
     🪵 Irtonainen lankku
@@ -218,7 +216,7 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
 {hasMetalBox && (
   <button
     className="evidence-card"
-    onClick={() => setShowMetalBoxEvidence(true)}
+    onClick={() => setShowMetalEvidence(true)}
   >
     📦 Metallirasia
   </button>
@@ -335,6 +333,80 @@ if (showPhotoEvidence) {
             marginTop: "1rem",
             marginBottom: "1rem",
           }}
+          if (showKeyEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>🔑 Ruostunut avain</h2>
+
+        <img
+          src="/ruostunutavain.png"
+          alt="Ruostunut avain"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Vanha avain on pahasti ruostunut.
+        </p>
+
+        <p>
+          Avaimeen on kaiverrettu numero:
+        </p>
+
+        <h2>1952</h2>
+
+        <blockquote>
+          "Vierashuone."
+        </blockquote>
+
+        <button
+          className="btn"
+          onClick={() => setShowKeyEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
+        if (showMetalEvidence) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📦 Metallirasia</h2>
+
+        <p>
+          Pieni metallirasia on kulunut ja sen kannessa näkyy
+          sama symboli kuin aiemmin löydetyissä esineissä.
+        </p>
+
+        <p>
+          Rasian lukko näyttää vanhalta, mutta se saattaa vielä avautua.
+        </p>
+
+        <blockquote>
+          "Kaikkea ei ole tarkoitettu löydettäväksi liian aikaisin."
+        </blockquote>
+
+        <button
+          className="btn"
+          onClick={() => setShowMetalEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
         />
 
         <p>
