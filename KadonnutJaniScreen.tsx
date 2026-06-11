@@ -169,7 +169,6 @@ const [forestUnlocked, setForestUnlocked] = useState(false);
         <br />
 
         {hasDiary && (
-  {hasDiary && (
   <button
     className="evidence-card"
     onClick={() => setShowDiaryEvidence(true)}
