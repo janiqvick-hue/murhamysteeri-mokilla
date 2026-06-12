@@ -638,7 +638,7 @@ console.log({
   }, 2500);
 }
     {mapSolved && (
-  <button
+  
   <button
   className="btn"
   onClick={() => {
