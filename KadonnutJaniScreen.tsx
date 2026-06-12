@@ -624,39 +624,13 @@ console.log({
     const answer = mapAnswer.toLowerCase().trim();
 
     if (
-  answer.includes("metsäpolku") ||
-  answer.includes("metsä")
-) {
-  setMapSolved(true);
-
-  setNotification(
-    "🌲 Oikein! Uusi johtolanka löytyi."
-  );
-
-  setTimeout(() => {
-    setNotification("");
-  }, 2500);
-}
-    {mapSolved && (
-  
-  <button
-  className="btn"
-  onClick={() => {
-    const answer = mapAnswer.toLowerCase().trim();
-
-    if (
       answer.includes("metsäpolku") ||
       answer.includes("metsä")
     ) {
       setMapSolved(true);
-
-      setNotification(
-        "🌲 Oikein! Uusi johtolanka löytyi."
-      );
+      setNotification("🌲 Oikein! Uusi johtolanka löytyi.");
     } else {
-      setNotification(
-        "❌ Tämä ei tunnu oikealta."
-      );
+      setNotification("❌ Tämä ei tunnu oikealta.");
     }
 
     setTimeout(() => {
