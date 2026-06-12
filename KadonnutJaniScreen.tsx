@@ -1076,18 +1076,7 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
       <div className="rain-overlay" />
 
       <div className="config-card">
-        <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
         <h1>🕳️ Vanha Kaivo</h1>
 
         <p>
@@ -1126,14 +1115,18 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
 <button
   className="btn"
   onClick={() => {
-    setHasMapPiece(true);
+  setHasMapPiece(true);
+  setHasDiary(true);
+  setHasRustyKey(true);
 
-    setNotification("🗺️ Uusi todiste: Kartan pala");
+  setNotification(
+    "🗺️ Kartan pala, 📖 päiväkirja ja 🔑 avain lisätty kansioon"
+  );
 
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
+  setTimeout(() => {
+    setNotification("");
+  }, 2500);
+}}
 >
   🎒 Lisää tutkijan kansioon
 </button>
