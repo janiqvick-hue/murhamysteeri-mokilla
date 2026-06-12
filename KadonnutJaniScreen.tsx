@@ -1212,11 +1212,14 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
           Tutkimus alkaa tästä.
         </p>
 
-        <button
-          className="btn"
-          onClick={() => setShowDockPhone(true)}
-        >
-          📱 Tutki Janin puhelinta
+       <button
+  className="btn"
+  onClick={() => setShowDockPhone(true)}
+>
+  📱 Tutki Janin puhelinta
+</button>
+
+<button 
         <button
   className="btn"
   onClick={() => {
