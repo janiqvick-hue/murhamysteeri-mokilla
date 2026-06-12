@@ -45,6 +45,8 @@ const [showSymbolPuzzle, setShowSymbolPuzzle] = useState(false);
 const [forestUnlocked, setForestUnlocked] = useState(false);
 const [guestRoomUnlocked, setGuestRoomUnlocked] = useState(false);
 const [showMapPieceEvidence, setShowMapPieceEvidence] = useState(false);
+const [mapAnswer, setMapAnswer] = useState("");
+const [mapSolved, setMapSolved] = useState(false);
 
 const [openedDiary, setOpenedDiary] = useState(false);
 const [openedRustyKey, setOpenedRustyKey] = useState(false);
@@ -129,7 +131,7 @@ console.log({
   !showKeyEvidence &&
   !showMetalEvidence &&
   !showLetterEvidence &&
-  !showMapPieceEvidence
+  !showMapPieceEvidence &&
 ) {
   return (
   <div className="screen screen--center">
@@ -577,6 +579,17 @@ console.log({
       <div className="config-card">
         <h2>🗺️ Märkä kartan pala</h2>
 
+        <img
+  src="/kartanpala.png"
+  alt="Märkä kartan pala"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }}
+/>
+
         <p>
           Kartan pala on pahasti kastunut.
         </p>
@@ -596,6 +609,47 @@ console.log({
         <p>
           Loput tekstistä ovat kuluneet pois.
         </p>
+        <input
+  type="text"
+  value={mapAnswer}
+  onChange={(e) => setMapAnswer(e.target.value)}
+  placeholder="Mikä paikka tulee mieleesi?"
+  className="btn"
+  style={{ marginBottom: "1rem" }}
+/>
+
+<button
+  className="btn"
+  onClick={() => {
+    const answer = mapAnswer.toLowerCase().trim();
+
+    if (
+      answer.includes("metsäpolku") ||
+      answer.includes("metsä")
+    ) {
+      setMapSolved(true);
+
+      setNotification("🌲 Oikein! Uusi johtolanka löytyi.");
+
+      setTimeout(() => {
+        setNotification("");
+      }, 2500);
+    } else {
+      setNotification("❌ Tämä ei tunnu oikealta.");
+
+      setTimeout(() => {
+        setNotification("");
+      }, 2500);
+    }
+  }}
+>
+  🔍 Tarkista vastaus
+</button>
+        {mapSolved && (
+  <p style={{ marginTop: "1rem" }}>
+    🌲 Kartan pala näyttää osoittavan metsäpolulle.
+  </p>
+)}
 
         <button
           className="btn"
