@@ -44,6 +44,7 @@ const [checkedWater, setCheckedWater] = useState(false);
 const [showSymbolPuzzle, setShowSymbolPuzzle] = useState(false);
 const [forestUnlocked, setForestUnlocked] = useState(false);
 const [guestRoomUnlocked, setGuestRoomUnlocked] = useState(false);
+const [showMapPieceEvidence, setShowMapPieceEvidence] = useState(false);
 
 const [openedDiary, setOpenedDiary] = useState(false);
 const [openedRustyKey, setOpenedRustyKey] = useState(false);
@@ -124,7 +125,11 @@ console.log({
   !showPlankEvidence &&
   !showPhotoEvidence &&
   !showMarkEvidence &&
-  !showDiaryEvidence
+  !showDiaryEvidence &&
+  !showKeyEvidence &&
+  !showMetalEvidence &&
+  !showLetterEvidence
+  !showMapPieceEvidence
 ) {
   return (
   <div className="screen screen--center">
