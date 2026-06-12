@@ -1335,6 +1335,10 @@ if (atTrail) {
 Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
+<button
+  className="btn"
+  onClick={() => setAtShed(true)}
+>
   <h3>🔎 Mitä jälkiä kannattaa seurata?</h3>
 
 <p>
@@ -1385,49 +1389,55 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </button>
 
 {trailSolved && (
-  <>
-    <p style={{ marginTop: "1rem" }}>
-      👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
+  <p style={{ marginTop: "1rem" }}>
+    👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
+  </p>
+)}
+  {trailSolved && (
+  <div style={{ marginTop: "1.5rem" }}>
+    <img
+      src="/hylatty_vaja_siirtyma.png"
+      alt="Hylätty vaja"
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        marginBottom: "1rem",
+      }}
+    />
+
+    <p>
+      Jalanjäljet päättyvät vanhalle vajalle.
     </p>
 
-    <div style={{ marginTop: "1.5rem" }}>
-      <img
-        src="/hylatty_vaja_siirtyma.png"
-        alt="Hylätty vaja"
-        style={{
-          width: "100%",
-          borderRadius: "12px",
-          marginBottom: "1rem",
-        }}
-      />
+    <p>
+      Ovi on raollaan.
+    </p>
 
-      <p>Jalanjäljet päättyvät vanhalle vajalle.</p>
-
-      <p>Ovi on raollaan.</p>
-
-      <p
-        style={{
-          fontStyle: "italic",
-          opacity: 0.8,
-        }}
-      >
-        Sisällä odottaa joko vastaus...
-        tai jotain paljon pahempaa.
-      </p>
-
-      <button
-        className="btn"
-        onClick={() => setAtShed(true)}
-      >
-        🏚️ Siirry hylätylle vajalle
-      </button>
-    </div>
-  </>
+    <p
+      style={{
+        fontStyle: "italic",
+        opacity: 0.8,
+      }}
+    >
+      Sisällä odottaa joko vastaus...
+      tai jotain paljon pahempaa.
+    </p>
+  </div>
 )}
-);
+  <button
+  className="btn"
+  onClick={() => setAtShed(true)}
+  style={{ marginTop: "1rem" }}
+>
+  🏚️ Siirry hylätylle vajalle
+</button>
+  🏚️ Siirry hylätylle vajalle
+</button>
+      </div>
+    </div>
+  );
 }
-
-if (started) {
+  if (started) {
     if (
   !showDockPhone &&
   !atWell &&
