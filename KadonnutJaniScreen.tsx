@@ -1083,11 +1083,16 @@ setAtWell(true);
     <div className="rain-overlay" />
 
     <div
-      className="config-card"
-      style={{
-        background: "rgba(0,0,0,0.55)",
-      }}
-    >
+  className="config-card"
+  style={{
+  position: "absolute",
+  inset: 0,
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  zIndex: 0,
+}}
+>
       <h1>🔦 Kadonnut Jani</h1>
 
       <p
