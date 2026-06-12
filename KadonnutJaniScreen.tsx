@@ -43,6 +43,11 @@ const [checkedPlanks, setCheckedPlanks] = useState(false);
 const [checkedWater, setCheckedWater] = useState(false);
 const [showSymbolPuzzle, setShowSymbolPuzzle] = useState(false);
 const [forestUnlocked, setForestUnlocked] = useState(false);
+const [guestRoomUnlocked, setGuestRoomUnlocked] = useState(false);
+
+const [openedDiary, setOpenedDiary] = useState(false);
+const [openedRustyKey, setOpenedRustyKey] = useState(false);
+const [openedMapPiece, setOpenedMapPiece] = useState(false);
 
 console.log({
   started,
@@ -208,11 +213,14 @@ console.log({
 
         {hasDiary && (
   <button
-    className="evidence-card"
-    onClick={() => setShowDiaryEvidence(true)}
-  >
-    📖 Päiväkirjan sivu
-  </button>
+  className="evidence-card"
+  onClick={() => {
+    setShowDiaryEvidence(true);
+    setOpenedDiary(true);
+  }}
+>
+  📜 Päiväkirjan sivu
+</button>
 )}
 {hasGuardMark && (
   <button
