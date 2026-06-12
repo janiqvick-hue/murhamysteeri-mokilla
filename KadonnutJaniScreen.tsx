@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function KadonnutJaniScreen() {
 const [started, setStarted] = useState(false);
@@ -52,6 +52,8 @@ const [openedDiary, setOpenedDiary] = useState(false);
 const [openedRustyKey, setOpenedRustyKey] = useState(false);
 const [openedMapPiece, setOpenedMapPiece] = useState(false);
 
+const [introPlayed, setIntroPlayed] = useState(false);
+
 console.log({
   started,
   showFolder,
@@ -66,6 +68,19 @@ console.log({
   atUnderDock,
   atCellar,
 });
+  useEffect(() => {
+  if (started && !introPlayed) {
+    const audio = new Audio("/intro_jani.mp3");
+
+    audio.volume = 0.9;
+
+    audio.play().catch(() => {
+      console.log("Introääntä ei voitu toistaa.");
+    });
+
+    setIntroPlayed(true);
+  }
+}, [started, introPlayed]);
   const folderButton = (
   <button
     onClick={() => setShowFolder(true)}
