@@ -17,6 +17,7 @@ const [hasPlank, setHasPlank] = useState(false);
 const [hasDiary, setHasDiary] = useState(false);
 
 const [hasRustyKey, setHasRustyKey] = useState(false);
+const [hasMapPiece, setHasMapPiece] = useState(false);
 
 const [hasPhoto, setHasPhoto] = useState(false);
 const [hasLetter, setHasLetter] = useState(false);
@@ -982,6 +983,18 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
       <div className="rain-overlay" />
 
       <div className="config-card">
+        <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
         <h1>🕳️ Vanha Kaivo</h1>
 
         <p>
