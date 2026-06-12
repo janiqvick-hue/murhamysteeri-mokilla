@@ -43,6 +43,21 @@ const [checkedWater, setCheckedWater] = useState(false);
 const [showSymbolPuzzle, setShowSymbolPuzzle] = useState(false);
 const [forestUnlocked, setForestUnlocked] = useState(false);
 
+console.log({
+  started,
+  showFolder,
+  showDockPhone,
+  showEnding,
+  showCinematic,
+  atWell,
+  atTrail,
+  atShed,
+  atGuestRoom,
+  atSauna,
+  atUnderDock,
+  atCellar,
+});
+
   if (showNoteEvidence) {
   return (
     <div className="screen screen--center">
