@@ -648,16 +648,18 @@ console.log({
 )}
      {mapSolved && (
   <button
-    className="btn"
-    onClick={() => {
-      setShowMapPieceEvidence(false);
-      setShowFolder(false);
-      setAtTrail(true);
-    }}
-    style={{ marginTop: "1rem" }}
-  >
-    🌲 Siirry metsäpolulle
-  </button>
+  className="btn"
+  onClick={() => {
+    setShowMapPieceEvidence(false);
+    setShowFolder(false);
+
+    setAtWell(false);
+    setAtTrail(true);
+  }}
+  style={{ marginTop: "1rem" }}
+>
+  🌲 Siirry metsäpolulle
+</button>
 )}
 
         <button
