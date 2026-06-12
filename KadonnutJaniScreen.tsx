@@ -639,6 +639,7 @@ console.log({
 }
     {mapSolved && (
   <button
+  <button
   className="btn"
   onClick={() => {
     const answer = mapAnswer.toLowerCase().trim();
@@ -652,17 +653,15 @@ console.log({
       setNotification(
         "🌲 Oikein! Uusi johtolanka löytyi."
       );
-
-      setTimeout(() => {
-        setNotification("");
-      }, 2500);
     } else {
-      setNotification("❌ Tämä ei tunnu oikealta.");
-
-      setTimeout(() => {
-        setNotification("");
-      }, 2500);
+      setNotification(
+        "❌ Tämä ei tunnu oikealta."
+      );
     }
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
   }}
 >
   🔍 Tarkista vastaus
