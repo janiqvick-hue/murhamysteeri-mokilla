@@ -47,6 +47,12 @@ const [guestRoomUnlocked, setGuestRoomUnlocked] = useState(false);
 const [showMapPieceEvidence, setShowMapPieceEvidence] = useState(false);
 const [mapAnswer, setMapAnswer] = useState("");
 const [mapSolved, setMapSolved] = useState(false);
+  
+const [trailSolved, setTrailSolved] = useState(false);
+const [trailAnswer, setTrailAnswer] = useState("");
+  
+const [checkedShedDoor, setCheckedShedDoor] = useState(false);
+const [checkedShedWindow, setCheckedShedWindow] = useState(false);
 
 const [openedDiary, setOpenedDiary] = useState(false);
 const [openedRustyKey, setOpenedRustyKey] = useState(false);
@@ -1076,49 +1082,112 @@ console.log({
     </div>
   );
 }
-  if (atShed) {
+if (atShed) {
   return (
     <div className="screen screen--center">
       <div className="rain-overlay" />
 
       <div className="config-card">
-        <h1>🏚️ Hylätty Vaja</h1>
+        <h1>🏚️ Hylätty vaja</h1>
+
+        <img
+          src="/hylatty_vaja_siirtyma.png"
+          alt="Hylätty vaja"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
 
         <p>
-          Vaja näyttää olleen autiona vuosia.
+          Vaja näyttää hylätyltä...
+          mutta jokin siinä tuntuu väärältä.
         </p>
-
-        <h3>📦 Lukittu arkku</h3>
-        <p>
-          Arkun kannessa on numero 1952.
-        </p>
-
-        <h3>🧥 Vanha takki</h3>
-        <p>
-          Taskusta löytyy taiteltu kirje.
-        </p>
-
-        <h3>📜 Kirje</h3>
-        <p>
-          "Jos jotain tapahtuu minulle, älkää luottako kaikkiin."
-        </p>
-
-        <h3>🔑 Yläkerran avain</h3>
-        <p>
-          Avaimessa lukee: Vierashuone.
-        </p>
-        <h3>🚪 Vierashuone</h3>
+        <h3>👣 Mutaiset jäljet</h3>
 
 <p>
-Yläkerran avain sopii vanhan vierashuoneen oveen.
+  Vajan lattialla näkyy tuoreita mutaisia jalanjälkiä.
+  Kaikki eivät johda sisään...
 </p>
 
-<button
-  className="btn"
-  onClick={() => setAtGuestRoom(true)}
+<img
+  src="/jalanjaljet_metsapolulla.png"
+  alt="Mutaiset jalanjäljet"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  }}
+/>
+
+<p
+  style={{
+    fontStyle: "italic",
+    opacity: 0.8,
+  }}
 >
-  🚪 Siirry vierashuoneeseen
-</button>
+  "Miksi osa jäljistä näyttää johtavan takaisin metsään?"
+</p>
+
+        {!checkedShedDoor && (
+          <button
+            className="btn"
+            onClick={() => {
+              setCheckedShedDoor(true);
+
+              setNotification(
+                "🚪 Oven kahva on kylmä. Ovea on käytetty hiljattain."
+              );
+
+              setTimeout(() => {
+                setNotification("");
+              }, 2500);
+            }}
+          >
+            🚪 Tutki ovea
+          </button>
+        )}
+
+        {!checkedShedWindow && (
+          <button
+            className="btn"
+            onClick={() => {
+              setCheckedShedWindow(true);
+
+              setNotification(
+                "🪟 Ikkunasta näkyy vanha pöytä ja jotakin sen päällä..."
+              );
+
+              setTimeout(() => {
+                setNotification("");
+              }, 2500);
+            }}
+          >
+            🪟 Kurkista ikkunasta
+          </button>
+        )}
+
+        {checkedShedDoor && checkedShedWindow && (
+          <>
+            <p style={{ marginTop: "1rem" }}>
+              🔦 Olet tutkinut vajan ulkopuolen.
+            </p>
+
+            <p>
+              Sisällä saattaa olla vastauksia...
+              tai jotain paljon pahempaa.
+            </p>
+
+            <button
+              className="btn"
+              onClick={() => setAtGuestRoom(true)}
+            >
+              🏚️ Mene sisään vajaan
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -1270,6 +1339,98 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   className="btn"
   onClick={() => setAtShed(true)}
 >
+  <h3>🔎 Mitä jälkiä kannattaa seurata?</h3>
+
+<p>
+  Valokuvan ja päiväkirjan vihjeet tuntuvat viittaavan
+  siihen, että yksi jäljistä poikkeaa muista.
+</p>
+
+<input
+  type="text"
+  value={trailAnswer}
+  onChange={(e) => setTrailAnswer(e.target.value)}
+  placeholder="Kirjoita vastauksesi..."
+  className="btn"
+  style={{ marginBottom: "1rem" }}
+/>
+
+<button
+  className="btn"
+  onClick={() => {
+    const answer = trailAnswer.toLowerCase().trim();
+
+    if (
+      answer.includes("sivu") ||
+      answer.includes("sivummalla") ||
+      answer.includes("erilliset")
+    ) {
+      setTrailSolved(true);
+
+      setNotification(
+        "👣 Oikein! Erilliset jäljet johtavat syvemmälle metsään."
+      );
+
+      setTimeout(() => {
+        setNotification("");
+      }, 2500);
+    } else {
+      setNotification(
+        "❌ Jokin yksityiskohta jäi huomaamatta."
+      );
+
+      setTimeout(() => {
+        setNotification("");
+      }, 2500);
+    }
+  }}
+>
+  🔍 Tarkista vastaus
+</button>
+
+{trailSolved && (
+  <p style={{ marginTop: "1rem" }}>
+    👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
+  </p>
+)}
+  {trailSolved && (
+  <div style={{ marginTop: "1.5rem" }}>
+    <img
+      src="/hylatty_vaja_siirtyma.png"
+      alt="Hylätty vaja"
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        marginBottom: "1rem",
+      }}
+    />
+
+    <p>
+      Jalanjäljet päättyvät vanhalle vajalle.
+    </p>
+
+    <p>
+      Ovi on raollaan.
+    </p>
+
+    <p
+      style={{
+        fontStyle: "italic",
+        opacity: 0.8,
+      }}
+    >
+      Sisällä odottaa joko vastaus...
+      tai jotain paljon pahempaa.
+    </p>
+  </div>
+)}
+  <button
+  className="btn"
+  onClick={() => setAtShed(true)}
+  style={{ marginTop: "1rem" }}
+>
+  🏚️ Siirry hylätylle vajalle
+</button>
   🏚️ Siirry hylätylle vajalle
 </button>
       </div>
