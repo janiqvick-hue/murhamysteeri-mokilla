@@ -1207,6 +1207,18 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
 >
   🎒 Lisää tutkijan kansioon
 </button>
+        {!hasMapPiece && (
+  <p
+    style={{
+      marginTop: "1rem",
+      opacity: 0.8,
+      fontStyle: "italic",
+    }}
+  >
+    🔒 Tunne ei jätä rauhaan.
+    Ehkä juuri tämä löytö kätkee seuraavan johtolangan.
+  </p>
+)}
         
       </div>
     </div>
