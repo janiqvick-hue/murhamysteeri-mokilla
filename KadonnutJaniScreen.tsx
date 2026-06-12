@@ -131,7 +131,7 @@ console.log({
   !showKeyEvidence &&
   !showMetalEvidence &&
   !showLetterEvidence &&
-  !showMapPieceEvidence &&
+  !showMapPieceEvidence 
 ) {
   return (
   <div className="screen screen--center">
