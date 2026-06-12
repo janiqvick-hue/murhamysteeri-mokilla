@@ -983,3 +983,59 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       );
 }
 }
+  return (
+  <div className="screen screen--center">
+
+    <img
+      src="/01_aloitusnakyma_vartijat_valvovat.png"
+      alt="Kadonnut Jani"
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
+    />
+
+    <div className="rain-overlay" />
+
+    <div
+      className="config-card"
+      style={{
+        background: "rgba(0,0,0,0.55)",
+      }}
+    >
+      <h1>🔦 Kadonnut Jani</h1>
+
+      <p
+        style={{
+          fontFamily: "'Caveat', cursive",
+          fontSize: "2rem",
+          marginBottom: "0.5rem",
+        }}
+      >
+        Jani katosi kolme päivää sitten.
+      </p>
+
+      <p
+        style={{
+          fontFamily: "'Caveat', cursive",
+          fontSize: "2rem",
+          marginBottom: "1.5rem",
+        }}
+      >
+        Mitä mökillä tapahtui?
+      </p>
+
+      <button
+        className="btn"
+        onClick={() => setStarted(true)}
+      >
+        🔦 Aloita tutkimus
+      </button>
+    </div>
+  </div>
+);
+
+}
