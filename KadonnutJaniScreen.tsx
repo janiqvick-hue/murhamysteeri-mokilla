@@ -385,6 +385,7 @@ console.log({
   if (showPhotoEvidence) {
     return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -431,6 +432,7 @@ console.log({
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -493,6 +495,7 @@ console.log({
  if (showDiaryEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -538,6 +541,7 @@ console.log({
           if (showKeyEvidence) {
   return (
     <div className="screen screen--center">
+     {folderButton} 
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -593,6 +597,7 @@ console.log({
         if (showMetalEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -636,6 +641,7 @@ console.log({
  if (showMapPieceEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
         className="btn"
         onClick={() => setShowFolder(true)}
@@ -761,6 +767,7 @@ console.log({
   if (showMarkEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -801,6 +808,7 @@ console.log({
   if (showEnding) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -943,6 +951,7 @@ console.log({
   if (showCinematic) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -984,6 +993,7 @@ console.log({
   if (atCellar) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -1038,6 +1048,7 @@ console.log({
   if (atUnderDock) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
@@ -1086,6 +1097,7 @@ console.log({
   if (atSauna) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1128,6 +1140,7 @@ console.log({
   if (atGuestRoom) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1154,6 +1167,7 @@ console.log({
   if (atShed) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1201,6 +1215,7 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
   if (atWell) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1312,6 +1327,7 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
 if (atTrail) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1396,6 +1412,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     if (showDockPhone) {
   return (
     <div className="screen screen--center">
+      {folderButton}
 
       <button
         className="btn"
