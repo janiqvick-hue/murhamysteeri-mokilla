@@ -1058,11 +1058,7 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
   Missä vesi kohtaa puun,
   siellä totuus odottaa."
 </p>
-          className="btn"
-          onClick={() => setAtTrail(true)}
-        >
-          🌲 Siirry metsäpolulle
-        </button>
+        
       </div>
     </div>
   );
