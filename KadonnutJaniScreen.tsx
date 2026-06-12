@@ -1423,8 +1423,11 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       </button>
     </div>
   </>
-  )}
-  if (started) {
+)}
+);
+}
+
+if (started) {
     if (
   !showDockPhone &&
   !atWell &&
