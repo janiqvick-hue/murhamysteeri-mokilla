@@ -158,7 +158,51 @@ console.log({
 
     <div className="config-card">
         <h1>🎒 Tutkijan kansio</h1>
+<p>
+  📂 Todisteita löydetty:
+  {" "}
+  {[
+    hasPhone,
+    hasNote,
+    hasPlank,
+    hasDiary,
+    hasRustyKey,
+    hasMapPiece,
+    hasPhoto,
+    hasLetter,
+    hasGuardMark,
+    hasMetalBox,
+  ].filter(Boolean).length}
+  / 10
+</p>
+      <div
+  style={{
+    marginBottom: "1.5rem",
+    padding: "1rem",
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "12px",
+  }}
+>
+  <h3>📝 Tutkijan muistiinpanot</h3>
 
+  <p>• Janin katoaminen ei vaikuta sattumalta.</p>
+
+  {hasPhone && (
+    <p>• Janin puhelimessa oli jotain, mitä hän ei ehtinyt kertoa.</p>
+  )}
+
+  {hasMapPiece && (
+    <p>• Kartan pala viittaa siihen, että joku piilotti johtolankoja tarkoituksella.</p>
+  )}
+
+  {hasDiary && (
+    <p>• Päiväkirjassa mainitaan, että joku seurasi heitä.</p>
+  )}
+
+  {hasRustyKey && (
+    <p>• Ruostunut avain avaa vielä tuntemattoman oven.</p>
+  )}
+</div>
         {hasPhone && (
   <button
     className="evidence-card"
