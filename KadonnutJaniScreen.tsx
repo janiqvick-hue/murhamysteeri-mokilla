@@ -61,6 +61,18 @@ console.log({
   if (showNoteEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -110,6 +122,18 @@ console.log({
 ) {
   return (
   <div className="screen screen--center">
+    <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
 
     {notification && (
       <div className="notification">
@@ -263,6 +287,18 @@ console.log({
   if (showPhotoEvidence) {
     return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -297,6 +333,18 @@ console.log({
   if (showPlankEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -347,6 +395,18 @@ console.log({
  if (showDiaryEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -380,6 +440,18 @@ console.log({
           if (showKeyEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -423,6 +495,18 @@ console.log({
         if (showMetalEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -455,6 +539,18 @@ console.log({
   if (showMarkEvidence) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -483,6 +579,18 @@ console.log({
   if (showEnding) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="parchment">
@@ -613,6 +721,18 @@ console.log({
   if (showCinematic) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="parchment" style={{ textAlign: "center" }}>
@@ -642,6 +762,18 @@ console.log({
   if (atCellar) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -684,6 +816,18 @@ console.log({
   if (atUnderDock) {
   return (
     <div className="screen screen--center">
+      <button
+  className="btn"
+  onClick={() => setShowFolder(true)}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    zIndex: 1000,
+  }}
+>
+  🎒 Tutkijan kansio
+</button>
       <div className="rain-overlay" />
 
       <div className="config-card">
