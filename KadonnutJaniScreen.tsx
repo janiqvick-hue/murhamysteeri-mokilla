@@ -1060,8 +1060,9 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 >
   🌲 Siirry metsäpolulle
 </button>
-      </div>
+          </div>
   );
+}
       
   return (
   <div className="screen screen--center">
