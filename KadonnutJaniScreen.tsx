@@ -66,6 +66,36 @@ console.log({
   atUnderDock,
   atCellar,
 });
+  const folderButton = (
+  <button
+    onClick={() => setShowFolder(true)}
+    style={{
+      position: "fixed",
+      right: "20px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      zIndex: 9999,
+      width: "90px",
+      height: "120px",
+      borderRadius: "16px",
+      border: "2px solid #8b6f47",
+      background: "#5b4328",
+      color: "white",
+      cursor: "pointer",
+      boxShadow: "0 6px 18px rgba(0,0,0,0.4)",
+      fontWeight: "bold",
+      fontSize: "0.9rem",
+    }}
+  >
+    🧳
+    <br />
+    Tutkijan
+    <br />
+    salkku
+    <br />
+    1952
+  </button>
+);
 
   if (showNoteEvidence) {
   return (
