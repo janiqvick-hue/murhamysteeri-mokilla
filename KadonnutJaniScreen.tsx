@@ -1386,7 +1386,8 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </button>
 
 {trailSolved && (
-  <p style={{ marginTop: "1rem" }}>
+  <>
+    <div style={{ marginTop: "1.5rem" }}>
     👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
   </p>
 )}
@@ -1427,6 +1428,8 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 >
   🏚️ Siirry hylätylle vajalle
 </button>
+  </>
+)}
 </>
       </div>
     </div>
