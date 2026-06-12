@@ -556,6 +556,57 @@ console.log({
     </div>
   );
 }
+ if (showMapPieceEvidence) {
+  return (
+    <div className="screen screen--center">
+      <button
+        className="btn"
+        onClick={() => setShowFolder(true)}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          zIndex: 1000,
+        }}
+      >
+        🎒 Tutkijan kansio
+      </button>
+
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>🗺️ Märkä kartan pala</h2>
+
+        <p>
+          Kartan pala on pahasti kastunut.
+        </p>
+
+        <p>
+          Siitä erottuu vain muutama sana:
+        </p>
+
+        <blockquote>
+          "Missä vesi kohtaa..."
+        </blockquote>
+
+        <blockquote>
+          "...puun..."
+        </blockquote>
+
+        <p>
+          Loput tekstistä ovat kuluneet pois.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setShowMapPieceEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+} 
   
   if (showMarkEvidence) {
   return (
