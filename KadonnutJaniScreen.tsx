@@ -1182,7 +1182,17 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 
 <button
   className="btn"
-  onClick={() => setAtShed(true)}
+  onClick={() => {
+    setHasPhoto(true);
+
+    setNotification("📷 Vanha valokuva lisätty kansioon");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
+
+    setAtShed(true);
+  }}
 >
   🏚️ Siirry hylätylle vajalle
 </button>
