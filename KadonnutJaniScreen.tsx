@@ -624,10 +624,32 @@ console.log({
     const answer = mapAnswer.toLowerCase().trim();
 
     if (
-      answer.includes("metsäpolku") ||
-      answer.includes("metsä")
-    ) {
-      setMapSolved(true);
+  answer.includes("metsäpolku") ||
+  answer.includes("metsä")
+) {
+  setMapSolved(true);
+
+  setNotification(
+    "🌲 Oikein! Uusi johtolanka löytyi."
+  );
+
+  setTimeout(() => {
+    setNotification("");
+  }, 2500);
+}
+    {mapSolved && (
+  <button
+    className="btn"
+    onClick={() => {
+      setShowMapPieceEvidence(false);
+      setShowFolder(false);
+      setAtTrail(true);
+    }}
+    style={{ marginTop: "1rem" }}
+  >
+    🌲 Siirry metsäpolulle
+  </button>
+)}
 
       setNotification("🌲 Oikein! Uusi johtolanka löytyi.");
 
@@ -1184,18 +1206,6 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
 >
   🎒 Lisää tutkijan kansioon
 </button>
-
-<h3>🪨 Kaiverrus kaivon reunassa</h3>
-
-<p>
-  "Se mikä näyttää lopulta,
-  oli vasta alku.
-</p>
-
-<p>
-  Missä vesi kohtaa puun,
-  siellä totuus odottaa."
-</p>
         
       </div>
     </div>
