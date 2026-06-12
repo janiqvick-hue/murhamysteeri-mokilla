@@ -1181,6 +1181,18 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
   Kaivon pohjalta löytyy märkä ja repeytynyt kartan pala.
 </p>
 
+<p
+  style={{
+    marginTop: "1rem",
+    fontStyle: "italic",
+    opacity: 0.85,
+  }}
+>
+  💡 Jokin tässä kartanpalassa tuntuu tärkeältä.
+  Ehkä seuraava johtolanka löytyy vasta,
+  kun ymmärrät mitä se yrittää kertoa.
+</p>
+
 <button
   className="btn"
   onClick={() => {
