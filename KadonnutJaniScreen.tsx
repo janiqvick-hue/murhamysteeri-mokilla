@@ -979,6 +979,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   Sulje
 </button>
       </div>
-    </div>
-  );
+      </div>
+      );
+}
 }
