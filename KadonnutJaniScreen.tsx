@@ -254,7 +254,14 @@ console.log({
   🔑 Ruostunutavain
 </button>
   )}
-    
+  {hasMapPiece && (
+  <button
+    className="evidence-card"
+    onClick={() => setShowMapPieceEvidence(true)}
+  >
+    🗺️ Märkä kartan pala
+  </button>
+)}  
         <br />
 
   
