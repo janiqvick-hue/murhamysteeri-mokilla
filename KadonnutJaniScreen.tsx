@@ -639,19 +639,19 @@ console.log({
 }
     {mapSolved && (
   <button
-    className="btn"
-    onClick={() => {
-      setShowMapPieceEvidence(false);
-      setShowFolder(false);
-      setAtTrail(true);
-    }}
-    style={{ marginTop: "1rem" }}
-  >
-    🌲 Siirry metsäpolulle
-  </button>
-)}
+  className="btn"
+  onClick={() => {
+    const answer = mapAnswer.toLowerCase().trim();
 
-      setNotification("🌲 Oikein! Uusi johtolanka löytyi.");
+    if (
+      answer.includes("metsäpolku") ||
+      answer.includes("metsä")
+    ) {
+      setMapSolved(true);
+
+      setNotification(
+        "🌲 Oikein! Uusi johtolanka löytyi."
+      );
 
       setTimeout(() => {
         setNotification("");
@@ -671,6 +671,19 @@ console.log({
   <p style={{ marginTop: "1rem" }}>
     🌲 Kartan pala näyttää osoittavan metsäpolulle.
   </p>
+)}
+     {mapSolved && (
+  <button
+    className="btn"
+    onClick={() => {
+      setShowMapPieceEvidence(false);
+      setShowFolder(false);
+      setAtTrail(true);
+    }}
+    style={{ marginTop: "1rem" }}
+  >
+    🌲 Siirry metsäpolulle
+  </button>
 )}
 
         <button
