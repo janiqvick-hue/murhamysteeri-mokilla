@@ -1219,8 +1219,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   📱 Tutki Janin puhelinta
 </button>
 
-<button 
-        <button
+  <button
   className="btn"
   onClick={() => {
     if (hasMapPiece) {
