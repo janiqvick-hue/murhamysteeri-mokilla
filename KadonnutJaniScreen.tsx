@@ -1423,19 +1423,16 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       tai jotain paljon pahempaa.
     </p>
   </div>
-)}
-  <button
+<button
   className="btn"
   onClick={() => setAtShed(true)}
   style={{ marginTop: "1rem" }}
 >
   🏚️ Siirry hylätylle vajalle
-    </button>
-  
-      </div>
-    </div>
-  );
-}
+</button>
+
+</div>
+)}
   if (started) {
     if (
   !showDockPhone &&
