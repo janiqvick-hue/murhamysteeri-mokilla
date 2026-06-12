@@ -128,7 +128,7 @@ console.log({
   !showDiaryEvidence &&
   !showKeyEvidence &&
   !showMetalEvidence &&
-  !showLetterEvidence
+  !showLetterEvidence &&
   !showMapPieceEvidence
 ) {
   return (
