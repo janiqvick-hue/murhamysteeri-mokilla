@@ -1115,6 +1115,8 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 >
   🔦 Aloita tutkimus
 </button>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+}
