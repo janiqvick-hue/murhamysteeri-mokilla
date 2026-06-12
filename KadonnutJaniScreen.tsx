@@ -605,6 +605,16 @@ console.log({
         <blockquote>
           "...puun..."
         </blockquote>
+        
+        <p
+  style={{
+    marginTop: "1rem",
+    fontStyle: "italic",
+    opacity: 0.75,
+  }}
+>
+  🌲 Kuvassa polku katoaa puiden varjoihin.
+</p>
 
         <p>
           Loput tekstistä ovat kuluneet pois.
