@@ -1219,24 +1219,14 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   📱 Tutki Janin puhelinta
 </button>
 
+  {hasMapPiece && (
   <button
-  className="btn"
-  onClick={() => {
-    if (hasMapPiece) {
-      setAtTrail(true);
-    } else {
-      setNotification(
-        "🔍 Et vielä tiedä, mihin jalanjälkiä pitäisi seurata."
-      );
-
-      setTimeout(() => {
-        setNotification("");
-      }, 2500);
-    }
-  }}
->
-  👣 Seuraa jalanjälkiä
-</button>
+    className="btn"
+    onClick={() => setAtTrail(true)}
+  >
+    👣 Seuraa jalanjälkiä
+  </button>
+)}
       </div>
     </div>
   );
