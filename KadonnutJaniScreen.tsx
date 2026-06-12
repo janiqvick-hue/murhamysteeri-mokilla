@@ -155,18 +155,7 @@ console.log({
 ) {
   return (
   <div className="screen screen--center">
-    <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+    {folderButton}
 
     {notification && (
       <div className="notification">
@@ -965,6 +954,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
+      
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1109,38 +1099,11 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
           "Kesä 1952. Emme ole enää turvassa."
         </p>
 
-        <button
-          className="btn"
-          onClick={() => {
-            setHasDiary(true);
-            setNotification("📜 Uusi todiste: Päiväkirjan sivu");
-
-            setTimeout(() => {
-              setNotification("");
-            }, 2500);
-          }}
-        >
-          🎒 Lisää tutkijan kansioon
-        </button>
-
         <h3>🔑 Ruostunut avain</h3>
         <p>
           Avaimeen on kaiverrettu numero: 1952
         </p>
 
-        <button
-          className="btn"
-          onClick={() => {
-            setHasRustyKey(true);
-            setNotification("🔑 Uusi todiste: Ruostunut avain");
-
-            setTimeout(() => {
-              setNotification("");
-            }, 2500);
-          }}
-        >
-          🎒 Lisää tutkijan kansioon
-        </button>
 
         <h3>🗺️ Märkä kartan pala</h3>
 
@@ -1281,18 +1244,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     <div className="screen screen--center">
       {folderButton}
 
-      <button
-        className="btn"
-        onClick={() => setShowFolder(true)}
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          zIndex: 1000,
-        }}
-      >
-        🎒 Tutkijan kansio
-      </button>
 
       <div className="rain-overlay" />
 
