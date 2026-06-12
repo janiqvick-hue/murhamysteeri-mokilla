@@ -1335,10 +1335,7 @@ if (atTrail) {
 Jäljet päättyvät vanhalle hylätylle vajalle.
 </p>
 
-<button
-  className="btn"
-  onClick={() => setAtShed(true)}
->
+<>
   <h3>🔎 Mitä jälkiä kannattaa seurata?</h3>
 
 <p>
@@ -1430,9 +1427,12 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 >
   🏚️ Siirry hylätylle vajalle
 </button>
-
-</div>
-)}
+</>
+      </div>
+    </div>
+  );
+}
+  
   if (started) {
     if (
   !showDockPhone &&
