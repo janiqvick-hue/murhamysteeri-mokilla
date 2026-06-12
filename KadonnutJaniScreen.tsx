@@ -666,7 +666,8 @@ console.log({
 >
   🔍 Tarkista vastaus
 </button>
-        {mapSolved && (
+      
+{mapSolved && (
   <p style={{ marginTop: "1rem" }}>
     🌲 Kartan pala näyttää osoittavan metsäpolulle.
   </p>
