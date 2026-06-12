@@ -53,6 +53,7 @@ const [openedRustyKey, setOpenedRustyKey] = useState(false);
 const [openedMapPiece, setOpenedMapPiece] = useState(false);
 
 const [introPlayed, setIntroPlayed] = useState(false);
+const [phoneAudioPlayed, setPhoneAudioPlayed] = useState(false);
 
 console.log({
   started,
@@ -81,6 +82,19 @@ console.log({
     setIntroPlayed(true);
   }
 }, [started, introPlayed]);
+useEffect(() => {
+  if (showDockPhone && !phoneAudioPlayed) {
+    const audio = new Audio("/janin_viesti.mp3");
+
+    audio.volume = 1;
+
+    audio.play().catch(() => {
+      console.log("Puhelinääntä ei voitu toistaa.");
+    });
+
+    setPhoneAudioPlayed(true);
+  }
+}, [showDockPhone, phoneAudioPlayed]);
   const folderButton = (
   <button
     onClick={() => setShowFolder(true)}
