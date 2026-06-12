@@ -1430,9 +1430,8 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   style={{ marginTop: "1rem" }}
 >
   🏚️ Siirry hylätylle vajalle
-</button>
-  🏚️ Siirry hylätylle vajalle
-</button>
+    </button>
+  
       </div>
     </div>
   );
