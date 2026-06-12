@@ -832,6 +832,72 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
     </div>
   );
 }
+  if (atWell) {
+  return (
+    <div className="screen screen--center">
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🕳️ Vanha Kaivo</h1>
+
+        <p>
+          Kaivon reunaan on kaiverrettu sama symboli kuin laiturin lankussa.
+        </p>
+
+        <h3>📜 Repeytynyt päiväkirjan sivu</h3>
+        <p>
+          "Kesä 1952. Emme ole enää turvassa."
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => {
+            setHasDiary(true);
+            setNotification("📜 Uusi todiste: Päiväkirjan sivu");
+
+            setTimeout(() => {
+              setNotification("");
+            }, 2500);
+          }}
+        >
+          🎒 Lisää tutkijan kansioon
+        </button>
+
+        <h3>🔑 Ruostunut avain</h3>
+        <p>
+          Avaimeen on kaiverrettu numero: 1952
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => {
+            setHasRustyKey(true);
+            setNotification("🔑 Uusi todiste: Ruostunut avain");
+
+            setTimeout(() => {
+              setNotification("");
+            }, 2500);
+          }}
+        >
+          🎒 Lisää tutkijan kansioon
+        </button>
+
+        <h3>🌲 Seuraava johtolanka</h3>
+
+        <p>
+          Kartan kulma osoittaa metsään johtavalle polulle.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setAtTrail(true)}
+        >
+          🌲 Siirry metsäpolulle
+        </button>
+      </div>
+    </div>
+  );
+}
 if (atTrail) {
   return (
     <div className="screen screen--center">
@@ -980,6 +1046,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     }, 2500);
 
     setShowDockPhone(false);
+setAtWell(true);
   }}
 >
   🎒 Lisää tutkijan kansioon
