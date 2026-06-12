@@ -72,7 +72,7 @@ console.log({
   if (started && !introPlayed) {
     const audio = new Audio("/intro_jani.mp3");
 
-    audio.volume = 0.9;
+    audio.volume = 1;
 
     audio.play().catch(() => {
       console.log("Introääntä ei voitu toistaa.");
