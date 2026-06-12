@@ -1423,7 +1423,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
       </button>
     </div>
   </>
-  
+  )}
   if (started) {
     if (
   !showDockPhone &&
