@@ -100,6 +100,7 @@ console.log({
   if (showNoteEvidence) {
   return (
     <div className="screen screen--center">
+      {folderButton}
       <button
   className="btn"
   onClick={() => setShowFolder(true)}
