@@ -54,6 +54,7 @@ const [openedMapPiece, setOpenedMapPiece] = useState(false);
 
 const [introPlayed, setIntroPlayed] = useState(false);
 const [phoneAudioPlayed, setPhoneAudioPlayed] = useState(false);
+const [trailAudioPlayed, setTrailAudioPlayed] = useState(false);
 
 console.log({
   started,
@@ -95,6 +96,19 @@ useEffect(() => {
     setPhoneAudioPlayed(true);
   }
 }, [showDockPhone, phoneAudioPlayed]);
+  useEffect(() => {
+  if (atTrail && !trailAudioPlayed) {
+    const audio = new Audio("/metsapolku_kuiskaus.mp3");
+
+    audio.volume = 0.9;
+
+    audio.play().catch(() => {
+      console.log("Metsäpolun ääntä ei voitu toistaa.");
+    });
+
+    setTrailAudioPlayed(true);
+  }
+}, [atTrail, trailAudioPlayed]);
   const folderButton = (
   <button
     onClick={() => setShowFolder(true)}
