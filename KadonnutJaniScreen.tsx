@@ -1117,4 +1117,3 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
     </div>
   </div>
 );
-}
