@@ -1026,13 +1026,38 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
           🎒 Lisää tutkijan kansioon
         </button>
 
-        <h3>🌲 Seuraava johtolanka</h3>
+        <h3>🗺️ Märkä kartan pala</h3>
 
-        <p>
-          Kartan kulma osoittaa metsään johtavalle polulle.
-        </p>
+<p>
+  Kaivon pohjalta löytyy märkä ja repeytynyt kartan pala.
+</p>
 
-        <button
+<button
+  className="btn"
+  onClick={() => {
+    setHasMapPiece(true);
+
+    setNotification("🗺️ Uusi todiste: Kartan pala");
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2500);
+  }}
+>
+  🎒 Lisää tutkijan kansioon
+</button>
+
+<h3>🪨 Kaiverrus kaivon reunassa</h3>
+
+<p>
+  "Se mikä näyttää lopulta,
+  oli vasta alku.
+</p>
+
+<p>
+  Missä vesi kohtaa puun,
+  siellä totuus odottaa."
+</p>
           className="btn"
           onClick={() => setAtTrail(true)}
         >
