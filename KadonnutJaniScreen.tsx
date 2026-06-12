@@ -970,154 +970,15 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   🎒 Lisää tutkijan kansioon
 </button>
 
-        <br /><br />
-
-        <button
-          className="btn"
-          onClick={() => setShowDockPhone(false)}
-        >
-          Sulje
-        </button>
-      </div>
-    </div>
-  );
-}
-   if (atWell) {
-  return (
-    <div className="screen screen--center">
-
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
-
-      <div className="rain-overlay" />
-
-      <div className="config-card">
-        <h1>🕳️ Vanha Kaivo</h1>
-
-        <p>
-          Kaivon reunaan on kaiverrettu sama symboli kuin laiturin lankussa.
-        </p>
-
-        <h3>📜 Repeytynyt päiväkirjan sivu</h3>
-        <p>
-          "Kesä 1952. Emme ole enää turvassa."
-        </p>
-        <button
-  className="btn"
-  onClick={() => {
-    setHasDiary(true);
-    setNotification("📜 Uusi todiste: Päiväkirjan sivu");
-
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
->
-  🎒 Lisää tutkijan kansioon
-</button>
-
-        <h3>🔑 Ruostunutavain</h3>
-        <p>
-          Avaimeen on kaiverrettu numero: 1952
-        </p>
-        <button
-  className="btn"
-  onClick={() => {
-    setHasRustyKey(true);
-    setNotification("🔑 Uusi todiste: Ruostunutavain");
-
-    setTimeout(() => {
-      setNotification("");
-    }, 2500);
-  }}
->
-  🎒 Lisää tutkijan kansioon
-</button>
-
-        <h3>🧭 Kartan kulma</h3>
-        <p>
-          Metsäpolku
-        </p>
-        <h3>🌲 Seuraava johtolanka</h3>
-
-<p>
-  Kartan kulma osoittaa metsään johtavalle polulle.
-</p>
+<br /><br />
 
 <button
   className="btn"
-  onClick={() => setAtTrail(true)}
+  onClick={() => setShowDockPhone(false)}
 >
-  🌲 Siirry metsäpolulle
+  Sulje
 </button>
-          </div>
-  );
-}
-      
-  return (
-  <div className="screen screen--center">
-
-      <img
-  src="/01_aloitusnakyma_vartijat_valvovat.png"
-  alt="Kadonnut Jani"
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-      }}
-    />
-
-    <div className="rain-overlay" />
-
-    <div
-      className="config-card"
-      style={{
-        background: "rgba(0,0,0,0.55)",
-      }}
-    >
-      <h1>🔦 Kadonnut Jani</h1>
-
-      <p
-  style={{
-    fontFamily: "'Caveat', cursive",
-    fontSize: "2rem",
-    marginBottom: "0.5rem",
-  }}
->
-  Jani katosi kolme päivää sitten.
-</p>
-
-<p
-  style={{
-    fontFamily: "'Caveat', cursive",
-    fontSize: "2rem",
-    marginBottom: "1.5rem",
-  }}
->
-  Mitä mökillä tapahtui?
-</p>
-
-      <button
-  className="btn"
-  onClick={() => setStarted(true)}
->
-  🔦 Aloita tutkimus
-</button>
-        </div>
       </div>
     </div>
-    );
-    }
-    }
+  );
+}
