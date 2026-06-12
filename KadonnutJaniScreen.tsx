@@ -1445,8 +1445,6 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   </>
 
 )}
-  );
-}
   if (started) {
     if (
   !showDockPhone &&
