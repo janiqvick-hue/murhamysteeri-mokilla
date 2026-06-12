@@ -1062,8 +1062,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </button>
       </div>
   );
-}
-}  
+      
   return (
   <div className="screen screen--center">
 
