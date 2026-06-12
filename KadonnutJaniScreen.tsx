@@ -1355,6 +1355,22 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   style={{ marginBottom: "1rem" }}
 />
 
+<h3>🔎 Mitä jälkiä kannattaa seurata?</h3>
+
+<p>
+  Valokuvan ja päiväkirjan vihjeet tuntuvat viittaavan
+  siihen, että yksi jäljistä poikkeaa muista.
+</p>
+
+<input
+  type="text"
+  value={trailAnswer}
+  onChange={(e) => setTrailAnswer(e.target.value)}
+  placeholder="Kirjoita vastauksesi..."
+  className="btn"
+  style={{ marginBottom: "1rem" }}
+/>
+
 <button
   className="btn"
   onClick={() => {
@@ -1389,50 +1405,45 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
 </button>
 
 {trailSolved && (
-  <p style={{ marginTop: "1rem" }}>
-    👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
-  </p>
+  <>
+    <p style={{ marginTop: "1rem" }}>
+      👣 Erilliset jalanjäljet johtavat kohti vanhaa vajaa...
+    </p>
+
+    <div style={{ marginTop: "1.5rem" }}>
+      <img
+        src="/hylatty_vaja_siirtyma.png"
+        alt="Hylätty vaja"
+        style={{
+          width: "100%",
+          borderRadius: "12px",
+          marginBottom: "1rem",
+        }}
+      />
+
+      <p>Jalanjäljet päättyvät vanhalle vajalle.</p>
+
+      <p>Ovi on raollaan.</p>
+
+      <p
+        style={{
+          fontStyle: "italic",
+          opacity: 0.8,
+        }}
+      >
+        Sisällä odottaa joko vastaus...
+        tai jotain paljon pahempaa.
+      </p>
+
+      <button
+        className="btn"
+        onClick={() => setAtShed(true)}
+      >
+        🏚️ Siirry hylätylle vajalle
+      </button>
+    </div>
+  </>
 )}
-  {trailSolved && (
-  <div style={{ marginTop: "1.5rem" }}>
-    <img
-      src="/hylatty_vaja_siirtyma.png"
-      alt="Hylätty vaja"
-      style={{
-        width: "100%",
-        borderRadius: "12px",
-        marginBottom: "1rem",
-      }}
-    />
-
-    <p>
-      Jalanjäljet päättyvät vanhalle vajalle.
-    </p>
-
-    <p>
-      Ovi on raollaan.
-    </p>
-
-    <p
-      style={{
-        fontStyle: "italic",
-        opacity: 0.8,
-      }}
-    >
-      Sisällä odottaa joko vastaus...
-      tai jotain paljon pahempaa.
-    </p>
-  </div>
-)}
-  <button
-  className="btn"
-  onClick={() => setAtShed(true)}
-  style={{ marginTop: "1rem" }}
->
-  🏚️ Siirry hylätylle vajalle
-</button>
-  🏚️ Siirry hylätylle vajalle
-</button>
       </div>
     </div>
   );
