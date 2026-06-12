@@ -101,18 +101,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+      
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -386,18 +375,7 @@ console.log({
     return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+      
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -433,18 +411,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -496,18 +463,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -542,18 +498,7 @@ console.log({
   return (
     <div className="screen screen--center">
      {folderButton} 
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -598,18 +543,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -642,18 +576,6 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-        className="btn"
-        onClick={() => setShowFolder(true)}
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          zIndex: 1000,
-        }}
-      >
-        🎒 Tutkijan kansio
-      </button>
 
       <div className="rain-overlay" />
 
@@ -768,18 +690,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -809,18 +720,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+      
       <div className="rain-overlay" />
 
       <div className="parchment">
@@ -952,18 +852,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="parchment" style={{ textAlign: "center" }}>
@@ -994,18 +883,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
@@ -1049,18 +927,7 @@ console.log({
   return (
     <div className="screen screen--center">
       {folderButton}
-      <button
-  className="btn"
-  onClick={() => setShowFolder(true)}
-  style={{
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    zIndex: 1000,
-  }}
->
-  🎒 Tutkijan kansio
-</button>
+
       <div className="rain-overlay" />
 
       <div className="config-card">
