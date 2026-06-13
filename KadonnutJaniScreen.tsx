@@ -56,8 +56,65 @@ const [introPlayed, setIntroPlayed] = useState(false);
 const [phoneAudioPlayed, setPhoneAudioPlayed] = useState(false);
 const [trailAudioPlayed, setTrailAudioPlayed] = useState(false);
 const [endingAudioPlayed, setEndingAudioPlayed] = useState(false);
+
 const [letterStarted, setLetterStarted] = useState(false);
 const [visibleText, setVisibleText] = useState("");
+  
+const finalLetter = `📜 JANIN VIIMEINEN KIRJE
+
+Jos kuulet tämän...
+
+jokin meni pieleen.
+
+Minun piti palata mökiltä jo tunteja sitten.
+
+Aluksi kaikki tuntui tavalliselta.
+
+Vanha mökki.
+Laituri.
+Metsäpolku.
+
+Mutta sitten aloin löytää asioita, jotka eivät kuuluneet sinne.
+
+Valokuvia ihmisistä, joita kukaan ei enää muistanut.
+
+Päiväkirjan sivuja, jotka oli yritetty piilottaa.
+
+Merkkejä siitä, että joku oli tutkinut samoja asioita ennen minua.
+
+Ja lopulta ymmärsin jotakin, mitä en olisi halunnut koskaan tietää.
+
+Tämä ei alkanut minusta.
+
+Eikä se pääty minuun.
+
+Joku tiesi totuuden jo vuonna 1952.
+
+Joku yritti varoittaa.
+
+Mutta kukaan ei kuunnellut.
+
+Jos päätät jatkaa tästä eteenpäin...
+
+ole varovainen.
+
+Kaikki, mitä löydät, ei halua tulla löydetyksi.
+
+Ja jos kuulet rannalta äänen, joka kuulostaa tutulta...
+
+älä seuraa sitä.
+
+...
+
+Sillä totuus lepää edelleen järven pohjassa.
+
+Ja joskus...
+
+totuus katsoo takaisin.
+
+...
+
+VARTIJAT OVAT TÄÄLLÄ.`;
 
 console.log({
   started,
@@ -115,6 +172,7 @@ useEffect(() => {
 }, [atTrail, trailAudioPlayed]);
 useEffect(() => {
   if (showEnding && !endingAudioPlayed) {
+
     const audio = new Audio("/loppukirje");
 
     audio.volume = 1;
@@ -126,6 +184,26 @@ useEffect(() => {
     setEndingAudioPlayed(true);
   }
 }, [showEnding, endingAudioPlayed]);
+
+  useEffect(() => {
+  if (showEnding && !letterStarted) {
+    setVisibleText("");
+    setLetterStarted(true);
+
+    let index = 0;
+
+    const interval = setInterval(() => {
+      setVisibleText(finalLetter.slice(0, index));
+      index++;
+
+      if (index > finalLetter.length) {
+        clearInterval(interval);
+      }
+    }, 90);
+
+    return () => clearInterval(interval);
+  }
+}, [showEnding, letterStarted]);
   const folderButton = (
   <button
     onClick={() => setShowFolder(true)}
@@ -765,62 +843,8 @@ useEffect(() => {
     </div>
   );
 }
-  const finalLetter = `📜 JANIN VIIMEINEN KIRJE
 
-Jos kuulet tämän...
-
-jokin meni pieleen.
-
-Minun piti palata mökiltä jo tunteja sitten.
-
-Aluksi kaikki tuntui tavalliselta.
-
-Vanha mökki.
-Laituri.
-Metsäpolku.
-
-Mutta sitten aloin löytää asioita, jotka eivät kuuluneet sinne.
-
-Valokuvia ihmisistä, joita kukaan ei enää muistanut.
-
-Päiväkirjan sivuja, jotka oli yritetty piilottaa.
-
-Merkkejä siitä, että joku oli tutkinut samoja asioita ennen minua.
-
-Ja lopulta ymmärsin jotakin, mitä en olisi halunnut koskaan tietää.
-
-Tämä ei alkanut minusta.
-
-Eikä se pääty minuun.
-
-Joku tiesi totuuden jo vuonna 1952.
-
-Joku yritti varoittaa.
-
-Mutta kukaan ei kuunnellut.
-
-Jos päätät jatkaa tästä eteenpäin...
-
-ole varovainen.
-
-Kaikki, mitä löydät, ei halua tulla löydetyksi.
-
-Ja jos kuulet rannalta äänen, joka kuulostaa tutulta...
-
-älä seuraa sitä.
-
-...
-
-Sillä totuus lepää edelleen järven pohjassa.
-
-Ja joskus...
-
-totuus katsoo takaisin.
-
-...
-
-VARTIJAT OVAT TÄÄLLÄ.`;
-  useEffect(() => {
+useEffect(() => {
   if (showEnding && !letterStarted) {
     setVisibleText("");
     setLetterStarted(true);
