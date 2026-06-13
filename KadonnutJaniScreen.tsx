@@ -1362,7 +1362,7 @@ Jäljet päättyvät vanhalle hylätylle vajalle.
   onClick={() => {
     setHasPhone(true);
     setHasNote(true);
-    setShowNoteEvidence(true);
+    // setShowNoteEvidence(true);
 
     setNotification("📱 Janin puhelin lisätty kansioon");
 
