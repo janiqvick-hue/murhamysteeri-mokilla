@@ -1131,43 +1131,87 @@ useEffect(() => {
       <div className="rain-overlay" />
 
       <div className="config-card">
-        <h1>🏚️ Hylätty Vaja</h1>
+        <h1>🏚️ Hylätty vaja</h1>
+
+        <img
+          src="/vaja_ulkopuoli.png"
+          alt="Vaja"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
 
         <p>
-          Vaja näyttää olleen autiona vuosia.
+          Oven saranat narisevat. Tuntuu kuin joku olisi ollut täällä äskettäin.
         </p>
 
         <h3>📦 Lukittu arkku</h3>
-        <p>
-          Arkun kannessa on numero 1952.
-        </p>
 
-        <h3>🧥 Vanha takki</h3>
+        <img
+          src="/vaja_lukittu_arkku.png"
+          alt="Arkku"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
         <p>
-          Taskusta löytyy taiteltu kirje.
+          Arkun kanteen on kaiverrettu numero 1952.
         </p>
 
         <h3>📜 Kirje</h3>
+
+        <img
+          src="/vaja_kirje.png"
+          alt="Kirje"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <blockquote>
+          "Jos jotain tapahtuu minulle,
+          älkää luottako kaikkiin."
+        </blockquote>
+
+        <h3>🔑 Vierashuoneen avain</h3>
+
+        <img
+          src="/vaja_vierashuone_avain.png"
+          alt="Vierashuoneen avain"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
         <p>
-          "Jos jotain tapahtuu minulle, älkää luottako kaikkiin."
+          Avaimessa lukee: "Vierashuone".
         </p>
 
-        <h3>🔑 Yläkerran avain</h3>
-        <p>
-          Avaimessa lukee: Vierashuone.
-        </p>
-        <h3>🚪 Vierashuone</h3>
+        <button
+          className="btn"
+          onClick={() => {
+            setHasLetter(true);
 
-<p>
-Yläkerran avain sopii vanhan vierashuoneen oveen.
-</p>
+            setNotification("📜 Kirje lisätty kansioon");
 
-<button
-  className="btn"
-  onClick={() => setAtGuestRoom(true)}
->
-  🚪 Siirry vierashuoneeseen
-</button>
+            setTimeout(() => {
+              setNotification("");
+            }, 2500);
+
+            setAtGuestRoom(true);
+          }}
+        >
+          🚪 Siirry vierashuoneeseen
+        </button>
       </div>
     </div>
   );
