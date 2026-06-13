@@ -908,7 +908,8 @@ useEffect(() => {
         <h2>Totuus lepää järven pohjassa.</h2>
 
         <p style={{ marginTop: "2rem", opacity: 0.8 }}>
-          Vartijat ovat palanneet.
+  Vartijat ovat täällä.
+</p>
         </p>
 
         <h3 style={{ marginTop: "3rem" }}>
