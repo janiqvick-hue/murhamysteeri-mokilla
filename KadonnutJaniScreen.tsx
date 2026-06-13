@@ -1185,32 +1185,7 @@ useEffect(() => {
     </div>
   );
 }
-  return (
-    <div className="screen screen--center">
-      {folderButton}
-      <div className="rain-overlay" />
 
-      <div className="config-card">
-        <h1>🚪 Vierashuone</h1>
-
-        <h3>📷 Vanha valokuva</h3>
-        <p>Kuvassa näkyy neljä henkilöä mökin portailla vuonna 1952.</p>
-
-        <h3>📓 Päiväkirja</h3>
-        <p>"Vartija katosi sinä yönä."</p>
-
-        <h3>🗺️ Kartan pala</h3>
-        <p>Kartta osoittaa kohti saunaa.</p>
-        <button
-  className="btn"
-  onClick={() => setAtSauna(true)}
->
-  🔥 Siirry saunalle
-</button>
-      </div>
-    </div>
-  );
-}
   if (atShed) {
   return (
     <div className="screen screen--center">
