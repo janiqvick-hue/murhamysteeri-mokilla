@@ -108,9 +108,15 @@ useEffect(() => {
     audio.play().catch(() => {
       console.log("Metsäpolun ääntä ei voitu toistaa.");
     });
-    useEffect(() => {
+    
+    }, [showEnding, endingAudioPlayed]);
+
+    setTrailAudioPlayed(true);
+  }
+}, [atTrail, trailAudioPlayed]);
+useEffect(() => {
   if (showEnding && !endingAudioPlayed) {
-    const audio = new Audio("/loppukirje.m4a");
+    const audio = new Audio("/Loppukirje.m4a");
 
     audio.volume = 1;
 
@@ -120,12 +126,7 @@ useEffect(() => {
 
     setEndingAudioPlayed(true);
   }
-
-    }, [showEnding, endingAudioPlayed]);
-
-    setTrailAudioPlayed(true);
-  }
-}, [atTrail, trailAudioPlayed]);
+}, [showEnding, endingAudioPlayed]);
   const folderButton = (
   <button
     onClick={() => setShowFolder(true)}
