@@ -27,6 +27,8 @@ export default function KadonnutJaniScreen() {
   const [selectedEvidence, setSelectedEvidence] = useState<string | null>(null);
   const [notification, setNotification] = useState("");
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [droneOscillator, setDroneOscillator] = useState<OscillatorNode | null>(null);
   
   // Arvoitusten syötteet
   const [suitcaseCode, setSuitcaseCode] = useState("");
@@ -42,7 +44,7 @@ Kaikki alkoi jo kauan ennen minua.
 
 Joku yritti varoittaa jo vuonna 1952, eikä totuus pääty minuun.
 
-If kuulet rannalta äänen, joka kuulostaa tutulta...
+Jos kuulet rannalta äänen, joka kuulostaa tutulta...
 
 älä seuraa sitä.
 
@@ -70,12 +72,131 @@ VARTIJAT OVAT TÄÄLLÄ.`;
     localStorage.setItem("jani_hasMetalBox", hasMetalBox.toString());
   }, [started, currentStage, hasPhone, hasNote, hasPlank, hasDiary, hasRustyKey, hasMapPiece, hasPhoto, hasLetter, hasGuardMark, hasMetalBox]);
 
-  // Äänitiedostojen soitto kovennetulla äänenvoimakkuudella (volume = 1.0)
+  // ─── AMBIENT AUDIO-SYNTETISAATTORI (KOVENNETTU MYRSKY- JA HUMINA-EFEKTI) ───
+  useEffect(() => {
+    if (audioEnabled) {
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // Matala humina (pahaenteinen drone-ääni)
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gainNode = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(48, ctx.currentTime); 
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(120, ctx.currentTime);
+
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        lfo.frequency.setValueAtTime(0.08, ctx.currentTime); 
+        lfoGain.gain.setValueAtTime(0.18, ctx.currentTime); 
+
+        lfo.connect(lfoGain);
+        lfoGain.connect(gainNode.gain);
+
+        osc.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        gainNode.gain.setValueAtTime(0.22, ctx.currentTime); 
+        osc.start();
+        lfo.start();
+
+        // Taustasateen kohina
+        const bufferSize = ctx.sampleRate * 2;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+
+        const rainSource = ctx.createBufferSource();
+        rainSource.buffer = noiseBuffer;
+        rainSource.loop = true;
+
+        const rainFilter = ctx.createBiquadFilter();
+        rainFilter.type = 'bandpass';
+        rainFilter.frequency.setValueAtTime(380, ctx.currentTime);
+        rainFilter.Q.setValueAtTime(1.0, ctx.currentTime);
+
+        const rainGain = ctx.createGain();
+        rainGain.gain.setValueAtTime(0.12, ctx.currentTime); 
+
+        rainSource.connect(rainFilter);
+        rainFilter.connect(rainGain);
+        rainGain.connect(ctx.destination);
+        rainSource.start();
+
+        setAudioContext(ctx);
+        setDroneOscillator(osc);
+      } catch (err) {
+        console.error("Audioalustuksen virhe:", err);
+      }
+    } else {
+      if (audioContext) {
+        audioContext.close().catch(() => {});
+        setAudioContext(null);
+        setDroneOscillator(null);
+      }
+    }
+
+    return () => {
+      if (audioContext) {
+        audioContext.close().catch(() => {});
+      }
+    };
+  }, [audioEnabled]);
+
+  // Klikkaus-, löytö- ja virheäänet
+  const playChime = (type: 'find' | 'unlock' | 'error' | 'click') => {
+    if (!audioEnabled || !audioContext) return;
+    try {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      if (type === 'find') {
+        osc.frequency.setValueAtTime(320, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(640, audioContext.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.55, audioContext.currentTime); 
+        gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.36);
+      } else if (type === 'unlock') {
+        osc.frequency.setValueAtTime(440, audioContext.currentTime);
+        osc.frequency.setValueAtTime(554, audioContext.currentTime + 0.1);
+        osc.frequency.setValueAtTime(659, audioContext.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.50, audioContext.currentTime); 
+        gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.4);
+      } else if (type === 'error') {
+        osc.frequency.setValueAtTime(120, audioContext.currentTime);
+        osc.frequency.linearRampToValueAtTime(70, audioContext.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.55, audioContext.currentTime); 
+        gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.26);
+      } else {
+        osc.frequency.setValueAtTime(400, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.30, audioContext.currentTime); 
+        gain.gain.linearRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.09);
+      }
+    } catch (e) {}
+  };
+
+  // Puheäänien soitto (volume = 1.0)
   const playAudio = (src: string) => {
     if (!audioEnabled) return;
     const audio = new Audio(src);
     audio.volume = 1.0;
-    audio.play().catch(() => console.log("Ääntä ei voitu toistaa klikkausrajoituksen vuoksi."));
+    audio.play().catch(() => console.log("Ääntä ei voitu toistaa."));
   };
 
   // Kirjeen kirjoitusefekti
@@ -103,7 +224,7 @@ VARTIJAT OVAT TÄÄLLÄ.`;
   // Salkkupainike
   const folderButton = (
     <button
-      onClick={() => setShowFolder(true)}
+      onClick={() => { playChime('click'); setShowFolder(true); }}
       style={{
         position: "fixed", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 9999,
         width: "95px", height: "125px", borderRadius: "16px", border: "2px solid #8b6f47",
@@ -115,92 +236,9 @@ VARTIJAT OVAT TÄÄLLÄ.`;
     </button>
   );
 
-  // TUTKIJAN SALKKU
+  // SALKKUNÄKYMÄ
   if (showFolder) {
     const evidenceList = [
       { id: "phone", name: "📱 Janin puhelin", has: hasPhone, desc: "Löytyi laiturilta märältä lankulta. Näyttö on säröillä, ja viimeinen otettu kuva esittää vanhaa kaivoa." },
       { id: "note", name: "📝 Märkä muistilappu", has: hasNote, desc: "Muste on levinnyt sateessa, mutta vuosi 1952 erottuu selvästi. 'Tämä ei alkanut Janista.'" },
       { id: "key", name: "🔑 Ruostunut avain 1952", has: hasRustyKey, desc: "Löytyi vanhan kaivon uumenista. Kylkeen on kaiverrettu vuosiluku 1952. Sopii vajan arkkuun." },
-      { id: "map", name: "🗺️ Märkä kartan pala", has: hasMapPiece, desc: "Kaivosta löytynyt reittikartta, joka osoittaa polun hylätylle vajalle." },
-      { id: "photo_beach", name: "🖼️ Valokuva rannasta", has: hasPhoto, desc: "Metsäpolulta löytynyt rikkinäinen kuva mökin rannasta sellaisena kuin se oli ennen loistohuvilaa." },
-      { id: "letter", name: "✉️ Salainen kirje vajasta", has: hasLetter, desc: "Arkusta löytynyt varoitus: 'Jos jotain tapahtuu minulle, älkää luottako kaikkiin.'" },
-      { id: "mark", name: "🛡️ Vartijoiden merkki", has: hasGuardMark, desc: "Rantasaunan lauteiden salalokerosta noudettu metallinen symboli. Vartijoiden virallinen tunnus." },
-      { id: "plank", name: "🪵 Irtonainen lankku", has: hasPlank, desc: "Saunasta löytynyt vihje: 'Totuus on piilotettu veden alle.' Johdattaa takaisin laiturille." },
-      { id: "box", name: "📦 Metallirasia", has: hasMetalBox, desc: "Laiturin alta kylmästä järvivedestä pelastettu rasia, joka avaa tien kellariin." },
-      { id: "diary", name: "📖 Kadonnut päiväkirja", has: hasDiary, desc: "Kellarin sähkökaapista löytynyt alkuperäinen päiväkirja vuodelta 1952: 'Syyllinen ei ollut ulkopuolinen. Hän oli yksi meistä.'" },
-    ];
-
-    return (
-      <div className="screen screen--center">
-        <div className="rain-overlay" />
-        <div className="config-card" style={{ maxWidth: "450px", width: "95%" }}>
-          <h2>🎒 Tutkijan salkku 1952</h2>
-          <p style={{ fontSize: "0.85rem", opacity: 0.7, marginBottom: "1rem" }}>
-            Kerätty: {evidenceList.filter(e => e.has).length} / 10 todistetta
-          </p>
-
-          {!selectedEvidence ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "300px", overflowY: "auto", textAlign: "left", padding: "4px" }}>
-              {evidenceList.map(e => (
-                <button
-                  key={e.id}
-                  disabled={!e.has}
-                  onClick={() => setSelectedEvidence(e.id)}
-                  style={{
-                    padding: "10px", background: e.has ? "#1a2540" : "rgba(255,255,255,0.05)",
-                    color: e.has ? "white" : "rgba(255,255,255,0.3)", border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "8px", cursor: e.has ? "pointer" : "not-allowed", textAlign: "left"
-                  }}
-                >
-                  {e.has ? e.name : "🔒 [Lukittu todiste]"}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div style={{ padding: "1rem", background: "rgba(0,0,0,0.3)", borderRadius: "12px", textAlign: "left", marginBottom: "1rem" }}>
-              <h3>{evidenceList.find(e => e.id === selectedEvidence)?.name}</h3>
-              <p style={{ marginTop: "0.5rem", fontSize: "0.95rem", lineHeight: "1.4" }}>
-                {evidenceList.find(e => e.id === selectedEvidence)?.desc}
-              </p>
-              <button className="btn" style={{ marginTop: "1rem", padding: "4px 12px" }} onClick={() => setSelectedEvidence(null)}>Takaisin listaan</button>
-            </div>
-          )}
-
-          <button className="btn" onClick={() => setShowFolder(false)} style={{ width: "100%", background: "#8b6f47", marginTop: "1rem" }}>
-            Sulje salkku
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // PELIN ALKURUUTU
-  if (!started) {
-    return (
-      <div className="screen screen--center">
-        <div className="rain-overlay" />
-        <div className="config-card">
-          <h1>🔦 Kadonnut Jani</h1>
-          <p style={{ margin: "1rem 0" }}>80 tunnin tutkimus ja kauhumysteeri Lopella. Kaikki alkaa sateiselta laiturilta, jossa Jani nähtiin viimeisen kerran.</p>
-          
-          <div style={{ margin: "1rem 0", display: "flex", gap: "10px", justifyContent: "center" }}>
-            <button className={`btn ${audioEnabled ? "" : "btn-secondary"}`} onClick={() => setAudioEnabled(!audioEnabled)}>
-              {audioEnabled ? "🔊 Äänet päällä" : "🔇 Äänet pois"}
-            </button>
-          </div>
-
-          <button className="btn" onClick={() => { setStarted(true); playAudio("/intro_jani.mp3kovennettu.m4a"); }}>
-            Aloita tutkimus
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // PELIALUEET (STAGES 1-8)
-  return (
-    <div className="screen screen--center">
-      <div className="rain-overlay" />
-      {folderButton}
-
-      <div style={{ position: "absolute", top: "15px", left: "15px", display: "flex", gap: "10px", zIndex: 10 }}>
