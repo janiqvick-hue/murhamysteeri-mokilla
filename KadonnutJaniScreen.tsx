@@ -821,7 +821,31 @@ if (showPhoneInfo) {
     </div>
   );
 } 
-  
+  if (showLetterEvidence) {
+  return (
+    <div className="screen screen--center">
+      {folderButton}
+
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h2>📄 Kirje</h2>
+
+        <blockquote>
+          "Jos jotain tapahtuu minulle,
+          älkää luottako kaikkiin."
+        </blockquote>
+
+        <button
+          className="btn"
+          onClick={() => setShowLetterEvidence(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
+}
   if (showMarkEvidence) {
   return (
     <div className="screen screen--center">
