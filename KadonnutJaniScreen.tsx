@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { LocationId, EvidenceId, Evidence, GameState } from './tyypit';
 
-// Lopen käsikirjoituksen mukaiset 10 virallista todistetta omilla kuvillasi kytkettynä
+// 10 virallista todistetta omilla kuvillasi kytkettynä
 const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
   puhelin: {
     id: 'puhelin',
@@ -14,8 +14,8 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Laituri (Alku)',
     icon: '📱',
     imageUrl: '/janipuhelin.png',
-    description: 'Janin laiturille jättämä älypuhelin. Näyttö on säpäleinä ja kuori kostea, mutta virta menee päälle. Viimeisin otettu kuva esittää vanhaa kivikaivoa huvilan takamaastossa sumun keskellä.',
-    secretHint: 'Puhelimen kuva osoittaa suoraan kaivon suuntaan. Jokin on piilotettu sinne.'
+    description: 'Janin laiturille jättämä älypuhelin. Näyttö on säpäleinä. Viimeisin otettu kuva esittää vanhaa kivikaivoa huvilan takamaastossa sumun keskellä.',
+    secretHint: 'Puhelimen kuva osoittaa suoraan kaivon suuntaan.'
   },
   muistilappu: {
     id: 'muistilappu',
@@ -23,7 +23,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Laituri (Alku)',
     icon: '📝',
     imageUrl: '/märkämuistilappu.png',
-    description: 'Sateen turmelema paperilappu, josta erottuu hätäinen käsiala: "Puhdas vesi... jokin siinä kutsuu. Äänet kuulostavat tutuilta. Älä seuraa niitä. Vartijat yrittävät suojella meitä ihmisiltä..."',
+    description: 'Sateen turmelema paperilappu: "Puhdas vesi... jokin siinä kutsuu. Äänet kuulostavat tutuilta. Älä seuraa niitä. Vartijat yrittävät suojella meitä ihmisiltä..."',
     secretHint: 'Lappu varmistaa, että Jani kuuli kutsuvia ääniä Lopen puhtaasta järvestä.'
   },
   avain: {
@@ -32,7 +32,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Vanha Kaivo',
     icon: '🔑',
     imageUrl: '/ruostunutavain.png',
-    description: 'Painava ja umpiruosteinen rautainen avain, johon on lyöty numero "1952". Haisee syvältä mudalta ja kylmältä järvivedeltä.',
+    description: 'Painava rautainen avain, johon on lyöty numero "1952". Haisee syvältä mudalta.',
     secretHint: 'Vuosiluku 1952 on avain kaikkeen. Tämä sopii selvästi vajan arkkuun.'
   },
   paivakirja_sivu: {
@@ -41,7 +41,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Vanha Kaivo',
     icon: '📄',
     imageUrl: '/paivakirjansivu.png',
-    description: 'Repäisty sivu vanhasta muistikirjasta: "Kesä 1952. Emme ole enää turvassa rannalla. Se jokin alhaalta vaatii vaietun verensä. Vartijat yrittävät sulkea totuuden kellariin, mutta se ei pysy siellä..."',
+    description: 'Repäisty sivu: "Kesä 1952. Emme ole enää turvassa rannalla. Vartijat yrittävät sulkea totuuden kellariin, mutta se ei pysy siellä..."',
     secretHint: 'Vahvistaa, että Lopen huvilan rannassa tehtiin karu päätös jo vuonna 1952.'
   },
   kartta: {
@@ -59,7 +59,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Hylätty Vaja',
     icon: '✉️',
     imageUrl: '/kirje.png',
-    description: 'Vajan arkusta löytynyt Janille osoitettu vanha kirje: "Jos jotain tapahtuu minulle Lopella, älkää uskoko kaikkia kartanon vieraita. He kantavat nimeä VARTIJAT. Totuus elää syvällä järvessä."',
+    description: 'Janille osoitettu kirje: "Jos jotain tapahtuu minulle Lopella, älkää uskoko kaikkia kartanon vieraita. He kantavat nimeä VARTIJAT. Totuus elää syvällä järvessä."',
     secretHint: 'Kirje varoittaa vartijoista – syyllinen voi olla aivan vieressäsi.'
   },
   lankku: {
@@ -68,7 +68,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Rantasauna',
     icon: '🪵',
     imageUrl: '/irtonainenlankku.png',
-    description: 'Rantasaunan lauteiden alta irtoava vanha lankunpätkä. Sen alapintaan on hiilellä piirretty karu silmäsymboli sekä rujo teksti: "Totuus on piilotettu veden alle. Älä luota kehenkään."',
+    description: 'Lauteiden alta irtoava vanha lankunpätkä. Sen alapintaan on hiilellä piirretty karu silmäsymboli sekä teksti: "Totuus on piilotettu veden alle. Älä luota kehenkään."',
     secretHint: 'Viesti hiilessä antaa suunnan: tutki laiturin alus veteenhukutun totuuden varalta.'
   },
   merkki: {
@@ -77,7 +77,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Rantasauna',
     icon: '🛡️',
     imageUrl: '/vartijoidenmerkki.png',
-    description: 'Kupariaikaa nähnyt painava ja vihreäksi hapettunut Vartijoiden metallimerkki. Se esittää tuijottavaa silmää, jonka alla risteää kaksi airon lapaa.',
+    description: 'Vihreäksi hapettunut Vartijoiden metallimerkki. Se esittää tuijottavaa silmää, jonka alla risteää kaksi airon lapaa.',
     secretHint: 'Lopen rannan ja vedessä piilevän salaisuuden vartijoiden aito metallinen tunnus.'
   },
   valokuva: {
@@ -86,7 +86,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Laiturin Alla',
     icon: '🖼️',
     imageUrl: '/vanhavalokuva.png',
-    description: 'Kellastunut mustavalkokuva vuodelta 1952. Siinä joukko miehiä seisoo Lopen rannassa puretun satavuotiaan talon portilla. Yhden henkilön kasvot on raavittu kokonaan pois puukon kärjellä.',
+    description: 'Mustavalkokuva vuodelta 1952. Siinä joukko miehiä seisoo Lopen rannassa puretun satavuotiaan talon portilla. Yhden henkilön kasvot on raavittu kokonaan pois.',
     secretHint: 'Poistetun miehen hahmo piilottaa syyllisen, joka ei halunnut jättää jälkiä.'
   },
   metallirasia: {
@@ -95,7 +95,7 @@ const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
     foundAt: 'Laiturin Alla',
     icon: '📦',
     imageUrl: '/metallirasia.png',
-    description: 'Pieni rautainen metallirasia, joka oli upotettu laiturin alle syvään kylmään järveteen. Kanteen on raaputettu viesti: "Varjelkaa totuutta. Älkää avatko kellaria."',
+    description: 'Pieni rautainen metallirasia, joka oli upotettu laiturin alle järveteen. Kanteen on raaputettu viesti: "Varjelkaa totuutta. Älkää avatko kellaria."',
     secretHint: 'Rasian synkkä käsky viittaa huvilan kellarissa odottavaan viimeiseen sähkökaappiin.'
   }
 };
@@ -173,6 +173,7 @@ Sillä totuus lepää edelleen järven pohjassa.
 Ja joskus... totuus katsoo takaisin.
 
 VARTIJAT OVAT TÄÄLLÄ.`;
+
   useEffect(() => {
     localStorage.setItem('jani_started', started.toString());
     localStorage.setItem('jani_stage', currentStage.toString());
@@ -233,9 +234,13 @@ VARTIJAT OVAT TÄÄLLÄ.`;
 
   const playAudio = (src: string) => {
     if (!audioEnabled) return;
-    const audio = new Audio(src);
-    audio.volume = 1.0;
-    audio.play().catch(() => console.log("Ääntä ei voitu toistaa."));
+    try {
+      const audio = new Audio(src);
+      audio.volume = 1.0;
+      audio.play().catch((e) => console.log("Äänen toisto estetty selaimessa:", e));
+    } catch (err) {
+      console.log("Audio-virhe:", err);
+    }
   };
 
   useEffect(() => {
@@ -252,6 +257,19 @@ VARTIJAT OVAT TÄÄLLÄ.`;
   }, [currentStage, letterStarted]);
 
   const folderButton = (
+    <button
+      onClick={() => { playChime('click'); setShowFolder(true); }}
+      style={{
+        position: "fixed", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 9999,
+        width: "95px", height: "125px", borderRadius: "16px", border: "2px solid #8b6f47",
+        background: "#5b4328", color: "white", cursor: "pointer", boxShadow: "0 6px 18px rgba(0,0,0,0.4)",
+        fontWeight: "bold", fontSize: "0.85rem",
+      }}
+    >
+      🧳<br />Tutkijan<br />salkku<br />1952
+    </button>
+  );
+
     <button
       onClick={() => { playChime('click'); setShowFolder(true); }}
       style={{
