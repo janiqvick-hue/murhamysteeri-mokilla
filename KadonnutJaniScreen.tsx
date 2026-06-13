@@ -55,6 +55,7 @@ const [openedMapPiece, setOpenedMapPiece] = useState(false);
 const [introPlayed, setIntroPlayed] = useState(false);
 const [phoneAudioPlayed, setPhoneAudioPlayed] = useState(false);
 const [trailAudioPlayed, setTrailAudioPlayed] = useState(false);
+const [endingAudioPlayed, setEndingAudioPlayed] = useState(false);
 
 console.log({
   started,
@@ -105,6 +106,20 @@ useEffect(() => {
     audio.play().catch(() => {
       console.log("Metsäpolun ääntä ei voitu toistaa.");
     });
+    useEffect(() => {
+  if (showEnding && !endingAudioPlayed) {
+    const audio = new Audio("/loppukirje.m4a");
+
+    audio.volume = 1;
+
+    audio.play().catch(() => {
+      console.log("Loppukirjeen ääntä ei voitu toistaa.");
+    });
+
+    setEndingAudioPlayed(true);
+  }
+
+    }, [showEnding, endingAudioPlayed]);
 
     setTrailAudioPlayed(true);
   }
