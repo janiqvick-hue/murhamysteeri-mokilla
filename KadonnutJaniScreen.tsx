@@ -115,7 +115,7 @@ useEffect(() => {
 }, [atTrail, trailAudioPlayed]);
 useEffect(() => {
   if (showEnding && !endingAudioPlayed) {
-    const audio = new Audio("/Loppukirje.m4a");
+    const audio = new Audio("/loppukirje");
 
     audio.volume = 1;
 
@@ -820,6 +820,26 @@ totuus katsoo takaisin.
 ...
 
 VARTIJAT OVAT TÄÄLLÄ.`;
+  useEffect(() => {
+  if (showEnding && !letterStarted) {
+    setVisibleText("");
+    setLetterStarted(true);
+
+    let index = 0;
+
+    const interval = setInterval(() => {
+      setVisibleText(finalLetter.slice(0, index));
+      index++;
+
+      if (index > finalLetter.length) {
+        clearInterval(interval);
+      }
+    }, 90);
+
+    return () => clearInterval(interval);
+  }
+}, [showEnding, letterStarted]);
+  
   if (showEnding) {
   return (
     <div className="screen screen--center">
