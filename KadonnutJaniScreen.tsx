@@ -1200,6 +1200,9 @@ Yläkerran avain sopii vanhan vierashuoneen oveen.
   setTimeout(() => {
     setNotification("");
   }, 2500);
+
+    setAtWell(false);
+setAtTrail(true);
 }}
 >
   🎒 Lisää tutkijan kansioon
