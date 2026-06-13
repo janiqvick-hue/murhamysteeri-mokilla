@@ -56,6 +56,8 @@ const [introPlayed, setIntroPlayed] = useState(false);
 const [phoneAudioPlayed, setPhoneAudioPlayed] = useState(false);
 const [trailAudioPlayed, setTrailAudioPlayed] = useState(false);
 const [endingAudioPlayed, setEndingAudioPlayed] = useState(false);
+const [letterStarted, setLetterStarted] = useState(false);
+const [visibleText, setVisibleText] = useState("");
 
 console.log({
   started,
@@ -763,6 +765,61 @@ useEffect(() => {
     </div>
   );
 }
+  const finalLetter = `📜 JANIN VIIMEINEN KIRJE
+
+Jos kuulet tämän...
+
+jokin meni pieleen.
+
+Minun piti palata mökiltä jo tunteja sitten.
+
+Aluksi kaikki tuntui tavalliselta.
+
+Vanha mökki.
+Laituri.
+Metsäpolku.
+
+Mutta sitten aloin löytää asioita, jotka eivät kuuluneet sinne.
+
+Valokuvia ihmisistä, joita kukaan ei enää muistanut.
+
+Päiväkirjan sivuja, jotka oli yritetty piilottaa.
+
+Merkkejä siitä, että joku oli tutkinut samoja asioita ennen minua.
+
+Ja lopulta ymmärsin jotakin, mitä en olisi halunnut koskaan tietää.
+
+Tämä ei alkanut minusta.
+
+Eikä se pääty minuun.
+
+Joku tiesi totuuden jo vuonna 1952.
+
+Joku yritti varoittaa.
+
+Mutta kukaan ei kuunnellut.
+
+Jos päätät jatkaa tästä eteenpäin...
+
+ole varovainen.
+
+Kaikki, mitä löydät, ei halua tulla löydetyksi.
+
+Ja jos kuulet rannalta äänen, joka kuulostaa tutulta...
+
+älä seuraa sitä.
+
+...
+
+Sillä totuus lepää edelleen järven pohjassa.
+
+Ja joskus...
+
+totuus katsoo takaisin.
+
+...
+
+VARTIJAT OVAT TÄÄLLÄ.`;
   if (showEnding) {
   return (
     <div className="screen screen--center">
@@ -773,78 +830,17 @@ useEffect(() => {
       <div className="parchment">
         <h2>📜 JANIN VIIMEINEN KIRJE</h2>
 
-        <p><i>
-          Jos luet tätä, onnistuit siellä missä minä epäonnistuin.
-        </i></p>
-
-        <p>
-          Seurasit jälkiäni laiturilta kaivolle,
-          metsäpolulle ja kellarin pimeyteen asti.
-        </p>
-
-        <p>
-          Sinä ratkaisit Janin katoamisen.
-        </p>
-
-        <p>
-          Mutta totuus ei pääty tähän.
-        </p>
-
-        <p>
-          Järvi kätkee edelleen vastauksia.
-        </p>
-
-        <p>
-          <strong>Ja Järven Vartijat odottavat...</strong>
-        </p>
-        <p
+<pre
   style={{
-    marginTop: "2rem",
-    fontStyle: "italic",
-    opacity: 0.8,
+    whiteSpace: "pre-wrap",
+    fontFamily: "'Caveat', cursive",
+    fontSize: "2rem",
+    lineHeight: "1.8",
+    textAlign: "left",
   }}
 >
-  Mökillä, syksyllä 1952
-</p>
-
-        <p style={{ marginTop: "2rem" }}>
-          – Jani
-        </p>
-
-        <hr />
-
-        <h3>🌲 JATKUU...</h3>
-
-        <p>
-          JÄRVEN VARTIJAT<br />
-          Varjojen Perintö
-        </p>
-        <p
-  style={{
-    marginTop: "1rem",
-    fontStyle: "italic",
-  }}
->
-  "Totuus lepää järven pohjassa."
-</p>
-<p
-  style={{
-    marginTop: "2rem",
-    opacity: 0.7,
-    fontStyle: "italic",
-  }}
->
-  Järveltä kuuluu kaukainen huuto...
-</p>
-
-<p
-  style={{
-    fontWeight: "bold",
-    letterSpacing: "2px",
-  }}
->
-  "Vartijat ovat palanneet."
-</p>
+  {visibleText}
+</pre>
         <button
   className="btn"
   onClick={() => setShowFolder(true)}
