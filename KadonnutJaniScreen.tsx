@@ -1195,6 +1195,26 @@ useEffect(() => {
         <p>
           Avaimessa lukee: "Vierashuone".
         </p>
+        <h3>🩸 Verinen muistivihon sivu</h3>
+
+<p>
+  Vajan lattialankkujen alta pilkottaa repeytynyt sivu.
+</p>
+
+<blockquote>
+  "Hän ei ollut se, joksi luulimme häntä.
+  Jos löydät tämän...
+  älä jää yksin."
+</blockquote>
+
+<p
+  style={{
+    fontStyle: "italic",
+    opacity: 0.8,
+  }}
+>
+  Kirjoitus päättyy kesken, kuin kirjoittaja olisi joutunut keskeyttämään.
+</p>
 
         <button
           className="btn"
