@@ -291,7 +291,6 @@ useEffect(() => {
   !showLetterEvidence &&
   !showMapPieceEvidence &&
   !showPhoneInfo
-)
 ) {
   return (
   <div className="screen screen--center">
