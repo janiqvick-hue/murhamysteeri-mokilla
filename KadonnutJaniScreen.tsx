@@ -6,174 +6,38 @@ import {
 } from 'lucide-react';
 import { LocationId, EvidenceId, Evidence, GameState } from './tyypit';
 
-// 10 virallista todistetta omilla kuvillasi kytkettynä
 const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
-  puhelin: {
-    id: 'puhelin',
-    name: 'Janin puhelin',
-    foundAt: 'Laituri (Alku)',
-    icon: '📱',
-    imageUrl: '/janipuhelin.png',
-    description: 'Janin laiturille jättämä älypuhelin. Näyttö on säpäleinä. Viimeisin otettu kuva esittää vanhaa kivikaivoa huvilan takamaastossa sumun keskellä.',
-    secretHint: 'Puhelimen kuva osoittaa suoraan kaivon suuntaan.'
-  },
-  muistilappu: {
-    id: 'muistilappu',
-    name: 'Märkä muistilappu',
-    foundAt: 'Laituri (Alku)',
-    icon: '📝',
-    imageUrl: '/märkämuistilappu.png',
-    description: 'Sateen turmelema paperilappu: "Puhdas vesi... jokin siinä kutsuu. Äänet kuulostavat tutuilta. Älä seuraa niitä. Vartijat yrittävät suojella meitä ihmisiltä..."',
-    secretHint: 'Lappu varmistaa, että Jani kuuli kutsuvia ääniä Lopen puhtaasta järvestä.'
-  },
-  avain: {
-    id: 'avain',
-    name: 'Ruostunut avain',
-    foundAt: 'Vanha Kaivo',
-    icon: '🔑',
-    imageUrl: '/ruostunutavain.png',
-    description: 'Painava rautainen avain, johon on lyöty numero "1952". Haisee syvältä mudalta.',
-    secretHint: 'Vuosiluku 1952 on avain kaikkeen. Tämä sopii selvästi vajan arkkuun.'
-  },
-  paivakirja_sivu: {
-    id: 'paivakirja_sivu',
-    name: 'Päiväkirjan sivu',
-    foundAt: 'Vanha Kaivo',
-    icon: '📄',
-    imageUrl: '/paivakirjansivu.png',
-    description: 'Repäisty sivu: "Kesä 1952. Emme ole enää turvassa rannalla. Vartijat yrittävät sulkea totuuden kellariin, mutta se ei pysy siellä..."',
-    secretHint: 'Vahvistaa, että Lopen huvilan rannassa tehtiin karu päätös jo vuonna 1952.'
-  },
-  kartta: {
-    id: 'kartta',
-    name: 'Märkä kartan pala',
-    foundAt: 'Vanha Kaivo',
-    icon: '🗺️',
-    imageUrl: '/kartanpala.png',
-    description: 'Tonttikartta Lopen rannalta. Vanhan kaivon vierestä lähtevä umpeenkasvanut polku on merkitty punaisella ristillä vajan kohdalle.',
-    secretHint: 'Kartan polku johdattaa askeleet suoraan vanhaan kuusikkoon metsäpolulle.'
-  },
-  kirje: {
-    id: 'kirje',
-    name: 'Kirje',
-    foundAt: 'Hylätty Vaja',
-    icon: '✉️',
-    imageUrl: '/kirje.png',
-    description: 'Janille osoitettu kirje: "Jos jotain tapahtuu minulle Lopella, älkää uskoko kaikkia kartanon vieraita. He kantavat nimeä VARTIJAT. Totuus elää syvällä järvessä."',
-    secretHint: 'Kirje varoittaa vartijoista – syyllinen voi olla aivan vieressäsi.'
-  },
-  lankku: {
-    id: 'lankku',
-    name: 'Irtonainen lankku',
-    foundAt: 'Rantasauna',
-    icon: '🪵',
-    imageUrl: '/irtonainenlankku.png',
-    description: 'Lauteiden alta irtoava vanha lankunpätkä. Sen alapintaan on hiilellä piirretty karu silmäsymboli sekä teksti: "Totuus on piilotettu veden alle. Älä luota kehenkään."',
-    secretHint: 'Viesti hiilessä antaa suunnan: tutki laiturin alus veteenhukutun totuuden varalta.'
-  },
-  merkki: {
-    id: 'merkki',
-    name: 'Vartijoiden merkki',
-    foundAt: 'Rantasauna',
-    icon: '🛡️',
-    imageUrl: '/vartijoidenmerkki.png',
-    description: 'Vihreäksi hapettunut Vartijoiden metallimerkki. Se esittää tuijottavaa silmää, jonka alla risteää kaksi airon lapaa.',
-    secretHint: 'Lopen rannan ja vedessä piilevän salaisuuden vartijoiden aito metallinen tunnus.'
-  },
-  valokuva: {
-    id: 'valokuva',
-    name: 'Vanha valokuva',
-    foundAt: 'Laiturin Alla',
-    icon: '🖼️',
-    imageUrl: '/vanhavalokuva.png',
-    description: 'Mustavalkokuva vuodelta 1952. Siinä joukko miehiä seisoo Lopen rannassa puretun satavuotiaan talon portilla. Yhden henkilön kasvot on raavittu kokonaan pois.',
-    secretHint: 'Poistetun miehen hahmo piilottaa syyllisen, joka ei halunnut jättää jälkiä.'
-  },
-  metallirasia: {
-    id: 'metallirasia',
-    name: 'Metallirasia',
-    foundAt: 'Laiturin Alla',
-    icon: '📦',
-    imageUrl: '/metallirasia.png',
-    description: 'Pieni rautainen metallirasia, joka oli upotettu laiturin alle järveteen. Kanteen on raaputettu viesti: "Varjelkaa totuutta. Älkää avatko kellaria."',
-    secretHint: 'Rasian synkkä käsky viittaa huvilan kellarissa odottavaan viimeiseen sähkökaappiin.'
-  }
+  puhelin: { id: 'puhelin', name: 'Janin puhelin', foundAt: 'Laituri', icon: '📱', imageUrl: '/janipuhelin.png', description: 'Janin laiturille jättämä älypuhelin. Näyttö on säpäleinä. Viimeisin kuva esittää kaivoa.', secretHint: 'Osoittaa kaivon suuntaan.' },
+  muistilappu: { id: 'muistilappu', name: 'Märkä muistilappu', foundAt: 'Laituri', icon: '📝', imageUrl: '/märkämuistilappu.png', description: 'Muste on levinnyt sateessa: "Puhdas vesi... jokin siinä kutsuu. Älä seuraa sitä. Vartijat suojelevat meitä..."', secretHint: 'Äänet kutsuvat järvestä.' },
+  avain: { id: 'avain', name: 'Ruostunut avain', foundAt: 'Kaivo', icon: '🔑', imageUrl: '/ruostunutavain.png', description: 'Painava avain, jossa numero "1952". Sopii vajan arkkuun.', secretHint: 'Vuosi 1952 on avain kaikkeen.' },
+  paivakirja_sivu: { id: 'paivakirja_sivu', name: 'Päiväkirjan sivu', foundAt: 'Kaivo', icon: '📄', imageUrl: '/paivakirjansivu.png', description: 'Repäisty sivu: "Kesä 1952. Emme ole turvassa. Totuus suljettiin kellariin..."', secretHint: 'Karu päätös tehtiin rannalla.' },
+  kartta: { id: 'kartta', name: 'Märkä kartan pala', foundAt: 'Kaivo', icon: '🗺️', imageUrl: '/kartanpala.png', description: 'Kartan pala, joka osoittaa polun vanhaan kuusikkoon vajan kohdalle.', secretHint: 'Johdattaa askeleet vajalle.' },
+  kirje: { id: 'kirje', name: 'Kirje', foundAt: 'Vaja', icon: '✉️', imageUrl: '/kirje.png', description: 'Varoitus: "Älä usko kaikkia kartanon vieraita. He kantavat nimeä VARTIJAT. Totuus elää järvessä."', secretHint: 'Syyllinen voi olla vieressäsi.' },
+  lankku: { id: 'lankku', name: 'Irtonainen lankku', foundAt: 'Sauna', icon: '🪵', imageUrl: '/irtonainenlankku.png', description: 'Alapinnassa silmäsymboli ja teksti: "Totuus on piilotettu veden alle. Älä luota kehenkään."', secretHint: 'Tutki laiturin alus veteen hukutetun totuuden varalta.' },
+  merkki: { id: 'merkki', name: 'Vartijoiden merkki', foundAt: 'Sauna', icon: '🛡️', imageUrl: '/vartijoidenmerkki.png', description: 'Vihreäksi hapettunut metallimerkki. Esittää tuijottavaa silmää ja kahta risteävää airon lapaa.', secretHint: 'Vartijoiden aito tunnus.' },
+  valokuva: { id: 'valokuva', name: 'Vanha valokuva', foundAt: 'Laiturin Alla', icon: '🖼️', imageUrl: '/vanhavalokuva.png', description: 'Mustavalkokuva vuodelta 1952. Yhden henkilön kasvot on raavittu kokonaan pois.', secretHint: 'Poistettu hahmo piilottaa syyllisen.' },
+  metallirasia: { id: 'metallirasia', name: 'Metallirasia', foundAt: 'Laiturin Alla', icon: '📦', imageUrl: '/metallirasia.png', description: 'Metallirasia laiturin alta järvestä. "Varjelkaa totuutta. Älkää avatko kellaria."', secretHint: 'Viittaa kellarin sähkökaappiin.' }
 };
-interface ThematicImageProps {
-  id: LocationId;
-  title: string;
-}
+import React, { useState, useEffect } from 'react';
+import {
+  Phone, BookOpen, Key, Compass, Waves, Shield, Box, Lock, Unlock,
+  Volume2, VolumeX, Eye, RefreshCw, AlertCircle, HelpCircle, Search,
+  Skull, Maximize2, FileText, CheckCircle, MapPin
+} from 'lucide-react';
+import { LocationId, EvidenceId, Evidence, GameState } from './tyypit';
 
-// OMAN PUBLIC-KANSION KUVAT AUTOMAATTISESTI KYTKETTYNÄ JA VARAJÄRJESTELMÄLLÄ
-function ThematicImage({ id, title }: ThematicImageProps) {
-  const imageMap: Record<LocationId, string> = {
-    laituri: '/kohtaus02_laiturin_hiljaisuus.png',
-    kaivo: '/01_aloitusnakyma_vartijat_valvovat.png',
-    metsapolku: '/jalanjaljet_metsapolulla.png',
-    vaja: '/vaja_ulkopuoli.png',
-    vierashuone: '/vierashuone_yleiskuva.png',
-    rantasauna: '/C236D35D-A8AA-4FC2-B8B5-BE5961AEB200.jpeg',
-    laiturin_alla: '/IMG_1083.jpeg',
-    kellari: '/kellari_yleiskuva.png'
-  };
-
-  return (
-    <div className="relative w-full h-56 rounded-2xl overflow-hidden border border-slate-900 shadow-lg group">
-      <img
-        src={imageMap[id]}
-        alt={title}
-        referrerPolicy="no-referrer"
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        onError={(e) => {
-          e.currentTarget.style.display = 'none';
-          e.currentTarget.parentElement!.className += ' bg-slate-900 flex items-center justify-center';
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/30" />
-      <div className="absolute bottom-3 left-4">
-        <span className="text-[10px] uppercase font-mono text-amber-400 tracking-widest block mb-0.5">Tutkimuskohde</span>
-        <h4 className="font-display text-slate-100 font-bold uppercase tracking-wider text-sm">{title}</h4>
-      </div>
-    </div>
-  );
-}
-
-export default function KadonnutJaniScreen() {
-  const [started, setStarted] = useState(() => localStorage.getItem('jani_started') === 'true');
-  const [currentStage, setCurrentStage] = useState(() => parseInt(localStorage.getItem('jani_stage') || '1', 10));
-
-  const [hasPhone, setHasPhone] = useState(() => localStorage.getItem('jani_hasPhone') === 'true');
-  const [hasNote, setHasNote] = useState(() => localStorage.getItem('jani_hasNote') === 'true');
-  const [hasPlank, setHasPlank] = useState(() => localStorage.getItem('jani_hasPlank') === 'true');
-  const [hasDiary, setHasDiary] = useState(() => localStorage.getItem('jani_hasDiary') === 'true');
-  const [hasRustyKey, setHasRustyKey] = useState(() => localStorage.getItem('jani_hasRustyKey') === 'true');
-  const [hasMapPiece, setHasMapPiece] = useState(() => localStorage.getItem('jani_hasMapPiece') === 'true');
-  const [hasPhoto, setHasPhoto] = useState(() => localStorage.getItem('jani_hasPhoto') === 'true');
-  const [hasLetter, setHasLetter] = useState(() => localStorage.getItem('jani_hasLetter') === 'true');
-  const [hasGuardMark, setHasGuardMark] = useState(() => localStorage.getItem('jani_hasGuardMark') === 'true');
-  const [hasMetalBox, setHasMetalBox] = useState(() => localStorage.getItem('jani_hasMetalBox') === 'true');
-
-  const [showFolder, setShowFolder] = useState(false);
-  const [selectedEvidence, setSelectedEvidence] = useState<EvidenceId | null>(null);
-  const [notification, setNotification] = useState("");
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-
-  const [suitcaseCode, setSuitcaseCode] = useState("");
-  const [cellarPassword, setCellarPassword] = useState("");
-  const [visibleText, setVisibleText] = useState("");
-  const [letterStarted, setLetterStarted] = useState(false);
-
-  const finalLetter = `📜 JANIN VIIMEINEN KIRJE...
-
-Kaikki alkoi jo kauan ennen minua.
-Joku yritti varoittaa jo vuonna 1952, eikä totuus pääty minuun.
-Jos kuulet rannalta äänen, joka kuulostaa tutulta... älä seuraa sitä.
-Sillä totuus lepää edelleen järven pohjassa.
-Ja joskus... totuus katsoo takaisin.
-
-VARTIJAT OVAT TÄÄLLÄ.`;
-
+const CONST_EVIDENCE_ITEMS: Record<EvidenceId, Evidence> = {
+  puhelin: { id: 'puhelin', name: 'Janin puhelin', foundAt: 'Laituri', icon: '📱', imageUrl: '/janipuhelin.png', description: 'Janin laiturille jättämä älypuhelin. Näyttö on säpäleinä. Viimeisin kuva esittää kaivoa.', secretHint: 'Osoittaa kaivon suuntaan.' },
+  muistilappu: { id: 'muistilappu', name: 'Märkä muistilappu', foundAt: 'Laituri', icon: '📝', imageUrl: '/märkämuistilappu.png', description: 'Muste on levinnyt sateessa: "Puhdas vesi... jokin siinä kutsuu. Älä seuraa sitä. Vartijat suojelevat meitä..."', secretHint: 'Äänet kutsuvat järvestä.' },
+  avain: { id: 'avain', name: 'Ruostunut avain', foundAt: 'Kaivo', icon: '🔑', imageUrl: '/ruostunutavain.png', description: 'Painava avain, jossa numero "1952". Sopii vajan arkkuun.', secretHint: 'Vuosi 1952 on avain kaikkeen.' },
+  paivakirja_sivu: { id: 'paivakirja_sivu', name: 'Päiväkirjan sivu', foundAt: 'Kaivo', icon: '📄', imageUrl: '/paivakirjansivu.png', description: 'Repäisty sivu: "Kesä 1952. Emme ole turvassa. Totuus suljettiin kellariin..."', secretHint: 'Karu päätös tehtiin rannalla.' },
+  kartta: { id: 'kartta', name: 'Märkä kartan pala', foundAt: 'Kaivo', icon: '🗺️', imageUrl: '/kartanpala.png', description: 'Kartan pala, joka osoittaa polun vanhaan kuusikkoon vajan kohdalle.', secretHint: 'Johdattaa askeleet vajalle.' },
+  kirje: { id: 'kirje', name: 'Kirje', foundAt: 'Vaja', icon: '✉️', imageUrl: '/kirje.png', description: 'Varoitus: "Älä usko kaikkia kartanon vieraita. He kantavat nimeä VARTIJAT. Totuus elää järvessä."', secretHint: 'Syyllinen voi olla vieressäsi.' },
+  lankku: { id: 'lankku', name: 'Irtonainen lankku', foundAt: 'Sauna', icon: '🪵', imageUrl: '/irtonainenlankku.png', description: 'Alapinnassa silmäsymboli ja teksti: "Totuus on piilotettu veden alle. Älä luota kehenkään."', secretHint: 'Tutki laiturin alus veteen hukutetun totuuden varalta.' },
+  merkki: { id: 'merkki', name: 'Vartijoiden merkki', foundAt: 'Sauna', icon: '🛡️', imageUrl: '/vartijoidenmerkki.png', description: 'Vihreäksi hapettunut metallimerkki. Esittää tuijottavaa silmää ja kahta risteävää airon lapaa.', secretHint: 'Vartijoiden aito tunnus.' },
+  valokuva: { id: 'valokuva', name: 'Vanha valokuva', foundAt: 'Laiturin Alla', icon: '🖼️', imageUrl: '/vanhavalokuva.png', description: 'Mustavalkokuva vuodelta 1952. Yhden henkilön kasvot on raavittu kokonaan pois.', secretHint: 'Poistettu hahmo piilottaa syyllisen.' },
+  metallirasia: { id: 'metallirasia', name: 'Metallirasia', foundAt: 'Laiturin Alla', icon: '📦', imageUrl: '/metallirasia.png', description: 'Metallirasia laiturin alta järvestä. "Varjelkaa totuutta. Älkää avatko kellaria."', secretHint: 'Viittaa kellarin sähkökaappiin.' }
+};
   useEffect(() => {
     localStorage.setItem('jani_started', started.toString());
     localStorage.setItem('jani_stage', currentStage.toString());
@@ -237,7 +101,7 @@ VARTIJAT OVAT TÄÄLLÄ.`;
     try {
       const audio = new Audio(src);
       audio.volume = 1.0;
-      audio.play().catch((e) => console.log("Äänen toisto estetty selaimessa:", e));
+      audio.play().catch((e) => console.log("Audio estetty selaimessa:", e));
     } catch (err) {
       console.log("Audio-virhe:", err);
     }
@@ -269,20 +133,6 @@ VARTIJAT OVAT TÄÄLLÄ.`;
       🧳<br />Tutkijan<br />salkku<br />1952
     </button>
   );
-
-    <button
-      onClick={() => { playChime('click'); setShowFolder(true); }}
-      style={{
-        position: "fixed", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 9999,
-        width: "95px", height: "125px", borderRadius: "16px", border: "2px solid #8b6f47",
-        background: "#5b4328", color: "white", cursor: "pointer", boxShadow: "0 6px 18px rgba(0,0,0,0.4)",
-        fontWeight: "bold", fontSize: "0.85rem",
-      }}
-    >
-      🧳<br />Tutkijan<br />salkku<br />1952
-    </button>
-  );
-
   if (showFolder) {
     const evidenceList: { id: EvidenceId; name: string; has: boolean; desc: string; img: string }[] = [
       { id: 'puhelin', name: '📱 Janin puhelin', has: hasPhone, desc: CONST_EVIDENCE_ITEMS.puhelin.description, img: CONST_EVIDENCE_ITEMS.puhelin.imageUrl || '' },
@@ -468,7 +318,7 @@ VARTIJAT OVAT TÄÄLLÄ.`;
               )}
             </>
           )}
-                   {/* 5. VIERASHUONE (ARVOITUS 1952) */}
+          {/* 5. VIERASHUONE (ARVOITUS 1952) */}
           {currentStage === 5 && (
             <>
               <p>Huoneessa vallitsee psykologinen kauhu. Halkeilevaan vanhaan peiliin on raaputettu: <i>'Älä katso taaksesi.'</i> Sängyn alta löytyy lukittu matkalaukku.</p>
