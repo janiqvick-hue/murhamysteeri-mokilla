@@ -1002,7 +1002,12 @@ useEffect(() => {
 
         <button
   className="btn"
-  onClick={() => setShowEnding(true)}
+  onClick={() => {
+  setLetterStarted(false);
+  setVisibleText("");
+  setEndingAudioPlayed(false);
+  setShowEnding(true);
+}}
 >
   🔎 Paljasta Janin kohtalo
 </button>
