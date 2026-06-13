@@ -173,7 +173,7 @@ useEffect(() => {
 useEffect(() => {
   if (showEnding && !endingAudioPlayed) {
 
-    const audio = new Audio("/loppukirje");
+    const audio = new Audio("/loppukirje?v=1");
 
     audio.volume = 1;
 
