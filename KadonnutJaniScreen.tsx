@@ -100,6 +100,7 @@ useEffect(() => {
   }
 }, [showDockPhone, phoneAudioPlayed]);
   useEffect(() => {
+  
   if (atTrail && !trailAudioPlayed) {
     const audio = new Audio("/metsapolku_kuiskaus.mp3");
 
@@ -108,8 +109,6 @@ useEffect(() => {
     audio.play().catch(() => {
       console.log("Metsäpolun ääntä ei voitu toistaa.");
     });
-    
-    }, [showEnding, endingAudioPlayed]);
 
     setTrailAudioPlayed(true);
   }
