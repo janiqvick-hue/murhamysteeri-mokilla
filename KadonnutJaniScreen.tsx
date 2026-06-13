@@ -975,39 +975,106 @@ useEffect(() => {
 
       <div className="config-card">
         <h1>🕯️ Kellarin salaisuus</h1>
+<img
+  src="/kellari_yleiskuva.png"
+  alt="Kellari"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  }}
+/>
 
-        <p>
-          Vanhan kellarin ilma on kylmä. Joku on yrittänyt peittää totuuden vuosikymmeniä.
-        </p>
+<p>
+  Kellarin ilma on kylmä ja kostea.
+  Tuntuu kuin joku olisi odottanut täällä vuosikymmeniä.
+</p>
 
-        <h3>📖 Kadonnut päiväkirja</h3>
-        <p>
-          "Syyllinen ei ollut ulkopuolinen. Hän oli yksi meistä."
-        </p>
+<h3>📖 Kadonnut päiväkirja</h3>
 
-        <h3>🗝️ Viimeinen avain</h3>
-        <p>
-          Avain avaa metallikaapin kellarin nurkassa.
-        </p>
+<img
+  src="/kellari_kadonnut_paivakirja.png"
+  alt="Kadonnut päiväkirja"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  }}
+/>
 
-        <h3>👤 Totuus</h3>
-        <p>
-          Jani ei kadonnut sattumalta. Hän sai tietää vartijoiden salaisuuden.
-        </p>
+<blockquote>
+  "Syyllinen ei ollut ulkopuolinen.
+  Hän oli yksi meistä."
+</blockquote>
 
-        <h1>🔦 Kadonnut Jani</h1>
-        <p>
-          Olet paljastanut mökin vuosikymmeniä kätkemän totuuden.
-        </p>
+<h3>🗄️ Metallikaappi</h3>
 
-        <button
+<img
+  src="/kellari_metallikaappi.png"
+  alt="Metallikaappi"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  }}
+/>
+
+<p>
+  Kaapin ovi on jätetty raolleen.
+  Sen sisältä löytyy viimeinen johtolanka.
+</p>
+
+<h3>📷 Totuuden valokuva</h3>
+
+<img
+  src="/kellari_totuuden_valokuva.png"
+  alt="Totuuden valokuva"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  }}
+/>
+
+<blockquote>
+  "Hän ei ollut se, joksi luulimme."
+</blockquote>
+
+<h3>🛡️ Salainen merkintä</h3>
+
+<img
+  src="/kellari_salainen_merkinta.png"
+  alt="Salainen merkintä"
+  style={{
+    width: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  }}
+/>
+
+<p
+  style={{
+    fontStyle: "italic",
+    opacity: 0.8,
+  }}
+>
+  "TOTUUS EI SAA NOUSTA PINTAAN."
+</p>
+
+<h1>🔦 Kadonnut Jani</h1>
+
+<p>
+  Olet paljastanut mökin vuosikymmeniä kätkemän totuuden.
+</p>
+
+<button
   className="btn"
   onClick={() => {
-  setLetterStarted(false);
-  setVisibleText("");
-  setEndingAudioPlayed(false);
-  setShowEnding(true);
-}}
+    setLetterStarted(false);
+    setVisibleText("");
+    setEndingAudioPlayed(false);
+    setShowEnding(true);
+  }}
 >
   🔎 Paljasta Janin kohtalo
 </button>
