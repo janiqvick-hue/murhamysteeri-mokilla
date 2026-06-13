@@ -910,7 +910,6 @@ useEffect(() => {
         <p style={{ marginTop: "2rem", opacity: 0.8 }}>
   Vartijat ovat täällä.
 </p>
-        </p>
 
         <h3 style={{ marginTop: "3rem" }}>
           🌲 JATKUU Järven Vartijoissa...
