@@ -362,26 +362,7 @@ useEffect(() => {
 {!hasPhone && (
   <p>⬜ Janin puhelin</p>
 )}
-        {showPhoneInfo && (
-  <div className="config-card">
-    <h3>📱 Janin puhelin</h3>
-
-  <img
-  src="/janipuhelin.png?v=2"
-  alt="Janin puhelin"
-  style={{
-    width: "100%",
-    borderRadius: "12px",
-    marginTop: "1rem",
-    marginBottom: "1rem"
-  }}
-/>
-
-<p>
-  Jani otti tämän kuvan juuri ennen katoamistaan.
-</p>
-
-    <button
+        
       className="btn"
       onClick={() => setShowPhoneInfo(false)}
     >
@@ -496,6 +477,41 @@ useEffect(() => {
 </div>
 </div>
 );
+}
+if (showPhoneInfo) {
+  return (
+    <div className="screen screen--center">
+      {folderButton}
+
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h3>📱 Janin puhelin</h3>
+
+        <img
+          src="/janipuhelin.png?v=2"
+          alt="Janin puhelin"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Jani otti tämän kuvan juuri ennen katoamistaan.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => setShowPhoneInfo(false)}
+        >
+          Sulje
+        </button>
+      </div>
+    </div>
+  );
 }
 
   if (showPhotoEvidence) {
