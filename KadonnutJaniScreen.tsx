@@ -363,13 +363,6 @@ useEffect(() => {
   <p>⬜ Janin puhelin</p>
 )}
         
-      className="btn"
-      onClick={() => setShowPhoneInfo(false)}
-    >
-      Sulje
-    </button>
-  </div>
-)}
         {hasNote && (
   <button
     className="evidence-card"
