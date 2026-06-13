@@ -450,7 +450,7 @@ VARTIJAT OVAT TÄÄLLÄ.`;
               )}
             </>
           )}
-          {/* 5. VIERASHUONE (ARVOITUS 1952) */}
+                   {/* 5. VIERASHUONE (ARVOITUS 1952) */}
           {currentStage === 5 && (
             <>
               <p>Huoneessa vallitsee psykologinen kauhu. Halkeilevaan vanhaan peiliin on raaputettu: <i>'Älä katso taaksesi.'</i> Sängyn alta löytyy lukittu matkalaukku.</p>
@@ -566,23 +566,23 @@ VARTIJAT OVAT TÄÄLLÄ.`;
                     border: "2px solid #b3966d",
                     maxHeight: "80svh",
                     overflowY: "auto"
-                }}
-              >
-                <p style={{ whiteSpace: "pre-wrap", fontWeight: "bold" }}>{visibleText}</p>
-                
-                {visibleText.length >= finalLetter.length && (
-                  <button 
-                    className="btn" 
-                    onClick={() => { playChime('click'); resetGame(); }}
-                    style={{ marginTop: "2rem", background: "#5b4328", color: "white", fontFamily: "sans-serif", fontSize: "0.9rem", border: "none" }}
-                  >
-                    Pelaa uudelleen
-                  </button>
-                )}
-              </div>
-            )}
-          </>
-        )}
+                  }}
+                >
+                  <p style={{ whiteSpace: "pre-wrap", fontWeight: "bold" }}>{visibleText}</p>
+                  
+                  {visibleText.length >= finalLetter.length && (
+                    <button 
+                      className="btn" 
+                      onClick={() => { playChime('click'); resetGame(); }}
+                      style={{ marginTop: "2rem", background: "#5b4328", color: "white", fontFamily: "sans-serif", fontSize: "0.9rem", border: "none" }}
+                    >
+                      Pelaa uudelleen
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
 
       </div>
