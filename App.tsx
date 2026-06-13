@@ -1,14 +1,32 @@
 "use client"; // Pakollinen Next.js-moninpeleissä!
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../firebase'; // Varmista, että polku osoittaa sinun firebase.js-tiedostoosi!
-import { ref, set, get, child } from 'firebase/database';
+import { ref, set, get, child, onValue } from 'firebase/database';
 
 export default function Home() {
   const [roomCode, setRoomCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [playerName, setPlayerName] = useState('');
   const [inLobby, setInLobby] = useState(false);
+  const [players, setPlayers] = useState({}); // Tila reaaliaikaisille pelaajille
+
+  // Kuunnellaan lobbyn pelaajia reaaliajassa, kun huoneeseen on liitytty
+  useEffect(() => {
+    if (!roomCode) return;
+
+    const roomRef = ref(db, `rooms/${roomCode}/players`);
+    
+    // Tämä funktio laukeaa aina, kun tietokannassa tapahtuu muutos
+    const unsubscribe = onValue(roomRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setPlayers(snapshot.val());
+      }
+    });
+
+    // Suljetaan kuuntelija, kun komponentti poistuu käytöstä
+    return () => unsubscribe();
+  }, [roomCode]);
 
   // Toiminto: Luodaan uusi huone tietokantaan
   const createRoom = async () => {
@@ -59,6 +77,18 @@ export default function Home() {
       <div style={{ padding: '40px', background: '#0f172a', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', textAlign: 'center' }}>
         <h1 style={{ color: '#dc2626' }}>MURHAMYSTEERI LOBBY</h1>
         <p style={{ fontSize: '20px' }}>Olet huoneessa: <strong style={{ color: '#f59e0b' }}>{roomCode}</strong></p>
+        
+        <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', maxWidth: '400px', margin: '20px auto', border: '1px solid #334155' }}>
+          <h3>Paikalla olevat pelaajat:</h3>
+          <ul style={{ listStyleType: 'none', padding: 0, fontSize: '18px' }}>
+            {Object.keys(players).map((pName) => (
+              <li key={pName} style={{ margin: '10px 0', padding: '5px', background: '#0f172a', borderRadius: '6px' }}>
+                👤 {pName} {pName === playerName ? '(Sinä)' : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <p style={{ color: '#94a3b8' }}>Odotetaan kavereita mukaan... Seuraavassa vaiheessa arvomme roolit!</p>
       </div>
     );
