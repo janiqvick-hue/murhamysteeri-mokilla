@@ -1101,6 +1101,93 @@ useEffect(() => {
   return (
     <div className="screen screen--center">
       {folderButton}
+
+      <div className="rain-overlay" />
+
+      <div className="config-card">
+        <h1>🛏️ Vierashuone</h1>
+
+        <img
+          src="/vierashuone_yleiskuva.png"
+          alt="Vierashuone"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Huone näyttää siltä kuin joku olisi poistunut kiireessä.
+          Pölyä on kaikkialla, mutta muutamat esineet näyttävät
+          koskemattomilta.
+        </p>
+
+        <h3>🪞 Vanha peili</h3>
+
+        <img
+          src="/vierashuone_peili.png"
+          alt="Peili"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <blockquote>
+          "Peilin pintaan on raaputettu sanat:
+          Älä katso taaksesi."
+        </blockquote>
+
+        <h3>🧳 Matkalaukku</h3>
+
+        <img
+          src="/vierashuone_matkalaukku.png"
+          alt="Matkalaukku"
+          style={{
+            width: "100%",
+            borderRadius: "12px",
+            marginBottom: "1rem",
+          }}
+        />
+
+        <p>
+          Laukku on jätetty auki. Sen sisältä löytyy
+          vanha muistikirjan sivu.
+        </p>
+
+        <h3>📓 Muistikirjan sivu</h3>
+
+        <blockquote>
+          "Hän tiesi enemmän kuin kertoi meille."
+        </blockquote>
+
+        <p style={{ opacity: 0.8 }}>
+          Kirjoitus päättyy kesken.
+        </p>
+
+        <button
+          className="btn"
+          onClick={() => {
+            setNotification("📓 Muistikirjan sivu lisätty kansioon");
+
+            setTimeout(() => {
+              setNotification("");
+            }, 2500);
+
+            setAtUnderDock(true);
+          }}
+        >
+          🌊 Siirry laiturin alle
+        </button>
+      </div>
+    </div>
+  );
+}
+  return (
+    <div className="screen screen--center">
+      {folderButton}
       <div className="rain-overlay" />
 
       <div className="config-card">
