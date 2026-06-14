@@ -6,14 +6,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "mestarietsiva",
     name: "Mestarietsivä",
     icon: "🔍",
-    description: "Kaikki tutkijat äänestivät oikein. Täydellinen tutkimus mökillä.",
+    description: "Löysi eniten vihjeitä mökiltä ja auttoi merkittävästi totuuden paljastamisessa.",
     rarity: "legendary",
   },
   {
     id: "taydellinen_rikollinen",
     name: "Täydellinen Rikollinen",
     icon: "🩸",
-    description: "Syyllinen selvisi loppuäänestyksestä ilman yhtäkään ääntä itseään vastaan.",
+    description: "Syyllinen selvisi loppuäänestyksestä saamatta yhtäkään ääntä itseään vastaan.",
     rarity: "legendary",
   },
   {
@@ -27,14 +27,14 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: "totuuden_vartija",
     name: "Totuuden Vartija",
     icon: "🗝️",
-    description: "Paljastit mökin salaisuuden oikealla hetkellä — ja tutkijat voittivat.",
+    description: "Kykeni pitämään omat ja mökin synkimmät salaisuudet visusti piilossa.",
     rarity: "rare",
   },
   {
     id: "jarven_vartija",
     name: "Järven Vartija",
     icon: "🌲",
-    description: "Keräsit todisteita vähintään viidestä eri mökkialueesta.",
+    description: "Keräsit todisteita vähintään viidestä eri mökkialueesta livenä.",
     rarity: "common",
   },
   {
@@ -90,20 +90,24 @@ export function computePlayerAchievements(
   const myInventory = Object.keys(game.inventories?.[playerId] ?? {});
   const votes = game.votes ?? {};
   
-  // Lasketaan kuinka moni äänesti pelaajaa (jos pelaaja on syyllinen, nämä ovat häntä vastaan annetut äänet)
   const votesAgainstMe = Object.values(votes).filter((v) => v === playerId).length;
   const myVote = votes[playerId];
 
-  // 1. Mestarietsivä: Kaikki äänestivät oikein ja pelaaja oli mukana äänestämässä syyllistä
-  if (
-    endingType === "perfect_investigation" &&
-    myRole !== "syyllinen" &&
-    myVote === syyllinenId
-  ) {
+  // 1. Mestarietsivä (Lasketaan kuka keräsi eniten vihjeitä tutkijoista)
+  let maxCluesFound = 0;
+  Object.entries(game.inventories ?? {}).forEach(([pid, inv]) => {
+    if (game.roles?.[pid] !== "syyllinen") {
+      const count = Object.keys(inv).length;
+      if (count > maxCluesFound) maxCluesFound = count;
+    }
+  });
+
+  const myCluesCount = myInventory.length;
+  if (myRole !== "syyllinen" && myCluesCount === maxCluesFound && myCluesCount > 0) {
     unlocked.push(ACHIEVEMENT_MAP["mestarietsiva"]);
   }
 
-  // 2. Täydellinen rikollinen: Syyllinen pääsee karkuun ilman yhtäkään epäilystä
+  // 2. Täydellinen rikollinen
   if (
     myRole === "syyllinen" &&
     (endingType === "culprit_escapes" || endingType === "secret_unsolved") &&
@@ -112,21 +116,17 @@ export function computePlayerAchievements(
     unlocked.push(ACHIEVEMENT_MAP["taydellinen_rikollinen"]);
   }
 
-  // 3. Hiljainen todistaja: Keräsi vähintään 5 vihjettä, mutta jätti äänestämättä ketään (tyhjä ääni tai 'none')
-  if (myRole !== "syyllinen" && myInventory.length >= 5 && (!myVote || myVote === "none")) {
+  // 3. Hiljainen todistaja
+  if (myRole !== "syyllinen" && myCluesCount >= 5 && (!myVote || myVote === "none")) {
     unlocked.push(ACHIEVEMENT_MAP["hiljainen_todistaja"]);
   }
 
-  // 4. Totuuden Vartija: Salaisuuden vartija paljasti tiedon ja tutkijat voittivat
-  if (
-    myRole === "salaisuuden_vartija" &&
-    game.secretRevealed &&
-    (endingType === "investigators_win" || endingType === "perfect_investigation")
-  ) {
+  // 4. Totuuden vartija
+  if (myRole === "salaisuuden_vartija" && !game.secretRevealed && votesAgainstMe <= 1) {
     unlocked.push(ACHIEVEMENT_MAP["totuuden_vartija"]);
   }
 
-  // 5. Järven Vartija: Keräsi vihjeitä vähintään 5 eri mökkialueesta livenä
+  // 5. Järven vartija
   const uniqueLocations = new Set(
     myInventory.map((id) => BASE_CLUES.find(c => c.id === id)?.locationId).filter(Boolean)
   );
@@ -134,7 +134,7 @@ export function computePlayerAchievements(
     unlocked.push(ACHIEVEMENT_MAP["jarven_vartija"]);
   }
 
-  // 6. Rohkea Tunnustaja: Syyllinen tunnustaa teon ennen äänestystä
+  // 6. Rohkea tunnustaja
   if (myRole === "syyllinen" && endingType === "culprit_confesses") {
     unlocked.push(ACHIEVEMENT_MAP["rohkea_tunnustaja"]);
   }
