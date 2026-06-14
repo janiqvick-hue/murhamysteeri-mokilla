@@ -5,14 +5,14 @@ export const MISSION_POOL: Mission[] = [
     id: "sabotoi",
     title: "Tuhoa todisteet",
     description:
-      "Käytä sabotagetoiminto piilottaaksesi tai korvataaksesi jonkun tärkeän vihjeen.",
+      "Käytä sabotaasitoimintoa piilottaaksesi tai korvataksesi jonkun tärkeän vihjeen muilta.",
     type: "use_sabotage",
   },
   {
     id: "valttu_aanestys",
     title: "Vältä epäilyksiä",
     description:
-      "Saa korkeintaan yhden äänen äänestyksessä. Johda muita harhaan tehokkaasti.",
+      "Saa korkeintaan yhden äänen loppuäänestyksessä. Johda muita harhaan tehokkaasti.",
     type: "survive_vote",
   },
   {
@@ -108,10 +108,9 @@ export function getMissionStatus(
 ): true | false | null {
   const completed = game.completedMissions ?? {};
 
+  // Koska vain syyllinen voi sabotoida, pelkkä sabotaasin olemassaolo riittää kuittaamaan tehtävän
   if (mission.type === "use_sabotage") {
-    const sab = game.sabotage;
-    if (!sab) return null;
-    return sab.performedBy === syyllinenId;
+    return !!game.sabotage;
   }
 
   if (mission.type === "collect_clue" && mission.clueId) {
