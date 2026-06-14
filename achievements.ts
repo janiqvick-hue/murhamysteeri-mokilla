@@ -1,47 +1,47 @@
 import type { Achievement, Game, EndingType } from "../types";
-import { CLUE_MAP } from "./clues";
+import { BASE_CLUES } from "./clues";
 
 export const ACHIEVEMENTS: Achievement[] = [
   {
     id: "mestarietsiva",
     name: "Mestarietsivä",
     icon: "🔍",
-    description: "Kaikki tutkijat äänestivät oikein. Täydellinen tutkimus.",
+    description: "Kaikki tutkijat äänestivät oikein. Täydellinen tutkimus mökillä.",
     rarity: "legendary",
   },
   {
     id: "taydellinen_rikollinen",
     name: "Täydellinen Rikollinen",
     icon: "🩸",
-    description: "Syyllinen selvisi eikä saanut yhtään ääntä itseään vastaan.",
+    description: "Syyllinen selvisi loppuäänestyksestä ilman yhtäkään ääntä itseään vastaan.",
     rarity: "legendary",
   },
   {
     id: "hiljainen_todistaja",
     name: "Hiljainen Todistaja",
     icon: "👁️",
-    description: "Keräsit vähintään 5 vihjettä syyllistämättä ketään.",
+    description: "Keräsit vähintään 5 vihjettä äänestämättä ketään (jätit tyhjän äänen).",
     rarity: "rare",
   },
   {
     id: "totuuden_vartija",
     name: "Totuuden Vartija",
     icon: "🗝️",
-    description: "Paljastit salaisuutesi oikealla hetkellä — ja tutkijat voittivat.",
+    description: "Paljastit mökin salaisuuden oikealla hetkellä — ja tutkijat voittivat.",
     rarity: "rare",
   },
   {
     id: "jarven_vartija",
     name: "Järven Vartija",
-    icon: "🏆",
-    description: "Keräsit vihjeitä vähintään viidestä eri paikasta.",
+    icon: "🌲",
+    description: "Keräsit todisteita vähintään viidestä eri mökkialueesta.",
     rarity: "common",
   },
   {
-    id: "hiljainen_tunnustaja",
+    id: "rohkea_tunnustaja",
     name: "Rohkea Tunnustaja",
     icon: "⚖️",
-    description: "Tunnustit ennen kuin sinut tuomittiin.",
+    description: "Tunnustit murhan livenä ennen kuin sinut tuomittiin äänestyksessä.",
     rarity: "common",
   },
 ];
@@ -89,13 +89,12 @@ export function computePlayerAchievements(
   const myRole = game.roles?.[playerId];
   const myInventory = Object.keys(game.inventories?.[playerId] ?? {});
   const votes = game.votes ?? {};
-  const syyllinenVotesAgainstMe = syyllinenId
-    ? Object.values(votes).filter((v) => v === playerId).length
-    : 0;
-
+  
+  // Lasketaan kuinka moni äänesti pelaajaa (jos pelaaja on syyllinen, nämä ovat häntä vastaan annetut äänet)
+  const votesAgainstMe = Object.values(votes).filter((v) => v === playerId).length;
   const myVote = votes[playerId];
-  const totalPlayers = Object.keys(game.players ?? {}).length;
 
+  // 1. Mestarietsivä: Kaikki äänestivät oikein ja pelaaja oli mukana äänestämässä syyllistä
   if (
     endingType === "perfect_investigation" &&
     myRole !== "syyllinen" &&
@@ -104,18 +103,21 @@ export function computePlayerAchievements(
     unlocked.push(ACHIEVEMENT_MAP["mestarietsiva"]);
   }
 
+  // 2. Täydellinen rikollinen: Syyllinen pääsee karkuun ilman yhtäkään epäilystä
   if (
     myRole === "syyllinen" &&
     (endingType === "culprit_escapes" || endingType === "secret_unsolved") &&
-    syyllinenVotesAgainstMe === 0
+    votesAgainstMe === 0
   ) {
     unlocked.push(ACHIEVEMENT_MAP["taydellinen_rikollinen"]);
   }
 
-  if (myRole !== "syyllinen" && myInventory.length >= 5) {
+  // 3. Hiljainen todistaja: Keräsi vähintään 5 vihjettä, mutta jätti äänestämättä ketään (tyhjä ääni tai 'none')
+  if (myRole !== "syyllinen" && myInventory.length >= 5 && (!myVote || myVote === "none")) {
     unlocked.push(ACHIEVEMENT_MAP["hiljainen_todistaja"]);
   }
 
+  // 4. Totuuden Vartija: Salaisuuden vartija paljasti tiedon ja tutkijat voittivat
   if (
     myRole === "salaisuuden_vartija" &&
     game.secretRevealed &&
@@ -124,15 +126,17 @@ export function computePlayerAchievements(
     unlocked.push(ACHIEVEMENT_MAP["totuuden_vartija"]);
   }
 
+  // 5. Järven Vartija: Keräsi vihjeitä vähintään 5 eri mökkialueesta livenä
   const uniqueLocations = new Set(
-    myInventory.map((id) => CLUE_MAP[id]?.locationId).filter(Boolean)
+    myInventory.map((id) => BASE_CLUES.find(c => c.id === id)?.locationId).filter(Boolean)
   );
   if (uniqueLocations.size >= 5) {
     unlocked.push(ACHIEVEMENT_MAP["jarven_vartija"]);
   }
 
+  // 6. Rohkea Tunnustaja: Syyllinen tunnustaa teon ennen äänestystä
   if (myRole === "syyllinen" && endingType === "culprit_confesses") {
-    unlocked.push(ACHIEVEMENT_MAP["hiljainen_tunnustaja"]);
+    unlocked.push(ACHIEVEMENT_MAP["rohkea_tunnustaja"]);
   }
 
   return unlocked.filter(Boolean);
