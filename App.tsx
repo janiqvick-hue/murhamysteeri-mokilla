@@ -1,15 +1,13 @@
-"use client"; // Pakollinen Next.js-moninpeleissä!
-
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase'; // Varmista, että polku osoittaa sinun firebase.js-tiedostoosi!
+import { db } from './firebase'; // KORJATTU: Polku osoittaa nyt oikein samaan src-kansioon!
 import { ref, set, get, child, onValue } from 'firebase/database';
 
-export default function Home() {
+export default function App() {
   const [roomCode, setRoomCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [playerName, setPlayerName] = useState('');
   const [inLobby, setInLobby] = useState(false);
-  const [players, setPlayers] = useState({}); // Tila reaaliaikaisille pelaajille
+  const [players, setPlayers] = useState<Record<string, any>>({}); // Tila reaaliaikaisille pelaajille
 
   // Kuunnellaan lobbyn pelaajia reaaliajassa, kun huoneeseen on liitytty
   useEffect(() => {
@@ -21,6 +19,8 @@ export default function Home() {
     const unsubscribe = onValue(roomRef, (snapshot) => {
       if (snapshot.exists()) {
         setPlayers(snapshot.val());
+      } else {
+        setPlayers({});
       }
     });
 
@@ -30,7 +30,7 @@ export default function Home() {
 
   // Toiminto: Luodaan uusi huone tietokantaan
   const createRoom = async () => {
-    if (!playerName) return alert('Syötä ensin nimesi!');
+    if (!playerName.trim()) return alert('Syötä ensin nimesi!');
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     
     try {
@@ -38,19 +38,19 @@ export default function Home() {
         status: 'waiting',
         host: playerName,
         players: {
-          [playerName]: { role: 'undecided', task: 'none' }
+          [playerName]: { name: playerName, role: 'undecided', task: 'none' }
         }
       });
       setRoomCode(code);
       setInLobby(true);
-    } catch (error) {
+    } catch (error: any) {
       alert('Virhe huoneen luomisessa: ' + error.message);
     }
   };
 
   // Toiminto: Liitytään olemassa olevaan huoneeseen
   const joinRoom = async () => {
-    if (!playerName) return alert('Syötä ensin nimesi!');
+    if (!playerName.trim()) return alert('Syötä ensin nimesi!');
     if (inputCode.length !== 4) return alert('Syötä 4-merkkinen koodi!');
 
     const dbRef = ref(db);
@@ -58,6 +58,7 @@ export default function Home() {
       const snapshot = await get(child(dbRef, `rooms/${inputCode}`));
       if (snapshot.exists()) {
         await set(ref(db, `rooms/${inputCode}/players/${playerName}`), {
+          name: playerName,
           role: 'undecided',
           task: 'none'
         });
@@ -66,7 +67,7 @@ export default function Home() {
       } else {
         alert('Huonetta ei löytynyt! Tarkista koodi.');
       }
-    } catch (error) {
+    } catch (error: any) {
       alert('Virhe liittyessä: ' + error.message);
     }
   };
