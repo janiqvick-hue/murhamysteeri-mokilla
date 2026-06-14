@@ -1,162 +1,463 @@
-"use client";
-import { useState } from "react";
-import type { Game } from "../types";
-import type { GameActions } from "../hooks/useGame";
-import type { Scenario } from "../types";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { db } from "./firebase";
+import { ref, update, onValue } from "firebase/database";
+import { calculateAchievements, ACHIEVEMENTS } from "./utils/achievements";
+import { ROLE_INFO } from "./utils/roles";
+import { SCENARIO_MAP } from "./utils/scenarios";
+import { 
+  Users, Check, ShieldAlert, Award, Skull, Vote, Play, AlertCircle, HelpCircle, BarChart2, Star, RotateCcw, CheckCircle, EyeOff, Search, AlertTriangle
+} from "lucide-react";
 
-interface Props {
-  game: Game;
+interface VotingScreenProps {
   playerId: string;
-  scenario: Scenario | null;
-  actions: GameActions;
+  gameCode: string;
+  isSoloMode: boolean;
+  lobbyData: any;
+  onNextStage: (resultsData?: any) => void;
+  onResetGame: () => void;
 }
 
-export default function VotingScreen({ game, playerId, scenario, actions }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [confessing, setConfessing] = useState(false);
-  const [confirmConfess, setConfirmConfess] = useState(false);
+export default function VotingScreen({
+  playerId,
+  gameCode,
+  isSoloMode,
+  lobbyData,
+  onNextStage,
+  onResetGame
+}: VotingScreenProps) {
+  const [votesMap, setVotesMap] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
-  const players = Object.entries(game.players ?? {});
-  const others = players.filter(([id]) => id !== playerId);
-  const myVote = game.votes?.[playerId];
-  const totalVotes = Object.keys(game.votes ?? {}).length;
-  const totalPlayers = players.length;
-  const myRole = game.roles?.[playerId];
-  const isSyyllinen = myRole === "syyllinen";
+  const myPlayer = lobbyData.players[playerId];
+  const myRole = myPlayer?.role || "vieras";
+  const isHost = myPlayer?.isHost;
 
-  const hasVoted = !!myVote;
+  const playerList = Object.values(lobbyData.players || {}) as any[];
+  const totalPlayers = playerList.length;
 
-  const handleSubmit = async () => {
-    if (!selected || submitting) return;
-    setSubmitting(true);
-    try {
-      await actions.submitVote(selected);
-    } catch (e: unknown) {
-      console.error(e);
-    } finally {
-      setSubmitting(false);
+  // 1. Firebasen reaaliaikainen synkronointi (Moninpeli)
+  useEffect(() => {
+    if (isSoloMode || !gameCode) return;
+
+    const votesRef = ref(db, `rooms/${gameCode}/votes`);
+    const unsubscribe = onValue(votesRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        setVotesMap(val);
+      } else {
+        setVotesMap({});
+      }
+    });
+
+    // Kuunnellaan milloin isäntä siirtää pelin lopputuloksiin
+    const statusRef = ref(db, `rooms/${gameCode}/status`);
+    const unsubStatus = onValue(statusRef, (snapshot) => {
+      if (snapshot.val() === "ending") {
+        onNextStage();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      unsubStatus();
+    };
+  }, [isSoloMode, gameCode, onNextStage]);
+
+  // 2. Yksinpelin simulaatio (Boteille automaattiäänet)
+  useEffect(() => {
+    if (!isSoloMode) return;
+    
+    const simulatedVotes: Record<string, string> = {};
+    playerList.forEach((p: any) => {
+      if (p.isAI) {
+        const potentialTargets = playerList.filter((t: any) => t.id !== p.id);
+        const randomTarget = potentialTargets[Math.floor(Math.random() * potentialTargets.length)];
+        simulatedVotes[p.id] = randomTarget.id;
+      }
+    });
+    setVotesMap(simulatedVotes);
+  }, [isSoloMode]);
+  // Äänen rekisteröinti livenä tai simuloituna
+  const handleVoteSubmit = async (targetId: string) => {
+    if (loading) return;
+    setLoading(true);
+
+    if (isSoloMode) {
+      const nextVotes = {
+        ...votesMap,
+        [playerId]: targetId
+      };
+      setVotesMap(nextVotes);
+
+      // Yksinpelissä siirrytään hetken kuluttua suoraan laskentaan
+      setTimeout(() => {
+        handleCalculateAndEnd(nextVotes);
+      }, 1500);
+    } else {
+      try {
+        const updates: Record<string, any> = {};
+        updates[`rooms/${gameCode}/votes/${playerId}`] = targetId;
+        
+        // Jos tämä oli viimeinen ääni livenä, isäntä siirtää huoneen ending-tilaan
+        const currentVotedCount = Object.keys(votesMap).length + 1;
+        if (currentVotedCount === totalPlayers && isHost) {
+          updates[`rooms/${gameCode}/status`] = "ending";
+        }
+
+        await update(ref(db), updates);
+      } catch (err) {
+        console.warn("Äänestys epäonnistui:", err);
+      }
+    }
+    setLoading(false);
+  };
+
+  // Syyllisen vapaaehtoinen murtuminen ja teon tunnustaminen livenä
+  const handleConfessCrime = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    if (isSoloMode) {
+      const nextVotes = {
+        ...votesMap,
+        [playerId]: playerId // Tunnustus merkitään äänestämällä itseään
+      };
+      setVotesMap(nextVotes);
+
+      setTimeout(() => {
+        onNextStage({
+          votes: nextVotes,
+          confessed: true
+        });
+      }, 1500);
+    } else {
+      try {
+        const updates: Record<string, any> = {};
+        updates[`rooms/${gameCode}/status`] = "ending";
+        updates[`rooms/${gameCode}/votes/${playerId}`] = playerId;
+        updates[`rooms/${gameCode}/confessed`] = true;
+
+        await update(ref(db), updates);
+      } catch (err) {
+        console.warn("Tunnustus epäonnistui:", err);
+      }
+    }
+    setLoading(false);
+  };
+
+  // Pelin päättyminen & äänten matemaattinen laskeminen
+  const handleCalculateAndEnd = async (votingData: Record<string, string>) => {
+    if (isSoloMode) {
+      onNextStage({
+        votes: votingData,
+        confessed: false
+      });
+    } else {
+      if (isHost) {
+        try {
+          await update(ref(db, `rooms/${gameCode}`), {
+            status: "ending"
+          });
+        } catch (err) {
+          console.warn("Tulosten laskenta epäonnistui:", err);
+        }
+      }
     }
   };
 
-  const handleConfess = async () => {
-    setConfessing(true);
-    try {
-      await actions.confessAsCulprit();
-    } catch {
-      setConfessing(false);
-    }
-  };
-
-  // NÄKYMÄ: Kun pelaaja on jo antanut oman salaisen äänensä
-  if (hasVoted) {
-    return (
-      <div className="screen screen--center" style={{ padding: '40px', background: '#0f172a', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="rain-overlay" />
-        <div className="vote-waiting" style={{ background: '#1e293b', padding: '30px', borderRadius: '12px', maxWidth: '400px', width: '100%', border: '1px solid #334155' }}>
-          <div className="vote-check" style={{ fontSize: '48px', color: '#10b981', marginBottom: '15px' }}>✓</div>
-          <h2 className="vote-sent-title" style={{ margin: '0 0 10px 0', fontSize: '22px', color: '#ffb4ab' }}>Ääni lähetetty salaisesti</h2>
-          <p className="hint-text" style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '20px' }}>Odotetaan muita mökkiläisiä… ({totalVotes}/{totalPlayers})</p>
+  const handlePlayAgain = async () => {
+    setLoading(true);
+    if (isSoloMode) {
+      onResetGame();
+    } else {
+      if (isHost) {
+        try {
+          const { set } = await import("firebase/database");
+          const roomRef = ref(db, `rooms/${gameCode}`);
           
-          {/* Reaaliaikainen edistymispalkki */}
-          <div className="vote-progress" style={{ width: '100%', height: '8px', background: '#0f172a', borderRadius: '4px', overflow: 'hidden' }}>
-            <div
-              className="vote-progress-fill"
-              style={{ width: `${(totalVotes / totalPlayers) * 100}%`, height: '100%', background: '#10b981', transition: 'width 0.3s ease' }}
-            />
+          const resetPlayers: Record<string, any> = {};
+          playerList.forEach((p: any) => {
+            resetPlayers[p.id] = {
+              id: p.id,
+              name: p.name,
+              isHost: !!p.isHost,
+              cluesFoundCount: 0,
+              sabotagesAttempted: 0
+            };
+          });
+
+          await set(roomRef, {
+            code: gameCode,
+            status: "lobby",
+            players: resetPlayers,
+            createdAt: Date.now()
+          });
+        } catch (err) {
+          console.warn("Huoneen nollaus epäonnistui", err);
+        }
+      } else {
+        onResetGame();
+      }
+    }
+    setLoading(false);
+  };
+
+  const getAchievementIcon = (typeId: string) => {
+    switch (typeId) {
+      case "mestarietsiva":
+        return <Award className="w-4 h-4 text-cyan-400" />;
+      case "taydellinen_rikollinen":
+        return <Skull className="w-4 h-4 text-red-400" />;
+      case "suurin_valehtelija":
+        return <AlertTriangle className="w-4 h-4 text-red-300" />;
+      case "totuuden_vartija":
+        return <Award className="w-4 h-4 text-purple-300" />;
+      case "epailyksen_mestari":
+        return <ShieldAlert className="w-4 h-4 text-orange-300" />;
+      default:
+        return <Star className="w-4 h-4 text-amber-400" />;
+    }
+  };
+  // Tarkistetaan onko oma ääni jo annettu
+  const hasVoted = !!votesMap[playerId];
+  const votedId = votesMap[playerId] || "";
+
+  // Lasketaan dynaamiset prosentit ja odotustilat
+  const totalSlots = totalPlayers;
+  const votedCount = Object.keys(votesMap).length;
+  const votedRatioPercent = Math.min(100, Math.round((votedCount / totalSlots) * 100));
+
+  // --- LOPETUSNÄYTÖN TIEDOT JA MUUTTUJAT ---
+  const scenario = lobbyData.scenarioId ? SCENARIO_MAP[lobbyData.scenarioId as keyof typeof SCENARIO_MAP] : null;
+  const wasConfessed = lobbyData.status === "ending" && (lobbyData.confessed || false);
+
+  const culpritPlayer = playerList.find((p: any) => p.role === "syyllinen");
+  const syyllinenId = culpritPlayer?.id;
+
+  // Äänestystulosten purku loppunäyttöä varten
+  const voteValues = Object.values(votesMap);
+  const voteCounts: Record<string, number> = {};
+  playerList.forEach(p => { voteCounts[p.id] = 0; });
+  for (const v of voteValues) {
+    if (v) voteCounts[v] = (voteCounts[v] ?? 0) + 1;
+  }
+
+  let maxVotes = -1;
+  let accusedId = "";
+  Object.entries(voteCounts).forEach(([pid, count]) => {
+    if (count > maxVotes) {
+      maxVotes = count;
+      accusedId = pid;
+    }
+  });
+
+  const accusedPlayer = playerList.find(p => p.id === accusedId);
+  const playerAchievementsMap = calculateAchievements(
+    playerList.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      role: p.role || "vieras",
+      cluesFoundCount: p.cluesFoundCount || 0,
+      sabotagesAttempted: p.sabotagesAttempted || 0
+    })),
+    votesMap
+  );
+
+  let titleText = "Mysteeri ratkeamatta";
+  let descText = "Mökkiläiset eivät päässeet yhteisymmärrykseen äänestyksessä. Totuus hukkui myrskyyn.";
+  let bgStyle = "from-slate-900 to-zinc-900";
+
+  if (wasConfessed) {
+    titleText = "Syyllinen murtui!";
+    descText = `${culpritPlayer?.name || "Murhaaja"} ei kestänyt painetta vaan tunnusti teon kaikkien edessä. Oikeus toteutui katumuksen kautta.`;
+    bgStyle = "from-red-950 to-slate-900";
+  } else if (accusedPlayer?.role === "syyllinen") {
+    titleText = "Etsivät voittivat!";
+    descText = `Seurue äänesti oikein! ${accusedPlayer.name} todettiin syylliseksi ja hänet eristettiin odottamaan virkavaltaa.`;
+    bgStyle = "from-emerald-950 to-slate-900";
+  } else if (accusedPlayer) {
+    titleText = "Syyllinen pakeni!";
+    descText = `Karmea virhe! Seurue tuomitsi viattoman pelaajan (${accusedPlayer.name}). Oikea murhaaja hymyilee varjoissa vapaana.`;
+    bgStyle = "from-amber-950 to-slate-900";
+  }
+
+  // --- RENDERÖINTI VAIHEEN MUKAAN ---
+  if (lobbyData.status === "ending") {
+    return (
+      <div className="flex flex-col min-h-[85vh] w-full max-w-md mx-auto px-1 py-4 space-y-5 text-slate-100" style={{ fontFamily: "sans-serif" }}>
+        {/* Tarinallinen lopputulosbanneri */}
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={`bg-gradient-to-b ${bgStyle} border border-slate-800 rounded-2xl p-6 text-center shadow-2xl relative overflow-hidden`}>
+          <span className="text-[10px] text-red-500 font-extrabold uppercase tracking-widest block mb-1">Pelin päätös</span>
+          <h2 className="text-3xl font-black uppercase tracking-tight mb-2">{titleText}</h2>
+          <p className="text-xs text-slate-300 leading-relaxed max-w-xs mx-auto italic">"{descText}"</p>
+        </motion.div>
+
+        {/* Skenaarion paljastus, motiivi ja taustat */}
+        {scenario && (
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-md">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 border-b border-slate-800 pb-2">
+              📖 Rikoksen Taustat & Motiivi
+            </h3>
+            <div className="space-y-1.5 text-xs">
+              <p className="text-slate-300"><span className="font-bold text-slate-400">Murhatapa:</span> {scenario.method}</p>
+              <p className="text-slate-300"><span className="font-bold text-slate-400">Salainen motiivi:</span> {scenario.motive}</p>
+              <p className="text-slate-400 italic pt-1 border-t border-slate-800/40 leading-relaxed">"{scenario.hiddenSecret}"</p>
+            </div>
           </div>
+        )}
+        {/* Äänten Jakautuminen */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-md">
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart2 className="w-5 h-5 text-slate-400" />
+            <h3 className="text-sm font-bold uppercase text-slate-100 tracking-wider">Äänten Jakautuminen</h3>
+          </div>
+          <div className="space-y-2.5">
+            {playerList.map((p: any) => {
+              const voters = Object.entries(votesMap)
+                .filter(([voterId, targetId]) => targetId === p.id)
+                .map(([voterId]) => {
+                  const voterObj = playerList.find((x: any) => x.id === voterId);
+                  return voterObj ? voterObj.name : "Mökkiläinen";
+                });
+              const isAccused = p.id === accusedId;
+              return (
+                <div key={p.id} className={`p-3.5 rounded-xl border ${isAccused ? "bg-red-950/20 border-red-500/40 text-slate-100" : "bg-slate-950 border-slate-800 text-slate-300"}`}>
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-extrabold text-slate-200">{p.name}</span>
+                      {isAccused && <span className="text-[9px] font-bold px-1.5 py-0.5 bg-red-900/30 text-red-400 rounded border border-red-900/50 uppercase leading-none">Syytetyin</span>}
+                    </div>
+                    <span className="text-xs font-mono font-bold text-slate-300 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-md">{voters.length} ääntä</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 italic mt-1 leading-snug">
+                    {voters.length > 0 ? `Äänestäjät: ${voters.join(", ")}` : "Ei yhtään epäilysääntä."}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Roolit ja Erikoispalkinnot */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-md">
+          <div className="flex items-center gap-2 mb-3">
+            <Users className="w-5 h-5 text-slate-400" />
+            <h3 className="text-sm font-bold uppercase text-slate-100 tracking-wider">Roolit & Palkinnot</h3>
+          </div>
+          <div className="space-y-3.5">
+            {playerList.map((p: any) => {
+              const roleKey = p.role || "vieras";
+              const roleInfo = ROLE_INFO[roleKey as keyof typeof ROLE_INFO] || ROLE_INFO.vieras;
+              const achievements = playerAchievementsMap[p.id] || [];
+              return (
+                <div key={p.id} className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-slate-300">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="block text-xs font-extrabold text-slate-200">{p.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">Etsinnät: {p.cluesFoundCount || 0} löydettyä vihjettä</span>
+                    </div>
+                    <span style={{ background: roleInfo.gradient, padding: '4px 10px', color: 'white', fontSize: '10px', fontWeight: 'bold', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>{roleInfo.name}</span>
+                  </div>
+                  {achievements.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-slate-900">
+                      {achievements.map((achId) => {
+                        const ach = ACHIEVEMENTS.find(a => a.id === achId);
+                        if (!ach) return null;
+                        return (
+                          <div key={achId} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-bold bg-slate-900 border-slate-800 text-amber-400" title={ach.description}>
+                            {getAchievementIcon(achId)}
+                            <span>{ach.title}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Uusi peli -painike */}
+        <div className="pt-2">
+          {isSoloMode || isHost ? (
+            <button type="button" onClick={handlePlayAgain} disabled={loading} className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-600 disabled:bg-slate-800 text-slate-100 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer border-none">
+              <RotateCcw className="w-4 h-4" /> Luo uusi rinki & pelaa uudestaan!
+            </button>
+          ) : (
+            <div className="text-center py-3 bg-slate-950 border border-slate-800 rounded-xl">
+              <p className="text-xs text-slate-400 animate-pulse">Huoneen isäntä valmistelee seuraavaa pelikierrosta...<br /><span className="text-[10px] text-slate-600">Pysy linjoilla!</span></p>
+            </div>
+          )}
         </div>
       </div>
     );
   }
-
-  // NÄKYMÄ: Varsinainen äänestysruutu
+  // --- VARSINAINEN ÄÄNESTYSKÄYTTÖLIITTYMÄ ---
+  const votingCandidates = playerList.filter((p: any) => p.id !== playerId);
   return (
-    <div className="screen voting-screen" style={{ padding: '20px', maxWidth: '500px', margin: '0 auto', fontFamily: 'sans-serif', color: 'white' }}>
-      <div className="rain-overlay" />
+    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full max-w-md mx-auto px-4 py-8 text-slate-100" style={{ fontFamily: "sans-serif" }}>
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 via-purple-600 to-amber-600 animate-pulse" />
+        <div className="text-center mb-6">
+          <span className="text-[10px] text-red-500 font-extrabold uppercase tracking-widest block mb-1">VAIHE 3: RATKAISU</span>
+          <h2 className="text-2xl font-black text-slate-100 uppercase tracking-tight flex items-center justify-center gap-1.5">
+            <EyeOff className="w-6 h-6 text-slate-400" /> Salainen Äänestys
+          </h2>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">Keskustele muiden pelaajien kanssa ja arvioi todisteiden painoarvoa. Kuka kantaa murhaajan taakkaa?</p>
+        </div>
 
-      <div className="voting-header" style={{ textAlign: 'center', marginBottom: '25px' }}>
-        <h1 className="screen-title" style={{ color: '#ffb4ab', fontSize: '28px', textTransform: 'uppercase', margin: '0 0 5px 0' }}>🗳️ Loppuäänestys</h1>
-        {scenario ? (
-          <>
-            <p className="voting-case" style={{ color: '#f59e0b', fontWeight: 'bold', margin: '0 0 5px 0' }}>{scenario.name}</p>
-            <p className="voting-hint" style={{ color: '#cbd5e1', fontSize: '15px', margin: 0 }}>Kuka seurueesta murhasi henkilön {scenario.victim}?</p>
-          </>
-        ) : (
-          <p className="voting-hint" style={{ color: '#cbd5e1', fontSize: '15px', margin: 0 }}>Kuka teistä on Syyllinen?</p>
-        )}
-      </div>
+        {/* Edistymispalkki */}
+        <div className="mb-6 bg-slate-950/80 border border-slate-800 px-4 py-3 rounded-xl">
+          <div className="flex justify-between items-center text-xs text-slate-400 font-medium mb-1.5">
+            <span>Annetut äänet:</span>
+            <span className="font-mono text-slate-100 font-bold">{votedCount} / {totalSlots}</span>
+          </div>
+          <div className="w-full bg-slate-900 border border-slate-800 h-2.5 rounded-full overflow-hidden">
+            <motion.div className="bg-emerald-500 h-full" initial={{ width: 0 }} animate={{ width: `${votedRatioPercent}%` }} transition={{ duration: 0.3 }} />
+          </div>
+        </div>
 
-      {/* Epäiltyjen lista (Muut pelaajat huoneessa) */}
-      <div className="suspect-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '25px' }}>
-        {others.map(([id, p]) => (
-          <button
-            key={id}
-            className={`suspect-card ${selected === id ? "suspect-card--selected" : ""}`}
-            onClick={() => setSelected(id)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '15px', width: '100%', padding: '15px', borderRadius: '10px', border: selected === id ? '2px solid #ef4444' : '1px solid #334155',
-              background: selected === id ? '#2d1f21' : '#1e293b', color: 'white', cursor: 'pointer', textAlign: 'left', fontSize: '16px', fontWeight: 'bold', transition: '0.2s'
-            }}
-          >
-            <span className="suspect-avatar" style={{ width: '36px', height: '36px', background: '#dc2626', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-              {p.name.charAt(0).toUpperCase()}
-            </span>
-            <span className="suspect-name" style={{ flex: 1 }}>{p.name}</span>
-            {selected === id && <span className="suspect-check" style={{ color: '#ef4444', fontSize: '20px' }}>✓</span>}
-          </button>
-        ))}
-      </div>
-
-      <div className="vote-footer" style={{ textAlign: 'center' }}>
-        <button
-          className="btn btn-danger btn-lg"
-          onClick={handleSubmit}
-          disabled={!selected || submitting}
-          style={{
-            width: '100%', background: '#dc2626', color: 'white', border: 'none', padding: '14px', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold',
-            cursor: (!selected || submitting) ? 'not-allowed' : 'pointer', opacity: (!selected || submitting) ? 0.5 : 1, marginBottom: '15px'
-          }}
-        >
-          {submitting ? "Lähetetään syytöstä…" : "⚖️ Syytä tätä henkilöä"}
-        </button>
-
-        {/* Syyllisen salainen tunnustuspaneeli */}
-        {isSyyllinen && !confirmConfess && (
-          <button
-            className="btn btn-ghost"
-            onClick={() => setConfirmConfess(true)}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}
-          >
-            🔓 Tunnusta syyllisyytesi
-          </button>
-        )}
-
-        {isSyyllinen && confirmConfess && (
-          <div className="confess-confirm" style={{ background: '#2d1f21', border: '1px solid #ef4444', padding: '15px', borderRadius: '8px', marginTop: '10px', textAlign: 'center' }}>
-            <p className="confess-warn" style={{ color: '#ef4444', fontSize: '13px', fontWeight: 'bold', margin: '0 0 12px 0' }}>Tunnustus on peruuttamaton. Peli päättyy välittömästi tutkijoiden voittoon.</p>
-            <div className="confess-btns" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button
-                className="btn btn-danger"
-                onClick={handleConfess}
-                disabled={confessing}
-                style={{ background: '#dc2626', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
-              >
-                {confessing ? "Tunnustetaan…" : "🩸 Kyllä, tunnustan"}
-              </button>
-              <button 
-                className="btn btn-ghost" 
-                onClick={() => setConfirmConfess(false)}
-                style={{ background: '#334155', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}
-              >
-                Peruuta
-              </button>
+        {!hasVoted ? (
+          <div className="space-y-4">
+            <div>
+              <span className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2.5">Valitse kenen epäilet tehneen rikoksen:</span>
+              <div className="space-y-2">
+                {votingCandidates.map((cand: any) => (
+                  <button key={cand.id} type="button" onClick={() => handleVoteSubmit(cand.id)} disabled={loading} className="w-full p-3.5 bg-slate-950 border border-slate-800 hover:bg-red-950/20 hover:border-red-500/40 rounded-xl text-left font-bold text-slate-200 text-sm flex justify-between items-center transition-all cursor-pointer group border-none">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-slate-700 group-hover:bg-red-500 group-hover:scale-125 transition-all"></div>
+                      <span>{cand.name}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest font-normal">Aseta Syytetyksi</span>
+                  </button>
+                ))}
+              </div>
             </div>
+            {myRole === "syyllinen" && (
+              <div className="pt-4 border-t border-slate-800/60">
+                <div className="p-4 bg-red-950/15 border border-red-500/20 rounded-xl text-center space-y-3">
+                  <Skull className="w-6 h-6 text-red-500 mx-auto animate-bounce" />
+                  <p className="text-xs text-red-300 leading-relaxed font-semibold">Olet syyllinen. Voit milloin tahansa antaa periksi, murtua ja vapaaehtoisesti tunnustaa teon käynnistääksesi dramaattisen katumus-lopun!</p>
+                  <button type="button" onClick={handleConfessCrime} disabled={loading} className="px-4 py-2 bg-red-900 hover:bg-red-800 text-slate-100 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md font-semibold border-none">"Tunnusta teko" (Murtuminen)</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8 space-y-4">
+            <div className="w-16 h-16 bg-emerald-950 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto text-emerald-400">
+              <Check className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-md font-bold text-slate-200">Äänesi on annettu onnistuneesti!</h3>
+              <p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">Kuponkisi on rekisteröity salaisesti ja anonyymisti. Odotetaan, että loputkin seurueesta saavat päätöksensä tehtyä...</p>
+            </div>
+            {isSoloMode && <div className="text-[10px] text-slate-500 font-mono animate-pulse">Lasketaan simuloituja ääniä ja analysoidaan tuloksia...</div>}
           </div>
         )}
-
-        <p className="hint-text" style={{ color: '#94a3b8', fontSize: '13px', marginTop: '15px' }}>{totalVotes}/{totalPlayers} ääntä annettu livenä</p>
-      </div>
+      </motion.div>
     </div>
   );
 }
