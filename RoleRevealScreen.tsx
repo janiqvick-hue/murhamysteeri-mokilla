@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion"; // KORJATTU: Standardi framer-motion import
-import { ROLE_INFO } from "../utils/roles"; // KORJATTU: Haetaan synkronoidut tiedot oikeasta paikasta
-import { SCENARIO_MAP } from "../utils/scenarios"; // KORJATTU: Haetaan synkronoidut skenaariot
-import { db } from "../firebase";
+import { motion, AnimatePresence } from "framer-motion";
+import { ROLE_INFO } from "./utils/roles";
+import { SCENARIO_MAP } from "./utils/scenarios";
+import { db } from "./firebase";
 import { ref, update } from "firebase/database";
 import { 
-  Lock, Unlock, Skull, ShieldAlert, Award, Eye, Info, CheckCircle
+  Lock, Skull, ShieldAlert, Award, Eye, Info, CheckCircle, Unlock
 } from "lucide-react";
 
 interface RoleRevealScreenProps {
@@ -30,11 +30,9 @@ export default function RoleRevealScreen({
   const myPlayer = lobbyData.players[playerId];
   const myRoleKey = myPlayer?.role || "vieras";
   
-  // KORJATTU: Haetaan rooli olemassa olevasta ROLE_INFO-määrityksestä
   const role = ROLE_INFO[myRoleKey as keyof typeof ROLE_INFO] || ROLE_INFO.vieras;
   const scenario = lobbyData.scenarioId ? SCENARIO_MAP[lobbyData.scenarioId as keyof typeof SCENARIO_MAP] : null;
 
-  // Alkulaskuri ajastin jännitykselle
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -49,7 +47,6 @@ export default function RoleRevealScreen({
     if (isSoloMode) {
       onNextStage();
     } else {
-      // Jos olet isäntä, aseta huoneen tila tutkimusvaiheeseen Firebaseen
       if (myPlayer?.isHost) {
         try {
           await update(ref(db, `rooms/${gameCode}`), {
@@ -64,14 +61,13 @@ export default function RoleRevealScreen({
     setLoading(false);
   };
 
-  // Muodostetaan skenaario- ja roolikuvaukset dynaamisesti (tukien koodissa normalText ja syyllinenText)
   const getScenarioHint = () => {
-    if (!scenario) return "Myrsky on katkaissut sähköt ja tietoliikenneyhteydet.";
+    if (!scenario) return "Myrsky on katkaissut sähköt and tietoliikenneyhteydet.";
     
     switch (role.id) {
       case "syyllinen":
         return scenario.syyllinenText || `Tiedät, että uhri on ${scenario.victim}. Tekosi motiivi on: "${scenario.motive}". Voit väärentää vihjeitä huoneissa käyttämällä sabotaasipaneelia.`;
-      case "salaisuuden_vartija": // KORJATTU: Oikea tunnus tyypeistä
+      case "salaisuuden_vartija":
         return scenario.secretForVartija || `Mökin vanha salaisuus painaa harteillasi. Huolehdi, ettei kukaan löydä vihjeitä, jotka voivat paljastaa mökin salat.`;
       case "tutkija":
         return `Etsivävaistosi ansiosta saat tutkimuksen edetessä runsaasti tietoa. Tarkkaile ristiriitoja. Uhri on ${scenario.victim} ja johtolangat odottavat tutkimusalueilla.`;
@@ -83,9 +79,8 @@ export default function RoleRevealScreen({
   };
 
   const isHost = myPlayer?.isHost;
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full max-w-md mx-auto px-4 py-6">
+    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full max-w-md mx-auto px-4 py-6 text-slate-100" style={{ fontFamily: 'sans-serif' }}>
       <AnimatePresence mode="wait">
         {!revealed ? (
           <motion.div
@@ -125,8 +120,8 @@ export default function RoleRevealScreen({
             animate={{ opacity: 1, scale: 1 }}
             className="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl"
           >
-            {/* Visual Header - KORJATTU: gradient-muuttuja tyypeistä */}
-            <div style={{ background: role.gradient, padding: '24px', color: '#e2e8f6', relative: 'true' }} className="relative">
+            {/* Visual Header */}
+            <div style={{ background: role.gradient, padding: '24px', color: '#e2e8f6' }} className="relative">
               <div className="absolute top-4 right-4 p-1.5 bg-black/40 border border-white/15 rounded-lg">
                 {role.id === "syyllinen" ? (
                   <Skull className="w-5 h-5 text-red-400" />
@@ -194,18 +189,18 @@ export default function RoleRevealScreen({
                   </div>
                 </div>
               </div>
+
               <div className="pt-2">
                 {isHost || isSoloMode ? (
                   <button
                     disabled={loading}
                     onClick={handleContinue}
-                    className="w-full py-2.5 bg-red-800 hover:bg-red-700 disabled:bg-slate-800 text-slate-100 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-red-950/30 transition-all cursor-pointer"
+                    className="w-full py-2.5 bg-red-800 hover:bg-red-700 disabled:bg-slate-800 text-slate-100 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer border-none"
                   >
                     {loading ? "Ladataan..." : "Jatka tutkimukseen"}
-                    <ArrowRight className="w-4 h-4" />
                   </button>
                 ) : (
-                  <div className="text-center py-2.5 bg-slate-900 border border-slate-800/50 rounded-xl">
+                  <div className="text-center py-2.5 bg-slate-900 border border-slate-800 rounded-xl">
                     <p className="text-[11px] text-slate-400 animate-pulse">
                       Odotetaan, että isäntä siirtää pelin tutkimusvaiheeseen...
                     </p>
