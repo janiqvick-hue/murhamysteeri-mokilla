@@ -1,7 +1,15 @@
 import type { Clue } from "../types";
 import type { Scenario } from "../types";
 
-const BASE_CLUES: Clue[] = [
+// Vihjeluokkien tyylittelyt
+export const CATEGORY_LABELS: Record<string, { label: string; color: string; icon: string }> = {
+  fyysinen: { label: "Fyysinen todiste", color: "#ef4444", icon: "🗡️" },
+  asiakirja: { label: "Dokumentti", color: "#3b82f6", icon: "📄" },
+  epailyttava: { label: "Epäilyttävä havainto", color: "#f59e0b", icon: "👀" },
+  todistus: { label: "Motiivi / Todistus", color: "#10b981", icon: "⚖️" }
+};
+
+export const BASE_CLUES: Clue[] = [
   {
     id: "veitsi",
     locationId: "paamokki",
@@ -11,7 +19,7 @@ const BASE_CLUES: Clue[] = [
       "Keittiöveitsi löytyi epätavallisesta paikasta – olohuoneen sohvan alta. Terässä on tumma tahra.",
     syyllinenText:
       "Keittiöveitsi on pudonnut sohvan alle. Tahra on vain puolukkamehua.",
-    salaisuusHint: "Veitsessä on merkkejä kiireestä – joku yritti piilottaa sen.",
+    salaisuusHint: "Veitsessä on merkkejä kiireestä – joku yritti piilottaa sen hätäisesti.",
   },
   {
     id: "kirje",
@@ -22,7 +30,7 @@ const BASE_CLUES: Clue[] = [
       "Repaleinen kirje, jossa vieras käsiala: 'Emme voi enää jatkaa – sinä tiedät miksi.'",
     syyllinenText:
       "Kirje on vanha rakkauskirje. Ei liity tähän iltaan mitenkään.",
-    salaisuusHint: "Kirje on kirjoitettu samana päivänä kuin tapahtuma.",
+    salaisuusHint: "Kirje on kirjoitettu ja tuotu mökille samana päivänä kuin tapahtuma.",
   },
   {
     id: "malja",
@@ -31,8 +39,19 @@ const BASE_CLUES: Clue[] = [
     category: "epailyttava",
     normalText:
       "Puolityhjä viskimalja – reunassa vain yksi huulijälki. Toinen malja on koskematon.",
-    syyllinenText: "Kaksi maljaa, kaksi juojaa. Normaalia illanviettoa.",
-    salaisuusHint: "Koskemattomassa maljassa ei ole juotu lainkaan.",
+    syyllinenText: "Kaksi maljaa, kaksi juojaa. Normaalia illanviettoa ennen tragediaa.",
+    salaisuusHint: "Koskemattomassa maljassa on outo, mantelimainen tuoksu. Myrkkyä?",
+  },
+  {
+    id: "kello",
+    locationId: "paamokki",
+    name: "Rikkinäinen taskukello",
+    category: "fyysinen",
+    normalText:
+      "Uhrin taskukello löytyi lattialta rikoutuneena. Se on pysähtynyt tasan aikaan 02:15.",
+    syyllinenText:
+      "Kello oli vanha ja tipahti pöydältä vahingossa. Aika on sattumaa.",
+    salaisuusHint: "Kellon lasissa on syviä naarmuja, jotka viittaavat kamppailuun.",
   },
   {
     id: "pyyhe",
@@ -40,10 +59,10 @@ const BASE_CLUES: Clue[] = [
     name: "Verinen pyyhe",
     category: "fyysinen",
     normalText:
-      "Pyyhe on taiteltu huolellisesti kiuaalle. Punertavia tahroja pyyhkeessä.",
+      "Pyyhe on taiteltu huolellisesti kiuaalle. Punertavia tahroja kuiduissa.",
     syyllinenText:
-      "Tahrat ovat hilsemäistä epidermiä – kylpijä on vain raapinut ihoa.",
-    salaisuusHint: "Pyyhe on taiteltu liian huolellisesti – joku on järjestellyt paikan.",
+      "Kylpijä on vain raapinut ihoa tai saanut pienen haavan. Ei merkittävää.",
+    salaisuusHint: "Pyyhe on taiteltu liian huolellisesti – joku on yrittänyt siivota jälkiä saunalla.",
   },
   {
     id: "polttotahrat",
@@ -51,10 +70,10 @@ const BASE_CLUES: Clue[] = [
     name: "Polttotahrat",
     category: "fyysinen",
     normalText:
-      "Tuoreet polttotahrat laudeilla – kiuas ei ole ollut edes käynnissä tänä iltana.",
+      "Tuoreet polttotahrat lauteilla – kiuas ei ole ollut edes käynnissä tänä iltana.",
     syyllinenText:
-      "Joku poltti kynnettä kiuaalle, se on vanha tapa. Ei merkittävää.",
-    salaisuusHint: "Tahrat ovat käden muotoiset. Jotain on puristettu kiuasta vasten.",
+      "Joku poltti tulitikkua lauteilla pimeässä. Vanha tapa, ei merkitystä.",
+    salaisuusHint: "Tahrat ovat käden muotoiset. Jotain on puristettu kiuasta vasten voimakkaasti.",
   },
   {
     id: "koukku",
@@ -62,9 +81,9 @@ const BASE_CLUES: Clue[] = [
     name: "Vääntynyt koukku",
     category: "fyysinen",
     normalText:
-      "Seinäkoukku on vääntynyt vinoon, ikään kuin jostain raskaasta on roikkutettu.",
-    syyllinenText: "Koukku on ollut lopsakkana jo vuosia. Vanhan rakennuksen vika.",
-    salaisuusHint: "Koukku on uusi – se on asennettu tänä kesänä.",
+      "Seinäkoukku on vääntynyt vinoon, ikään kuin jostain raskaasta taakasta.",
+    syyllinenText: "Koukku on ollut löysänä jo vuosia. Vanhan mökkirakennuksen vikoja.",
+    salaisuusHint: "Koukku on uusi – se on asennettu mökille vasta tänä kesänä.",
   },
   {
     id: "tuhka",
@@ -72,10 +91,10 @@ const BASE_CLUES: Clue[] = [
     name: "Palaneet paperit",
     category: "asiakirja",
     normalText:
-      "Tuhkassa on palaneen paperin jäänteitä. Palonumerossa näkyy katkelma: '...sopimus...'",
+      "Tuhkassa on palaneen paperin jäänteitä. Palaneessa kulmassa näkyy teksti: '...testamentti...'",
     syyllinenText:
-      "Vanhat grillireseptit poltettu pois – mökin vanhan tavan mukaan.",
-    salaisuusHint: "Paperin kulmat ovat suorat – se on poltettu kiireessä.",
+      "Vanhat grillireseptit tai roskat poltettu pois mökin tavan mukaan.",
+    salaisuusHint: "Paperi liittyy uhrin perintökiistoihin ystäväpiirin sisällä.",
   },
   {
     id: "pullonkorkit",
@@ -83,9 +102,9 @@ const BASE_CLUES: Clue[] = [
     name: "Pullonkorkit",
     category: "todistus",
     normalText:
-      "Kymmeniä pullonkorkkeja kaadettuna lattialle – joku juhli pitkään yksin.",
-    syyllinenText: "Koko porukka joi – ei ihme että korkkeja on paljon.",
-    salaisuusHint: "Yksi korkeista on eri merkkiä kuin muut.",
+      "Kymmeniä pullonkorkkeja kaadettuna lattialle – joku vietti pitkään aikaa täällä.",
+    syyllinenText: "Koko seurue joi yhdessä – ei ihme että korkkeja löytyy paljon.",
+    salaisuusHint: "Yksi korkeista on täysin eri merkkiä, jota kukaan teistä ei tuonut mökille.",
   },
   {
     id: "hiilyveitsi",
@@ -93,10 +112,10 @@ const BASE_CLUES: Clue[] = [
     name: "Hiiltynyt veitsi",
     category: "fyysinen",
     normalText:
-      "Grillissä on hiiltynyt veitsi – se ei kuulu grillikotaan. Terä on ehjä.",
+      "Grillipesässä on hiiltynyt veitsi – se ei kuulu grillikodan varustukseen.",
     syyllinenText:
-      "Käytettiin lihasien leikkaamiseen, pudotettiin grilliin vahingossa.",
-    salaisuusHint: "Veitsessä on sama merkki kuin keittiöveitsessä.",
+      "Käytettiin lihan kääntämiseen ja pudotettiin grilliin vahingossa.",
+    salaisuusHint: "Veitsen kahvassa on sama uniikki valmistajan merkki kuin keittiön pääveitsessä.",
   },
   {
     id: "koysi",
@@ -104,10 +123,10 @@ const BASE_CLUES: Clue[] = [
     name: "Katkaistu köysi",
     category: "fyysinen",
     normalText:
-      "Laituria pitkin kulkeva köysi on katkaistu terävästi – ei kulunut poikki.",
+      "Laituria pitkin kulkeva köysi on katkaistu terävästi – se ei ole kulunut poikki.",
     syyllinenText:
-      "Vene oli rymähtänyt kovaan myrskyyn, köysi ratkesi tuulen painosta.",
-    salaisuusHint: "Katkaisupinnassa on terävä kulma – saksilla tai veitsellä tehty.",
+      "Vene rymähti myrskyyn ja köysi ratkesi kovan tuulen painosta.",
+    salaisuusHint: "Katkaisupinnassa on viiltojälki – tehty erittäin terävällä veitsellä.",
   },
   {
     id: "jalanjäljet",
@@ -115,19 +134,19 @@ const BASE_CLUES: Clue[] = [
     name: "Tuoreet jalanjäljet",
     category: "fyysinen",
     normalText:
-      "Märät jalanjäljet laiturilla. Kengännumero on pienempi kuin miltä henkilöltä odottaisi.",
-    syyllinenText: "Joku kävi uimassa aiemmin illalla. Täysin normaalia.",
-    salaisuusHint: "Jalanjäljet tulevat metsästä – ei mökin suunnasta.",
+      "Märät jalanjäljet laiturilla. Kengännumero on yllättävän pieni.",
+    syyllinenText: "Joku kävi uimassa tai hakemassa vettä aiemmin illalla. Normaalia.",
+    salaisuusHint: "Jalanjäljet johtavat pimeästä metsästä suoraan laiturille – ei mökin suunnasta.",
   },
   {
-    id: "kolikko",
+    id: "puhelin",
     locationId: "laituri",
-    name: "Harvinainen kolikko",
+    name: "Uhrin puhelin",
     category: "epailyttava",
     normalText:
-      "Harvinainen vanhan liiton markka löytyi laudan halkeamasta.",
-    syyllinenText: "Joku tiputti kolikon sattumalta. Ei merkitystä.",
-    salaisuusHint: "Kolikko on tasoitettu etupuolelta – se on käytetty avaamiseen.",
+      "Uhrin lukittu matkapuhelin löytyi laiturin alta kastuneena. Ei verkkoa.",
+    syyllinenText: "Hän pudotti sen sinne itse ennen kuolemaansa.",
+    salaisuusHint: "Puhelimen näytössä näkyy viimeisin luonnosteltu tekstiviesti: 'Yksi meistä tietää'.",
   },
   {
     id: "vene",
@@ -135,9 +154,9 @@ const BASE_CLUES: Clue[] = [
     name: "Siirretty vene",
     category: "epailyttava",
     normalText:
-      "Toinen vene on siirretty – märät jäljet kostealla lattialla osoittavat sen.",
-    syyllinenText: "Siirsimme veneen aamulla kalastusta varten. Jäi unohtuneeseen paikkaan.",
-    salaisuusHint: "Vene on siirretty takaisin – mutta eri asentoon kuin aamulla.",
+      "Soutuvene on siirretty – märät ja hiekkaiset jäljet lattialla paljastavat sen.",
+    syyllinenText: "Venettä siirrettiin aamulla kalastusta varten. Jäi vain eri paikkaan.",
+    salaisuusHint: "Vene on siirretty takaisin venevajaan myrskyn alettua – mutta eri asentoon kuin aiemmin.",
   },
   {
     id: "tankki",
@@ -145,9 +164,9 @@ const BASE_CLUES: Clue[] = [
     name: "Tyhjä polttoainetankki",
     category: "fyysinen",
     normalText:
-      "Polttoainetankki on tyhjä – se täytettiin vasta eilen.",
-    syyllinenText: "Moottori vuotaa. On pitänyt korjata jo pitkään.",
-    salaisuusHint: "Tankin korkki on auki – polttoaine on kaadettu muualle.",
+      "Perämoottorin polttoainetankki on täysin tyhjä – vaikka se täytettiin vasta eilen.",
+    syyllinenText: "Moottori luultavasti vuotaa bensiiniä. Se on pitänyt korjata jo pitkään.",
+    salaisuusHint: "Tankin korkki on jätetty auki ja polttoaine on kaadettu maahan pakenemisen estämiseksi.",
   },
   {
     id: "avain",
@@ -155,9 +174,9 @@ const BASE_CLUES: Clue[] = [
     name: "Tuntematon avain",
     category: "epailyttava",
     normalText:
-      "Naulan kärjessä roikkuu avain, jota kukaan ei tunnista. Merkki: 'KS-7'.",
-    syyllinenText: "Vanha varaosa jostain lukosta. Täysin merkityksetön.",
-    salaisuusHint: "KS-7 on varasto numero 7:n koodi.",
+      "Naulan kärjessä roikkuu avain, jota kukaan mökkiseurueesta ei tunnista. Merkki: 'M-4'.",
+    syyllinenText: "Vanha vara-avain johonkin mökin vanhaan riippulukkoon. Merkityksetön.",
+    salaisuusHint: "Avaimen 'M-4' koodi vastaa vanhan ulkovaraston ovea.",
   },
   {
     id: "lehdet",
@@ -165,91 +184,41 @@ const BASE_CLUES: Clue[] = [
     name: "Käännetyt lehdet",
     category: "fyysinen",
     normalText:
-      "Polun maalehdot on sekoitettu käsin – joku on kaatunut tai ryöminyt tällä kohdin.",
-    syyllinenText: "Kuusi putosi tuuleen täällä aiemmin. Lehdet lentelivät.",
-    salaisuusHint: "Polun vieressä on kaivettu kuoppa – se on täytetty uudelleen.",
+      "Polun varren maasto on sekoitettu – aivan kuin joku olisi kaatunut tai ryöminyt tällä kohdin.",
+    syyllinenText: "Myrskytuuli repi puunoksia ja lennätti lehtiä ympäriinsä.",
+    salaisuusHint: "Polun vieressä sammalta on yritetty siirtää takaisin hätäisesti täytetyn kuopan päälle.",
   },
   {
     id: "taskulamppu",
     locationId: "metsakpolku",
-    name: "Sammutettu taskulamppu",
+    name: "Hylätty taskulamppu",
     category: "epailyttava",
     normalText:
-      "Taskulamppu on hylätty polun varteen sammutettuna. Paristot ovat täynnä.",
-    syyllinenText:
-      "Joku lähti kävelylle, jätti lampun vahingossa. Löytyy aina.",
-    salaisuusHint: "Lampussa on vieraita sormenjälkiä – se ei kuulu mökin varusteisiin.",
+      "Taskulamppu on hylätty polun varteen sammutettuna. Paristot ovat yhä täynnä.",
+    syyllinenText: "Joku pudotti sen iltakävelyllä pimeässä. Löytyy sieltä usein.",
+    salaisuusHint: "Taskulampun pinnassa on outoja mutatahroja – se ei kuulu mökin omiin varusteisiin.",
   },
   {
-    id: "hihna",
+    id: "saappaat",
     locationId: "metsakpolku",
-    name: "Katkaistu hihna",
+    name: "Mutaiset saappaat",
     category: "fyysinen",
     normalText:
-      "Katkaistu koiran hihna roikkuu havupuun oksalla. Omistajaa ei näy.",
-    syyllinenText: "Naapurin koira karkasi viime viikolla täältä.",
-    salaisuusHint: "Hihna on katkaistu samaan tapaan kuin laiturinkköysi.",
-  },
-  {
-    id: "lukko",
-    locationId: "vanha_varasto",
-    name: "Murrettu lukko",
-    category: "fyysinen",
-    normalText:
-      "Riippulukko on murrettu – sala on rikki sisältäpäin.",
-    syyllinenText: "Vanha lukko hajosi jo vuosia sitten. Ei murrettu.",
-    salaisuusHint: "Lukon murtoviiva on tuore – se on tehty tällä viikolla.",
-  },
-  {
-    id: "kaappi",
-    locationId: "vanha_varasto",
-    name: "Raaputettu kaappi",
-    category: "asiakirja",
-    normalText:
-      "Kaapinlevyssä on raapimisia – joku on yrittänyt avata sitä väkisin.",
-    syyllinenText: "Kaappi on ollut jumissa – reissulta palatessa se auki väkipakolla.",
-    salaisuusHint: "Kaapissa on vedoksia asiakirjoista.",
-  },
-  {
-    id: "suksi",
-    locationId: "vanha_varasto",
-    name: "Siirretty suksi",
-    category: "epailyttava",
-    normalText:
-      "Vanhan suksiparin alla on tumma jälki lattialla – joku on siirtänyt suksen äskettäin.",
-    syyllinenText: "Siivosin varastoa aamulla. Siirsin myös sukset.",
-    salaisuusHint: "Lätäkön muoto vastaa astiaa, ei verta.",
-  },
+      "Pari mutaisia kumisaappaita on piilotettu tiheän kuusen alle polun varteen.",
+    syyllinenText: "Joku jätti ne sinne kuivumaan sateesta huolimatta.",
+    salaisuusHint: "Saappaiden pohjakuvio täsmää täydellisesti laiturilta löytyneisiin jalanjälkiä.",
+  }
 ];
 
 export function getCluesForScenario(scenario: Scenario | null): Clue[] {
-  if (!scenario || Object.keys(scenario.clueOverrides).length === 0) {
+  if (!scenario || !scenario.clueOverrides || Object.keys(scenario.clueOverrides).length === 0) {
     return BASE_CLUES;
   }
   return BASE_CLUES.map((clue) => {
     const override = scenario.clueOverrides[clue.id];
-    if (!override) return clue;
-    return { ...clue, ...override };
+    if (override) {
+      return { ...clue, ...override };
+    }
+    return clue;
   });
 }
-
-export const CLUES = BASE_CLUES;
-
-export const CLUES_BY_LOCATION: Record<string, Clue[]> = {};
-for (const clue of BASE_CLUES) {
-  if (!CLUES_BY_LOCATION[clue.locationId]) {
-    CLUES_BY_LOCATION[clue.locationId] = [];
-  }
-  CLUES_BY_LOCATION[clue.locationId].push(clue);
-}
-
-export const CLUE_MAP: Record<string, Clue> = Object.fromEntries(
-  BASE_CLUES.map((c) => [c.id, c])
-);
-
-export const CATEGORY_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  fyysinen:    { label: "Fyysinen todiste",   icon: "🔬", color: "#3b82f6" },
-  todistus:    { label: "Todistajanlausunto", icon: "👁️", color: "#8b5cf6" },
-  asiakirja:   { label: "Salainen asiakirja", icon: "📜", color: "#f59e0b" },
-  epailyttava: { label: "Epäilyttävä esine",  icon: "❓", color: "#ef4444" },
-};
