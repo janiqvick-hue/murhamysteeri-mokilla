@@ -1,0 +1,220 @@
+import type { Scenario } from "../../types";
+
+export const SCENARIOS_POOL: Scenario[] = [
+  {
+    id: "saunan_salaisuus",
+    name: "Saunan Salaisuus",
+    subtitle: "Uhri löytyi saunan rappusilta",
+    victim: "Arvo Mäkinen",
+    victimLocation: "sauna",
+    motive: "Perintöriita — uhri oli muuttanut testamentin viime hetkellä.",
+    method: "Tyrmäys ja hukkuminen yhdistettynä — tapaus lavastettiin onnettomuudeksi.",
+    hiddenSecret:
+      "Arvo Mäkinen ei ollut yksin saunassa. Toinen henkilö auttoi peittämään jäljet — ja on edelleen vapaa.",
+    setting:
+      "Ilta oli alkanut hyvin — viski virtasi ja sauna lämpeni. Aamulla löytyi ruumis saunan rappusilta. Kaikki olivat paikalla. Kukaan ei myöntänyt mitään.",
+    secretForVartija:
+      "Arvo Mäkinen oli laatinut uuden testamentin juuri ennen kuolemaansa. Se hyödyttää vain yhtä henkilöä seurueesta.",
+    clueOverrides: {
+      pyyhe: {
+        normalText:
+          "Pyyhe on taiteltu huolellisesti kiuaalle. Punertavia tahroja pyyhkeessä — ja haju, joka ei ole peräisin saunasta.",
+        syyllinenText:
+          "Tahrat ovat hilsemäistä epidermiä. Haju on vain saunan oman lämmön tuoma.",
+      },
+      polttotahrat: {
+        normalText:
+          "Kiuas ei ole ollut käynnissä tänä iltana, mutta sen pinnalla on tuoreita polttotahroja. Käden muotoisia.",
+        syyllinenText: "Joku poltti kynttilää tai tulitikkua kiuaalle — se on vanha tapa. Ei merkittävää.",
+      },
+    },
+    witnessEventTemplates: [
+      {
+        id: "ss_event1",
+        title: "Ääni saunasta",
+        text: "Mökkiläiset kuulivat oudon kolahduksen saunan suunnalta noin puoli kahdentoista aikaan yöllä. Se ei kuulostanut puun natinalta.",
+        locationHint: "Sauna",
+        revealDelayMs: 2 * 60 * 1000,
+      },
+      {
+        id: "ss_event2",
+        title: "Rantahavainto",
+        text: "Laiturilla on tuore märkä jälki, joka alkaa saunasta ja päättyy veteen. Se ei selity pelkällä sateella.",
+        locationHint: "Laituri",
+        revealDelayMs: 5 * 60 * 1000,
+      },
+      {
+        id: "ss_event3",
+        title: "Repaleinen muistio",
+        text: "Grillikodan tuhkasta löytyi puoleksi palanut paperin pala, jossa lukee: '…summa sovittu, ei jätä todisteita…'",
+        locationHint: "Grillikota",
+        revealDelayMs: 8 * 60 * 1000,
+      },
+    ],
+    redHerringTemplates: [
+      {
+        id: "ss_rh1",
+        locationId: "sauna",
+        name: "Epäilyttävä vaate",
+        normalTextTemplate:
+          "Löytyi saunasta kangasnäyte, joka muistuttaa väreiltään pelaajan {target} tänä iltana käyttämää vaatetta. Oliko hän saunalla salaa?",
+      },
+      {
+        id: "ss_rh2",
+        locationId: "paamokki",
+        name: "Viestivihje",
+        normalTextTemplate:
+          "{target} muuttui hermostuneeksi ja poistui nopeasti paikalta, kun uhrin nimi mainittiin. Reaktio herättää epäilyksiä.",
+      },
+    ],
+  },
+  {
+    id: "laiturin_varjo",
+    name: "Laiturin Varjo",
+    subtitle: "Uhri katosi laiturilta",
+    victim: "Siiri Leinonen",
+    victimLocation: "laituri",
+    motive: "Siiri tiesi liian paljon — hän oli kuvannut jotain mitä ei olisi pitänyt nähdä.",
+    method: "Hukkuminen — köysi katkaistiin, vene siirrettiin ja jäljet siivottiin rannasta.",
+    hiddenSecret:
+      "Siirin kamera löytyi järvestä — mutta muistikortti on jossakin mökin sisällä, tallenteineen.",
+    setting:
+      "Siiri Leinonen kävi sanomassa hyvää yötä ja lähti kohti laituria. Kukaan ei nähnyt häntä enää elävänä. Soutuvene on siirretty paikaltaan.",
+    secretForVartija:
+      "Siiri Leinonen oli ottanut salaa valokuvia illan tapahtumista. Muistikortti on piilossa mökissä — ja siinä on kuva syyllisestä.",
+    clueOverrides: {
+      koysi: {
+        normalText:
+          "Köysi on katkaistu terävästi laiturin päässä. Märät jäljet laudoilla johtavat poispäin järvestä.",
+        syyllinenText:
+          "Vene oli rymähtänyt kovaan myrskyyn ja köysi ratkesi tuulen painosta.",
+      },
+      jalanjäljet: {
+        normalText:
+          "Laiturin laudoilla on tuoreita jalanjälkiä — yhdet menevät rantaan, toiset tulevat takaisin. Vain toinen henkilö palasi.",
+        syyllinenText: "Joku kävi vain uimassa aiemmin illalla. Jälkiä on kaikkialla rannassa.",
+      },
+    },
+    witnessEventTemplates: [
+      {
+        id: "lv_event1",
+        title: "Ääni järveltä",
+        text: "Mökkiin kuului raskas roiskaus järveltä noin puolen yön jälkeen. Ääni ei kuulostanut kalan hyppäämiseltä.",
+        locationHint: "Laituri",
+        revealDelayMs: 2 * 60 * 1000,
+      },
+      {
+        id: "lv_event2",
+        title: "Metsäpolun löytö",
+        text: "Metsäpolulta löytyi repaleinen huivi — samanlainen kuin Siirillä oli illalla päässään. Huivi on täysin märkä.",
+        locationHint: "Metsäpolku",
+        revealDelayMs: 5 * 60 * 1000,
+      },
+      {
+        id: "lv_event3",
+        title: "Venevaajan havainto",
+        text: "Venevajassa on tuore öljytahra lattialla, jota ei ollut aamulla. Joku on siirtänyt moottorivenettä yön aikana.",
+        locationHint: "Venevaja",
+        revealDelayMs: 8 * 60 * 1000,
+      },
+    ],
+    redHerringTemplates: [
+      {
+        id: "lv_rh1",
+        locationId: "laituri",
+        name: "Jalanjälkihavainto",
+        normalTextTemplate:
+          "Laiturin laudoilla näkyy mutainen jalanjälki, joka vastaa kooltaan pelaajan {target} kenkää. Jälki on tehty yön aikana.",
+      },
+      {
+        id: "lv_rh2",
+        locationId: "metsakpolku",
+        name: "Kangasnäyte",
+        normalTextTemplate:
+          "Metsäpolun oksasta löytyi irronnut kangaspala, joka muistuttaa pelaajan {target} tänä iltana käyttämää vaatetta.",
+      },
+    ],
+  },
+  {
+    id: "kadonnut_vieras",
+    name: "Kadonnut Vieras",
+    subtitle: "Kutsumaton vieras katosi yön aikana",
+    victim: "Petteri Salo",
+    victimLocation: "paamokki",
+    motive: "Petteri oli yksityisetsivä — hän tuli kiristämään jotakuta. Hänen tutkimuksensa osui liian lähelle.",
+    method: "Myrkytys — juomaan lisätty aine aiheutti kooman. Ruumis on piilotettu ulkovarastoon.",
+    hiddenSecret:
+      "Petteri Salon salkusta löytyi muistiinpanoja. Siellä on kaikkien mökkiläisten nimet — ja yksi on alleviivattu punaisella.",
+    setting:
+      "Petteri Salo saapui mökille kutsumattomana. Yön aikana hän katosi. Jäljelle jäi vain hänen salkkunsa ja särkynyt puhelin.",
+    secretForVartija:
+      "Petteri Salo oli yksityisetsivä, joka tutki salaa yhtä teistä — ja sai selville synkän salaisuuden.",
+    clueOverrides: {
+      kirje: {
+        normalText:
+          "Repaleinen kirje salkussa: 'Tiedän mitä teit Kaartjärvellä. Maksa tai kerron kaikille.' Kirjoitettu tänä iltana.",
+        syyllinenText:
+          "Kirje on Petterin omaa kiristystä, eikä liity suoraan hänen katoamiseensa.",
+      },
+      malja: {
+        normalText:
+          "Kolme viskimaljaa pöydällä. Kaksi on tyhjennetty. Kolmas — Petterin malja — on koskematon. Hän ei koskaan ehtinyt istumaan.",
+        syyllinenText:
+          "Petteri ei juonut maljasta, koska hän epäili saaneensa varoituksen.",
+      },
+    },
+    witnessEventTemplates: [
+      {
+        id: "kv_event1",
+        title: "Särkynyt puhelin",
+        text: "Petteri Salon puhelimesta on irrotettu SIM-kortti väkisin ennen kuin se rikottiin. Joku ei halunnut hänen soittavan apua.",
+        locationHint: "Päämökki",
+        revealDelayMs: 2 * 60 * 1000,
+      },
+      {
+        id: "kv_event2",
+        title: "Varaston ovi",
+        text: "Vanha ulkovarasto on ollut lukittuna koko kesän — mutta nyt riippulukko on murrettu auki.",
+        locationHint: "Vanha varasto",
+        revealDelayMs: 5 * 60 * 1000,
+      },
+      {
+        id: "kv_event3",
+        title: "Kirjekuori tuhkassa",
+        text: "Grillikodan tuhkasta löytyi puoleksi palanut kuori: 'Sinun toimeksiantosi mökillä on valmis.' Loput tekstistä on hiiltynyt.",
+        locationHint: "Grillikota",
+        revealDelayMs: 8 * 60 * 1000,
+      },
+    ],
+    redHerringTemplates: [
+      {
+        id: "kv_rh1",
+        locationId: "paamokki",
+        name: "Petterin merkintä",
+        normalTextTemplate:
+          "Petterin laukusta löytyi lappu: '{target} tietää perintöasiasta enemmän kuin sanoo.' Kirjoitettu painokkaasti lyijykynällä.",
+      },
+      {
+        id: "kv_rh2",
+        locationId: "vanha_varasto",
+        name: "Taskulamppu",
+        normalTextTemplate:
+          "Vanhan varaston ovelta löytyi taskulamppu, jonka kahvassa on pelaajan {target} sormenjäljet.",
+      }
+    ],
+  }
+];
+import type { Scenario } from "../types";
+import { SCENARIOS_POOL } from "./scenarios/scenariosPool";
+
+export const SCENARIOS: Scenario[] = SCENARIOS_POOL;
+
+export const SCENARIO_MAP: Record<string, Scenario> = Object.fromEntries(
+  SCENARIOS.map((s) => [s.id, s])
+);
+
+// Arvotaan pelin alussa täysin satunnainen murhatarina mökkiläisille livenä
+export function pickRandomScenario(): Scenario {
+  const randomIndex = Math.floor(Math.random() * SCENARIOS.length);
+  return SCENARIOS[randomIndex];
+}
