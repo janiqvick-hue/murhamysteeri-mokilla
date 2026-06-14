@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { db } from "./firebase"; // KORJATTU: polku juureen
 import { ref, set, onValue, update } from "firebase/database";
-import { pickRandomScenario } from "./utils/scenarios";
-import { assignRoles } from "./utils/roles";
+import { pickRandomScenario } from "./src/utils/scenarios";
+import { assignRoles } from "./src/utils/roles";
 import { Users, Copy, Check, Play, Compass } from "lucide-react";
 
 interface LobbyScreenProps {
