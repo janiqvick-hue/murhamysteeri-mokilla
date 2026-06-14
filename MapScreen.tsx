@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LOCATIONS } from "../utils/locations";
-import { BASE_CLUES } from "../utils/clues";
-import { SCENARIO_MAP } from "../utils/scenarios";
-import { db } from "../firebase";
+import { LOCATIONS } from "./utils/locations";
+import { BASE_CLUES } from "./utils/clues";
+import { SCENARIO_MAP } from "./utils/scenarios";
+import { db } from "./firebase";
 import { ref, update, onValue } from "firebase/database";
 import {
-  Compass, MapPin, Eye, Bell, ShieldAlert, Sparkles, BookOpen, Clock, Skull, Search, Play, ChevronRight, User
+  Compass, MapPin, Eye, Bell, ShieldAlert, Sparkles, BookOpen, Clock, Skull, Search, Play, ChevronRight, User, X
 } from "lucide-react";
 
-// --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN ---
+// --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
 interface WitnessNotification {
   id: string;
   text: string;
@@ -65,7 +65,7 @@ function WitnessBanner({ notifications }: { notifications: WitnessNotification[]
   );
 }
 
-// --- MAP SCREEN PROPS & COMPONENT ALKAA ---
+// --- MAP SCREEN PROPS MÄÄRITTELYT ---
 interface MapScreenProps {
   playerId: string;
   gameCode: string;
@@ -73,7 +73,7 @@ interface MapScreenProps {
   lobbyData: any;
   onNextStage: (resultsData?: any) => void;
 }
-// --- SABOTAGE MODAL UPOTETTU SUORAAN TÄHÄN ---
+// --- SABOTAGE MODAL UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
 interface SabotageModalProps {
   onClose: () => void;
   onSaveSabotage: (clueId: string, fakeName: string, fakeText: string) => void;
@@ -239,7 +239,7 @@ function SabotageModal({ onClose, onSaveSabotage, sabotagedMap }: SabotageModalP
   );
 }
 
-// --- MAIN MAP SCREEN COMPONENT ---
+// --- MAIN MAP SCREEN COMPONENT ALKAA ---
 export default function MapScreen({
   playerId,
   gameCode,
@@ -712,6 +712,7 @@ export default function MapScreen({
           </div>
         </div>
       </div>
+
       {/* Journal and Syyllisen Panel Section */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-5 flex-1 flex flex-col">
         <div className="flex justify-between items-center mb-4">
@@ -779,7 +780,7 @@ export default function MapScreen({
           className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 rounded-xl font-bold text-xs flex items-center justify-center gap-2 tracking-wide cursor-pointer text-center"
         >
           <Play className="w-3.5 h-3.5" />
-          Keskeytä ja siirry loppuäänestykseen
+          Keskeytä and siirry loppuäänestykseen
         </button>
       )}
 
@@ -798,7 +799,7 @@ export default function MapScreen({
           return (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
               onClick={() => setSelectedClueForDetail(null)}
             >
               <motion.div
