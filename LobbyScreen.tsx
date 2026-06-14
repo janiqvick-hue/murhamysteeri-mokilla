@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { db } from "./src/firebase";
+import { db } from "./firebase";
 import { ref, set, onValue, update } from "firebase/database";
 import { pickRandomScenario } from "./src/utils/scenarios";
 import { assignRoles } from "./src/utils/roles";
