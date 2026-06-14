@@ -3,7 +3,7 @@ import LobbyScreen from "./LobbyScreen";
 import RoleRevealScreen from "./RoleRevealScreen";
 import MapScreen from "./MapScreen";
 import VotingScreen from "./VotingScreen";
-import KaartjarviMap from "./kaartjarvi/KaartjarviMap"; // UUSI KYTKENTÄ KAARTJÄRVELLE
+import KaartjarviMap from "./KaartjarviMap";
 import { Compass, Skull, HelpCircle } from "lucide-react";
 
 export default function App() {
