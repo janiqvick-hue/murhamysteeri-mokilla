@@ -15,7 +15,7 @@ export const ROLE_INFO: Record<Role, RoleInfo> = {
     id: "todistaja",
     name: "Todistaja",
     icon: "👁️",
-    objective: "Tiedät jotain. Auta Tutkijaa — mutta pidä osa itsellään.",
+    objective: "Tiedät jotain. Auta Tutkijaa — mutta pidä osa itselläsi.",
     detail:
       "Sinulla on oma syysi pysyä hiljaa. Paljasta juuri sen verran, että ohjaat muita — mutta ei niin paljon, että vaarannat itsesi.",
     color: "#a78bfa",
@@ -27,7 +27,7 @@ export const ROLE_INFO: Record<Role, RoleInfo> = {
     icon: "🗝️",
     objective: "Tiedät totuuden. Päätä milloin — ja jos — paljastat sen.",
     detail:
-      "Sinulla on tieto joka voi ratkaista kaiken. Käytä 'Paljasta salaisuutesi' -painiketta oikealla hetkellä. Paljastaminen voi kääntää pelin — tai vaaranltu oman asemasi.",
+      "Sinulla on tieto joka voi ratkaista kaiken. Käytä 'Paljasta salaisuutesi' -painiketta oikealla hetkellä. Paljastaminen voi kääntää pelin — tai vaarantaa oman asemasi.",
     color: "#fbbf24",
     gradient: "linear-gradient(135deg, #4a3200 0%, #2d1e00 100%)",
   },
@@ -41,22 +41,34 @@ export const ROLE_INFO: Record<Role, RoleInfo> = {
     color: "#f87171",
     gradient: "linear-gradient(135deg, #5f1e1e 0%, #3a0f0f 100%)",
   },
+  vieras: {
+    id: "vieras",
+    name: "Mökkivieras",
+    icon: "👤",
+    objective: "Selvitä totuus keskustelemalla ja seuraamalla muita.",
+    detail:
+      "Olet tavallinen mökkiseurueen osallistuja ilman erikoiskykyjä. Tarkkaile kuka valehtelee ja kuka puhuu totta.",
+    color: "#94a3b8",
+    gradient: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+  }
 };
 
 export function assignRoles(playerIds: string[]): Record<string, Role> {
   const shuffled = [...playerIds].sort(() => Math.random() - 0.5);
   const roles: Record<string, Role> = {};
-  const n = shuffled.length;
 
   shuffled.forEach((id, i) => {
     if (i === 0) {
       roles[id] = "syyllinen";
-    } else if (i === 1 && n >= 3) {
+    } else if (i === 1) {
       roles[id] = "salaisuuden_vartija";
-    } else if (i % 2 === 0) {
+    } else if (i === 2) {
       roles[id] = "tutkija";
-    } else {
+    } else if (i === 3) {
       roles[id] = "todistaja";
+    } else {
+      // Jos pelaajia on yli 4, loput saavat suunnitelmasi mukaisen Mökkivieras-roolin
+      roles[id] = "vieras";
     }
   });
 
