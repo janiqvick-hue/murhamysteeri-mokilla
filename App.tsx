@@ -1,130 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { db } from './firebase'; // KORJATTU: Polku osoittaa nyt oikein samaan src-kansioon!
-import { ref, set, get, child, onValue } from 'firebase/database';
+import React, { useState, useEffect } from "react";
+import LobbyScreen from "./LobbyScreen";
+import RoleRevealScreen from "./RoleRevealScreen";
+import MapScreen from "./MapScreen";
+import VotingScreen from "./VotingScreen";
+import KaartjarviMap from "./kaartjarvi/KaartjarviMap"; // UUSI KYTKENTÄ KAARTJÄRVELLE
+import { Compass, Skull, HelpCircle } from "lucide-react";
 
 export default function App() {
-  const [roomCode, setRoomCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
-  const [playerName, setPlayerName] = useState('');
-  const [inLobby, setInLobby] = useState(false);
-  const [players, setPlayers] = useState<Record<string, any>>({}); // Tila reaaliaikaisille pelaajille
+  // Pelaajan anonyymi ID ja valittu pelityyppi
+  const [playerId] = useState(() => "p_" + Math.random().toString(36).substr(2, 9));
+  const [playerName, setPlayerName] = useState("");
+  const [gameCode, setGameCode] = useState("");
+  const [isSoloMode, setIsSoloMode] = useState(false);
+  const [lobbyData, setLobbyData] = useState<any>(null);
+  const [resultsData, setResultsData] = useState<any>(null);
 
-  // Kuunnellaan lobbyn pelaajia reaaliajassa, kun huoneeseen on liitytty
-  useEffect(() => {
-    if (!roomCode) return;
+  // Pelitila: "menu" (päävalikko), "lobby", "reveal", "investigation", "voting", "ending", "kaartjarvi"
+  const [gameState, setGameState] = useState<"menu" | "lobby" | "reveal" | "investigation" | "voting" | "ending" | "kaartjarvi">("menu");
 
-    const roomRef = ref(db, `rooms/${roomCode}/players`);
-    
-    // Tämä funktio laukeaa aina, kun tietokannassa tapahtuu muutos
-    const unsubscribe = onValue(roomRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setPlayers(snapshot.val());
-      } else {
-        setPlayers({});
-      }
-    });
-
-    // Suljetaan kuuntelija, kun komponentti poistuu käytöstä
-    return () => unsubscribe();
-  }, [roomCode]);
-
-  // Toiminto: Luodaan uusi huone tietokantaan
-  const createRoom = async () => {
-    if (!playerName.trim()) return alert('Syötä ensin nimesi!');
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    
-    try {
-      await set(ref(db, 'rooms/' + code), {
-        status: 'waiting',
-        host: playerName,
-        players: {
-          [playerName]: { name: playerName, role: 'undecided', task: 'none' }
-        }
-      });
-      setRoomCode(code);
-      setInLobby(true);
-    } catch (error: any) {
-      alert('Virhe huoneen luomisessa: ' + error.message);
-    }
+  const handleGameStarted = (data: any) => {
+    setLobbyData(data);
+    setGameState("reveal");
+  };
+  const handleResetGame = () => {
+    setGameCode("");
+    setLobbyData(null);
+    setResultsData(null);
+    setGameState("menu");
   };
 
-  // Toiminto: Liitytään olemassa olevaan huoneeseen
-  const joinRoom = async () => {
-    if (!playerName.trim()) return alert('Syötä ensin nimesi!');
-    if (inputCode.length !== 4) return alert('Syötä 4-merkkinen koodi!');
-
-    const dbRef = ref(db);
-    try {
-      const snapshot = await get(child(dbRef, `rooms/${inputCode}`));
-      if (snapshot.exists()) {
-        await set(ref(db, `rooms/${inputCode}/players/${playerName}`), {
-          name: playerName,
-          role: 'undecided',
-          task: 'none'
-        });
-        setRoomCode(inputCode);
-        setInLobby(true);
-      } else {
-        alert('Huonetta ei löytynyt! Tarkista koodi.');
-      }
-    } catch (error: any) {
-      alert('Virhe liittyessä: ' + error.message);
-    }
-  };
-
-  // NÄKYMÄ 2: Odotushuone (Lobby)
-  if (inLobby) {
+  // --- REPRENTAATIO VAIHEEN MUKAAN ---
+  if (gameState === "menu") {
     return (
-      <div style={{ padding: '40px', background: '#0f172a', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', textAlign: 'center' }}>
-        <h1 style={{ color: '#dc2626' }}>MURHAMYSTEERI LOBBY</h1>
-        <p style={{ fontSize: '20px' }}>Olet huoneessa: <strong style={{ color: '#f59e0b' }}>{roomCode}</strong></p>
-        
-        <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', maxWidth: '400px', margin: '20px auto', border: '1px solid #334155' }}>
-          <h3>Paikalla olevat pelaajat:</h3>
-          <ul style={{ listStyleType: 'none', padding: 0, fontSize: '18px' }}>
-            {Object.keys(players).map((pName) => (
-              <li key={pName} style={{ margin: '10px 0', padding: '5px', background: '#0f172a', borderRadius: '6px' }}>
-                👤 {pName} {pName === playerName ? '(Sinä)' : ''}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[85vh] w-full max-w-md mx-auto px-4 py-8 text-slate-100" style={{ fontFamily: "sans-serif" }}>
+        <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-center space-y-6">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 via-amber-600 to-purple-600" />
+          
+          <div>
+            <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-full w-fit mx-auto mb-3">
+              <Compass className="w-8 h-8 text-red-500" />
+            </div>
+            <h1 className="text-2xl font-black uppercase tracking-tight text-slate-100">MysteeriPelit Mökillä</h1>
+            <p className="text-xs text-slate-400 mt-1">Valitse pelattava tarina tai pelimuoto alta</p>
+          </div>
 
-        <p style={{ color: '#94a3b8' }}>Odotetaan kavereita mukaan... Seuraavassa vaiheessa arvomme roolit!</p>
+          <div className="space-y-3 pt-2 text-left">
+            {/* Vaihtoehto 1: Klassinen Mökkimysteeri */}
+            <button
+              type="button"
+              onClick={() => setGameState("lobby")}
+              className="w-full p-4 bg-slate-950 border border-slate-800 hover:border-red-500/40 rounded-xl flex items-center justify-between transition-all cursor-pointer group border-none"
+            >
+              <div>
+                <span className="block text-sm font-bold text-slate-200 group-hover:text-red-400 transition-colors">🩸 1. Mökkimysteeri</span>
+                <span className="text-[11px] text-slate-500 block mt-0.5">4–8 pelaajaa livenä tai Solo botteja vastaan. Löydä murhaaja!</span>
+              </div>
+            </button>
+
+            {/* Vaihtoehto 2: UUSI Kaartjärven Huvila */}
+            <button
+              type="button"
+              onClick={() => setGameState("kaartjarvi")}
+              className="w-full p-4 bg-slate-950 border border-slate-800 hover:border-amber-500/40 rounded-xl flex items-center justify-between transition-all cursor-pointer group border-none"
+            >
+              <div>
+                <span className="block text-sm font-bold text-slate-200 group-hover:text-amber-400 transition-colors">🏛️ 2. Kaartjärven Huvila</span>
+                <span className="text-[11px] text-slate-500 block mt-0.5">Yksinpeli-pulmapeli. Ratko arvoituksia Lopen upeassa huvilamiljöössä!</span>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
+  // --- LIITTYVÄT REPRENTAATIOT MUILLE PELITILOILLE ---
+  const currentStage = lobbyData?.status || "lobby";
 
-  // NÄKYMÄ 1: Aloitusruutu
   return (
-    <div style={{ padding: '40px', background: '#0f172a', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', textAlign: 'center' }}>
-      <h1 style={{ color: '#dc2626', letterSpacing: '2px', marginBottom: '30px' }}>MURHAMYSTEERI MÖKILLÄ</h1>
-      <div style={{ background: '#1e293b', padding: '30px', borderRadius: '12px', maxWidth: '400px', margin: '0 auto', border: '1px solid #334155' }}>
-        <input 
-          type="text" 
-          placeholder="Kirjoita oma nimesi" 
-          value={playerName} 
-          onChange={(e) => setPlayerName(e.target.value)}
-          style={{ padding: '10px', width: '85%', marginBottom: '20px', borderRadius: '6px', border: '1px solid #475569', background: '#0f172a', color: 'white', textAlign: 'center', fontSize: '16px' }}
+    <div className="min-h-screen bg-slate-950 font-sans antialiased text-slate-200">
+      {gameState === "lobby" && (
+        <LobbyScreen
+          playerId={playerId}
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          gameCode={gameCode}
+          setGameCode={setGameCode}
+          isSoloMode={isSoloMode}
+          setIsSoloMode={setIsSoloMode}
+          onGameStarted={handleGameStarted}
         />
-        <h3 style={{ marginBottom: '10px' }}>Luo uusi peli</h3>
-        <button onClick={createRoom} style={{ background: '#dc2626', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', width: '90%', fontWeight: 'bold' }}>
-          Luo uusi huone
-        </button>
-        <hr style={{ borderColor: '#334155', margin: '25px 0' }} />
-        <h3>Liity kaverin peliin</h3>
-        <input 
-          type="text" 
-          placeholder="4-numeroinen koodi" 
-          maxLength={4} 
-          value={inputCode} 
-          onChange={(e) => setInputCode(e.target.value)}
-          style={{ padding: '10px', width: '85%', marginBottom: '10px', borderRadius: '6px', border: '1px solid #475569', background: '#0f172a', color: 'white', textAlign: 'center', fontSize: '16px' }}
+      )}
+
+      {gameState === "reveal" && currentStage === "reveal" && (
+        <RoleRevealScreen
+          playerId={playerId}
+          gameCode={gameCode}
+          isSoloMode={isSoloMode}
+          lobbyData={lobbyData}
+          onNextStage={() => setGameState("investigation")}
         />
-        <button onClick={joinRoom} style={{ background: '#2563eb', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', width: '90%', fontWeight: 'bold' }}>
-          Liity huoneeseen
-        </button>
-      </div>
+      )}
+
+      {(gameState === "investigation" || currentStage === "investigation") && (
+        <MapScreen
+          playerId={playerId}
+          gameCode={gameCode}
+          isSoloMode={isSoloMode}
+          lobbyData={lobbyData}
+          onNextStage={(results) => {
+            if (results) setResultsData(results);
+            setGameState("voting");
+          }}
+        />
+      )}
+
+      {(gameState === "voting" || currentStage === "voting" || currentStage === "ending") && (
+        <VotingScreen
+          playerId={playerId}
+          gameCode={gameCode}
+          isSoloMode={isSoloMode}
+          lobbyData={lobbyData}
+          resultsData={resultsData}
+          onNextStage={() => {
+            // Jos Firebase päivittää tilaksi ending, haetaan tuorein data
+            if (lobbyData) {
+              const updatedLobby = { ...lobbyData, status: "ending" };
+              setLobbyData(updatedLobby);
+            }
+          }}
+          onResetGame={handleResetGame}
+        />
+      )}
+
+      {gameState === "kaartjarvi" && (
+        <KaartjarviMap
+          playerId={playerId}
+          playerName={playerName || "Seikkailija"}
+          onExitGame={handleResetGame}
+        />
+      )}
     </div>
   );
 }
