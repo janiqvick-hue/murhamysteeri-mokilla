@@ -1,7 +1,5 @@
 import type { Clue } from "../types";
-import type { Scenario } from "../types";
 
-// Vihjeluokkien tyylittelyt
 export const CATEGORY_LABELS: Record<string, { label: string; color: string; icon: string }> = {
   fyysinen: { label: "Fyysinen todiste", color: "#ef4444", icon: "🗡️" },
   asiakirja: { label: "Dokumentti", color: "#3b82f6", icon: "📄" },
@@ -13,204 +11,172 @@ export const BASE_CLUES: Clue[] = [
   {
     id: "veitsi",
     locationId: "paamokki",
-    name: "Keittiöveitsi",
+    name: "Verinen keittiöveitsi",
     category: "fyysinen",
-    normalText:
-      "Keittiöveitsi löytyi epätavallisesta paikasta – olohuoneen sohvan alta. Terässä on tumma tahra.",
-    syyllinenText:
-      "Keittiöveitsi on pudonnut sohvan alle. Tahra on vain puolukkamehua.",
-    salaisuusHint: "Veitsessä on merkkejä kiireestä – joku yritti piilottaa sen hätäisesti.",
+    normalText: "Keittiötasolta kadonnut suuri veitsi, jossa on tuoreita jälkiä takan vieressä. Terä on pesty kiireessä, mutta kahvassa on vielä jotain punaista.",
+    syyllinenText: "Keittiöveitsi on pesty hyvin. Punainen tahra kahvassa on vain maalia kunnostusprojektista.",
+    salaisuusHint: "Veitsen kahvassa on merkkejä siitä, että joku yritti pyyhkiä sormenjälkiä hätäisesti."
   },
   {
     id: "kirje",
     locationId: "paamokki",
-    name: "Repaleinen kirje",
+    name: "Repaleinen uhkauskirje",
     category: "asiakirja",
-    normalText:
-      "Repaleinen kirje, jossa vieras käsiala: 'Emme voi enää jatkaa – sinä tiedät miksi.'",
-    syyllinenText:
-      "Kirje on vanha rakkauskirje. Ei liity tähän iltaan mitenkään.",
-    salaisuusHint: "Kirje on kirjoitettu ja tuotu mökille samana päivänä kuin tapahtuma.",
+    normalText: "Kirje, jossa uhataan paljastaa vanha petos, jos vaadittua summaa ei makseta. Allekirjoitettu salaperäisellä 'X'-kirjaimella.",
+    syyllinenText: "Tämä on pelkkää vanhaa pilailua ystävien kesken vuosia sitten.",
+    salaisuusHint: "Kirjeen paperilaatu täsmää päämökin työpöydällä olevaan lehtiöön."
   },
   {
-    id: "malja",
+    id: "viskimalja",
     locationId: "paamokki",
-    name: "Viskimalja",
+    name: "Klassinen viskilasi",
     category: "epailyttava",
-    normalText:
-      "Puolityhjä viskimalja – reunassa vain yksi huulijälki. Toinen malja on koskematon.",
-    syyllinenText: "Kaksi maljaa, kaksi juojaa. Normaalia illanviettoa ennen tragediaa.",
-    salaisuusHint: "Koskemattomassa maljassa on outo, mantelimainen tuoksu. Myrkkyä?",
+    normalText: "Lasi olohuoneen pöydällä, jonka pohjalla on sentti hienoa rusehtavaa nestettä. Tuoksu on omituisen mantelimainen, mikä viittaa syanidiin.",
+    syyllinenText: "Lasi on täysin normaalia ja puhdasta viskiä illanvietosta.",
+    salaisuusHint: "Mantelin tuoksu on voimakas – tähän lasiin on selvästi sekoitettu jotain vierasta."
   },
   {
     id: "kello",
-    locationId: "paamokki",
-    name: "Rikkinäinen taskukello",
+    locationId: "laituri",
+    name: "Särkynyt kultakello",
     category: "fyysinen",
-    normalText:
-      "Uhrin taskukello löytyi lattialta rikoutuneena. Se on pysähtynyt tasan aikaan 02:15.",
-    syyllinenText:
-      "Kello oli vanha ja tipahti pöydältä vahingossa. Aika on sattumaa.",
-    salaisuusHint: "Kellon lasissa on syviä naarmuja, jotka viittaavat kamppailuun.",
+    normalText: "Laatukello, jonka lasi on pirstaleina ja viisarit pysähtyneet tasan kello 02:14. Ranneke on revennyt väkivaltaisesti.",
+    syyllinenText: "Kello hajosi kun se tipahti laiturille vahingossa aiemmin päivällä.",
+    salaisuusHint: "Rannekkeen repeämä paljastaa, että kello on kiskottu ranteesta voimalla."
   },
   {
     id: "pyyhe",
     locationId: "sauna",
-    name: "Verinen pyyhe",
+    name: "Märkä, tuoksuva pyyhe",
     category: "fyysinen",
-    normalText:
-      "Pyyhe on taiteltu huolellisesti kiuaalle. Punertavia tahroja kuiduissa.",
-    syyllinenText:
-      "Kylpijä on vain raapinut ihoa tai saanut pienen haavan. Ei merkittävää.",
-    salaisuusHint: "Pyyhe on taiteltu liian huolellisesti – joku on yrittänyt siivota jälkiä saunalla.",
+    normalText: "Lölyhuoneen nurkkaan mytätty pyyhe, joka tuoksuu petrolilta ja bensiiniltä, ei suinkaan saunaöljyltä.",
+    syyllinenText: "Pyyhkeellä puhdistettiin vain moottorin osia aamupäivällä.",
+    salaisuusHint: "Pyyhkeessä on myös tummia noki- ja kuitujälkiä, jotka viittaavat polttamiseen."
   },
   {
     id: "polttotahrat",
-    locationId: "sauna",
-    name: "Polttotahrat",
+    locationId: "grillikota",
+    name: "Muoviset polttotahrat",
     category: "fyysinen",
-    normalText:
-      "Tuoreet polttotahrat lauteilla – kiuas ei ole ollut edes käynnissä tänä iltana.",
-    syyllinenText:
-      "Joku poltti tulitikkua lauteilla pimeässä. Vanha tapa, ei merkitystä.",
-    salaisuusHint: "Tahrat ovat käden muotoiset. Jotain on puristettu kiuasta vasten voimakkaasti.",
-  },
-  {
-    id: "koukku",
-    locationId: "sauna",
-    name: "Vääntynyt koukku",
-    category: "fyysinen",
-    normalText:
-      "Seinäkoukku on vääntynyt vinoon, ikään kuin jostain raskaasta taakasta.",
-    syyllinenText: "Koukku on ollut löysänä jo vuosia. Vanhan mökkirakennuksen vikoja.",
-    salaisuusHint: "Koukku on uusi – se on asennettu mökille vasta tänä kesänä.",
+    normalText: "Kota-tulen loimussa sulaneen muovin jättämät tummat läikät penkillä. Joku on yrittänyt hävittää täällä jotain synteettistä.",
+    syyllinenText: "Grillatessa tipahti vahingossa muovinen pakkaus pussista nuotioon.",
+    salaisuusHint: "Sulanut muovi haisee erittäin pistävältä, aivan kuin jokin synteettinen vaate tai lompakko olisi poltettu."
   },
   {
     id: "tuhka",
     locationId: "grillikota",
-    name: "Palaneet paperit",
+    name: "Hienon paperin tuhka",
     category: "asiakirja",
-    normalText:
-      "Tuhkassa on palaneen paperin jäänteitä. Palaneessa kulmassa näkyy teksti: '...testamentti...'",
-    syyllinenText:
-      "Vanhat grillireseptit tai roskat poltettu pois mökin tavan mukaan.",
-    salaisuusHint: "Paperi liittyy uhrin perintökiistoihin ystäväpiirin sisällä.",
+    normalText: "Tulisijassa palaneen paksun paperin jäänteet. Suikaleesta erottuu sanoja ja leima, joka viittaa viralliseen lääkäritodistukseen.",
+    syyllinenText: "Tuhka on vain vanhoja sanomalehtiä, joita käytettiin sytytyksenä.",
+    salaisuusHint: "Leiman jäänteet paljastavat todistuksen olleen salainen ja tuore."
   },
   {
     id: "pullonkorkit",
     locationId: "grillikota",
-    name: "Pullonkorkit",
+    name: "Lääkekapselin korkit",
     category: "todistus",
-    normalText:
-      "Kymmeniä pullonkorkkeja kaadettuna lattialle – joku vietti pitkään aikaa täällä.",
-    syyllinenText: "Koko seurue joi yhdessä – ei ihme että korkkeja löytyy paljon.",
-    salaisuusHint: "Yksi korkeista on täysin eri merkkiä, jota kukaan teistä ei tuonut mökille.",
+    normalText: "Pöydän alle vieraiden silmiltä vierineet pullokorkit. Ne kuuluvat vahvoille rauhoittaville lääkkeille, joita ei pitäisi sekoittaa alkoholiin.",
+    syyllinenText: "Nämä ovat vanhoja vitamiinipullon korkkeja mökin varastoista.",
+    salaisuusHint: "Korkeissa on tuoretta lääkepölyä – purkki on avattu hiljattain."
   },
   {
     id: "hiilyveitsi",
     locationId: "grillikota",
-    name: "Hiiltynyt veitsi",
+    name: "Puoliksi hiiltynyt retkiveitsi",
     category: "fyysinen",
-    normalText:
-      "Grillipesässä on hiiltynyt veitsi – se ei kuulu grillikodan varustukseen.",
-    syyllinenText:
-      "Käytettiin lihan kääntämiseen ja pudotettiin grilliin vahingossa.",
-    salaisuusHint: "Veitsen kahvassa on sama uniikki valmistajan merkki kuin keittiön pääveitsessä.",
+    normalText: "Hiilien joukosta pilkottava metallikahvainen retkiveitsi. Sen terässä on syviä uria ja iskujälkiä, aivan kuin sitä olisi käytetty lukkojen murtamiseen.",
+    syyllinenText: "Veitsellä vain pilkottiin puita ja se unohdettiin hiillokseen.",
+    salaisuusHint: "Iskujäljet täsmäävät täydellisesti vanhan varaston murrettuun lukkoon."
   },
   {
     id: "koysi",
-    locationId: "laituri",
-    name: "Katkaistu köysi",
+    locationId: "venevaja",
+    name: "Karkea tervaköysi",
     category: "fyysinen",
-    normalText:
-      "Laituria pitkin kulkeva köysi on katkaistu terävästi – se ei ole kulunut poikki.",
-    syyllinenText:
-      "Vene rymähti myrskyyn ja köysi ratkesi kovan tuulen painosta.",
-    salaisuusHint: "Katkaisupinnassa on viiltojälki – tehty erittäin terävällä veitsellä.",
+    normalText: "Venevajan tukihirrestä katkaistu köysi. Pätkä puuttuu, ja leikkausjälki on tehty erittäin tylpällä tai sahahampaisella terällä.",
+    syyllinenText: "Köysi katkesi itsestään kovan rasituksen ja painon vuoksi.",
+    salaisuusHint: "Katkaisupinnassa näkyy sahausjälkiä – se on katkaistu tahallaan retkiveitsellä."
   },
   {
     id: "jalanjäljet",
-    locationId: "laituri",
-    name: "Tuoreet jalanjäljet",
+    locationId: "metsakpolku",
+    name: "Kuraiset jalanjäljet",
     category: "fyysinen",
-    normalText:
-      "Märät jalanjäljet laiturilla. Kengännumero on yllättävän pieni.",
-    syyllinenText: "Joku kävi uimassa tai hakemassa vettä aiemmin illalla. Normaalia.",
-    salaisuusHint: "Jalanjäljet johtavat pimeästä metsästä suoraan laiturille – ei mökin suunnasta.",
+    normalText: "Isot, karkeakuvioiset saappaiden jäljet, jotka johtavat tontin laidalta suoraan laituria kohti ja palaavat metsään kierrosreittiä pitkin.",
+    syyllinenText: "Joku kävi vain hakemassa polttopuita metsästä aiemmin sateessa.",
+    salaisuusHint: "Jäljet on tehty erittäin kiireessä, sillä askelväli on poikkeuksellisen pitkä."
   },
   {
     id: "puhelin",
-    locationId: "laituri",
-    name: "Uhrin puhelin",
+    locationId: "metsakpolku",
+    name: "Lätäkössä lojuva puhelin",
     category: "epailyttava",
-    normalText:
-      "Uhrin lukittu matkapuhelin löytyi laiturin alta kastuneena. Ei verkkoa.",
-    syyllinenText: "Hän pudotti sen sinne itse ennen kuolemaansa.",
-    salaisuusHint: "Puhelimen näytössä näkyy viimeisin luonnosteltu tekstiviesti: 'Yksi meistä tietää'.",
+    normalText: "Kallis älypuhelin, joka on upotettu veteen. Akku on revitty irti ja heitetty erikseen. Puhelimen SIM-korttipaikka on tyhjä.",
+    syyllinenText: "Puhelin tippui taskusta lätäkköön ja hajosi vahingossa.",
+    salaisuusHint: "SIM-kortin puuttuminen todistaa, että puhelin haluttiin mykistää pysyvästi."
   },
   {
     id: "vene",
-    locationId: "venevaja",
-    name: "Siirretty vene",
+    locationId: "laituri",
+    name: "Puinen soutuvene",
     category: "epailyttava",
-    normalText:
-      "Soutuvene on siirretty – märät ja hiekkaiset jäljet lattialla paljastavat sen.",
-    syyllinenText: "Venettä siirrettiin aamulla kalastusta varten. Jäi vain eri paikkaan.",
-    salaisuusHint: "Vene on siirretty takaisin venevajaan myrskyn alettua – mutta eri asentoon kuin aiemmin.",
+    normalText: "Mökin rannassa oleva soutuvene, joka keikkuu aallokossa. Huomattavaa on, että molemmat airot ja lukitustappi ovat poissa.",
+    syyllinenText: "Airot vietiin venevajaan suojaan myrskyltä, kuten kuuluukin.",
+    salaisuusHint: "Lukitustappi on katkaistu väkivalloin, veneellä yritettiin lähteä kiireessä."
   },
   {
     id: "tankki",
-    locationId: "venevaja",
-    name: "Tyhjä polttoainetankki",
+    locationId: "vanha_varasto",
+    name: "Tyhjä bensiinikannu",
     category: "fyysinen",
-    normalText:
-      "Perämoottorin polttoainetankki on täysin tyhjä – vaikka se täytettiin vasta eilen.",
-    syyllinenText: "Moottori luultavasti vuotaa bensiiniä. Se on pitänyt korjata jo pitkään.",
-    salaisuusHint: "Tankin korkki on jätetty auki ja polttoaine on kaadettu maahan pakenemisen estämiseksi.",
+    normalText: "Vihreä 5 litran peltitankki, joka tuoksuu tuoreelta bensiiniltä. Korkki on jätetty auki ja kanisterissa on tuore naarmu saunan avaimenperästä.",
+    syyllinenText: "Kannu on ollut tyhjänä varastossa jo viime kesästä lähtien.",
+    salaisuusHint: "Kannun pohjalla on vielä muutama tippa tuoretta polttoainetta, jota käytettiin saunalla."
   },
   {
     id: "avain",
-    locationId: "venevaja",
-    name: "Tuntematon avain",
+    locationId: "vanha_varasto",
+    name: "Ruosteinen varaston avain",
     category: "epailyttava",
-    normalText:
-      "Naulan kärjessä roikkuu avain, jota kukaan mökkiseurueesta ei tunnista. Merkki: 'M-4'.",
-    syyllinenText: "Vanha vara-avain johonkin mökin vanhaan riippulukkoon. Merkityksetön.",
-    salaisuusHint: "Avaimen 'M-4' koodi vastaa vanhan ulkovaraston ovea.",
+    normalText: "Rengasavaimen perään hätäisesti liitetty kulunut avain, joka sopii päämökin lukittuun isännänkaappiin.",
+    syyllinenText: "Tämä on vain vanha hylätty avain, joka ei sovi mihinkään mökin lukkoon.",
+    salaisuusHint: "Avain on putsattu äskettäin öljyllä, sitä on käytetty tänä yönä."
   },
   {
     id: "lehdet",
-    locationId: "metsakpolku",
-    name: "Käännetyt lehdet",
-    category: "fyysinen",
-    normalText:
-      "Polun varren maasto on sekoitettu – aivan kuin joku olisi kaatunut tai ryöminyt tällä kohdin.",
-    syyllinenText: "Myrskytuuli repi puunoksia ja lennätti lehtiä ympäriinsä.",
-    salaisuusHint: "Polun vieressä sammalta on yritetty siirtää takaisin hätäisesti täytetyn kuopan päälle.",
+    locationId: "paamokki",
+    name: "Vieraskirjan revityt sivut",
+    category: "asiakirja",
+    normalText: "Mökin vieraskirja hyllyssä, mutta siitä on revitty irti koko edellisen vuoden sivut. Viimeinen jäljellä oleva merkintä on vihjaileva saatesana.",
+    syyllinenText: "Sivut repiytyivät kun kirja putosi maahan remontin yhteydessä.",
+    salaisuusHint: "Sivut on leikattu siististi veitsellä – joku halusi pyyhkiä historian."
   },
   {
     id: "taskulamppu",
     locationId: "metsakpolku",
-    name: "Hylätty taskulamppu",
+    name: "Rikkoutunut taskulamppu",
     category: "epailyttava",
-    normalText:
-      "Taskulamppu on hylätty polun varteen sammutettuna. Paristot ovat yhä täynnä.",
-    syyllinenText: "Joku pudotti sen iltakävelyllä pimeässä. Löytyy sieltä usein.",
-    salaisuusHint: "Taskulampun pinnassa on outoja mutatahroja – se ei kuulu mökin omiin varusteisiin.",
+    normalText: "Märästä mustikanvarvukosta löytynyt metallinen taskulamppu. Paristolokero on täynnä järvivettä, ja lasissa on verta.",
+    syyllinenText: "Taskulamppu unohtui metsään ja joku astui sen päälle.",
+    salaisuusHint: "Verijäljet lasissa viittaavat siihen, että taskulamppua käytettiin lyömäaseena."
   },
   {
     id: "saappaat",
-    locationId: "metsakpolku",
-    name: "Mutaiset saappaat",
+    locationId: "sauna",
+    name: "Ylimääräiset kumisaappaat",
     category: "fyysinen",
-    normalText:
-      "Pari mutaisia kumisaappaita on piilotettu tiheän kuusen alle polun varteen.",
-    syyllinenText: "Joku jätti ne sinne kuivumaan sateesta huolimatta.",
-    salaisuusHint: "Saappaiden pohjakuvio täsmää täydellisesti laiturilta löytyneisiin jalanjälkiä.",
+    normalText: "Pukuhuoneen penkin alla olevat saappaat, kokoa 44. Pohjiin on tarttunut tuoretta turvetta ja pienenpieniä lasinsirpaleita päämökin lasista.",
+    syyllinenText: "Saappaat kuuluvat mökin omistajalle, niitä käytetään pihatöissä.",
+    salaisuusHint: "Lasinsirpaleet täsmäävät täydellisesti olohuoneen rikkoutuneeseen viskilasiin."
   }
 ];
 
-export function getCluesForScenario(scenario: Scenario | null): Clue[] {
+export const CLUE_MAP: Record<string, Clue> = Object.fromEntries(
+  BASE_CLUES.map((c) => [c.id, c])
+);
+
+export function getCluesForScenario(scenario: any): Clue[] {
   if (!scenario || !scenario.clueOverrides || Object.keys(scenario.clueOverrides).length === 0) {
     return BASE_CLUES;
   }
