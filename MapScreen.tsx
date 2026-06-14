@@ -1,16 +1,71 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion"; // KORJATTU: Standardi framer-motion
+import { motion, AnimatePresence } from "framer-motion";
 import { LOCATIONS } from "../utils/locations";
-import { BASE_CLUES } from "../utils/clues"; // KORJATTU: Oikea vihjemuuttuja
-import { SCENARIO_MAP } from "../utils/scenarios"; // KORJATTU: Oikea skenaariomappi
+import { BASE_CLUES } from "../utils/clues";
+import { SCENARIO_MAP } from "../utils/scenarios";
 import { db } from "../firebase";
-import { ref, update, onValue, set } from "firebase/database";
-import WitnessBanner from "./map/WitnessBanner";
-import SabotageModal from "./map/SabotageModal";
+import { ref, update, onValue } from "firebase/database";
 import {
-  Compass, MapPin, Eye, BookOpen, Clock, Skull, Search, Lock, Unlock, HelpCircle, AlertTriangle, Play, ChevronRight, CheckCircle2, User, Volume2, ShieldAlert
+  Compass, MapPin, Eye, Bell, ShieldAlert, Sparkles, BookOpen, Clock, Skull, Search, Play, ChevronRight, User
 } from "lucide-react";
 
+// --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN ---
+interface WitnessNotification {
+  id: string;
+  text: string;
+  type: "movement" | "sabotage" | "discovery" | "system";
+  timestamp: number;
+}
+
+function WitnessBanner({ notifications }: { notifications: WitnessNotification[] }) {
+  const activeNotifications = [...notifications]
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 2);
+
+  if (activeNotifications.length === 0) return null;
+
+  return (
+    <div className="w-full space-y-2 pointer-events-none mb-4">
+      <AnimatePresence>
+        {activeNotifications.map((notif) => {
+          let icon = <Bell className="w-4 h-4 text-amber-400" />;
+          let bgColor = "bg-slate-900/95 border-amber-500/20 text-slate-200";
+
+          if (notif.type === "sabotage") {
+            icon = <ShieldAlert className="w-4 h-4 text-red-400 animate-pulse" />;
+            bgColor = "bg-red-950/90 border-red-500/30 text-red-200";
+          } else if (notif.type === "discovery") {
+            icon = <Sparkles className="w-4 h-4 text-cyan-400" />;
+            bgColor = "bg-slate-900/95 border-cyan-500/20 text-slate-100";
+          } else if (notif.type === "movement") {
+            icon = <Eye className="w-4 h-4 text-emerald-400" />;
+            bgColor = "bg-slate-900/90 border-slate-800 text-slate-300";
+          }
+
+          return (
+            <motion.div
+              key={notif.id}
+              initial={{ opacity: 0, y: -15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.9 }}
+              className={`flex items-center gap-3 p-3 rounded-xl border shadow-lg backdrop-blur-md w-full ${bgColor}`}
+            >
+              <div className="shrink-0 p-1.5 bg-black/40 rounded-lg">{icon}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold leading-normal truncate">{notif.text}</p>
+                <span className="text-[9px] text-slate-500 font-mono">
+                  {new Date(notif.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// --- MAP SCREEN PROPS & COMPONENT ALKAA ---
 interface MapScreenProps {
   playerId: string;
   gameCode: string;
@@ -18,7 +73,173 @@ interface MapScreenProps {
   lobbyData: any;
   onNextStage: (resultsData?: any) => void;
 }
+// --- SABOTAGE MODAL UPOTETTU SUORAAN TÄHÄN ---
+interface SabotageModalProps {
+  onClose: () => void;
+  onSaveSabotage: (clueId: string, fakeName: string, fakeText: string) => void;
+  sabotagedMap: Record<string, any>;
+}
 
+function SabotageModal({ onClose, onSaveSabotage, sabotagedMap }: SabotageModalProps) {
+  const [selectedClueId, setSelectedClueId] = useState("");
+  const [fakeName, setFakeName] = useState("");
+  const [fakeText, setFakeText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const selectedClue = BASE_CLUES.find(c => c.id === selectedClueId);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClueId || !fakeName.trim() || !fakeText.trim()) return;
+
+    setSubmitting(true);
+    onSaveSabotage(selectedClueId, fakeName.trim(), fakeText.trim());
+    setSuccess(true);
+    
+    setTimeout(() => {
+      setSuccess(false);
+      setSubmitting(false);
+      onClose();
+    }, 1500);
+  };
+
+  const handleClueSelect = (id: string) => {
+    setSelectedClueId(id);
+    const existing = sabotagedMap[id];
+    if (existing) {
+      setFakeName(existing.fakeName);
+      setFakeText(existing.fakeText || existing.fakeDescription);
+    } else {
+      const original = BASE_CLUES.find(c => c.id === id);
+      setFakeName(original ? original.name : "");
+      setFakeText("");
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.95, y: 15 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 10 }}
+        className="bg-slate-900 border border-red-900/40 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
+      >
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 to-amber-600" />
+
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-2">
+            <Skull className="w-5 h-5 text-red-500 animate-pulse" />
+            <h3 className="text-md font-bold text-slate-100 uppercase tracking-wide">
+              Syyllisen Sabotaasipaneeli
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+          Kuulut murhaajiin. Voit väärentää minkä tahansa mökin vihjeen syöttämällä valheellista tietoa etsivien puhelimiin.
+        </p>
+
+        {success ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="py-12 flex flex-col items-center text-center justify-center space-y-3"
+          >
+            <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-full text-red-400 animate-bounce">
+              <ShieldAlert className="w-8 h-8" />
+            </div>
+            <h4 className="text-sm font-bold text-red-400 uppercase tracking-widest">Vihje Sabotoitu livenä!</h4>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
+                Valitse väärennettävä vihje
+              </label>
+              <select
+                value={selectedClueId}
+                onChange={(e) => handleClueSelect(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500 cursor-pointer"
+                required
+              >
+                <option value="">-- Valitse johto-lanka --</option>
+                {BASE_CLUES.map((clue) => {
+                  const loc = LOCATIONS.find(l => l.id === clue.locationId);
+                  const isAlreadySabotaged = !!sabotagedMap[clue.id];
+                  return (
+                    <option key={clue.id} value={clue.id}>
+                      {clue.name} ({loc ? loc.name : ""}) {isAlreadySabotaged ? "🛑" : ""}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {selectedClueId && (
+              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                <div className="p-3 bg-slate-950 border border-slate-850 rounded-xl">
+                  <span className="block text-[10px] text-amber-500/80 font-bold uppercase tracking-wider mb-0.5">Alkuperäinen esine:</span>
+                  <p className="text-xs font-bold text-slate-300 mb-1">{selectedClue?.name}</p>
+                  <p className="text-[11px] text-slate-500 italic leading-snug">"{selectedClue?.normalText}"</p>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Väärennetty nimi (Valenimi)</label>
+                  <input
+                    type="text"
+                    maxLength={35}
+                    value={fakeName}
+                    onChange={(e) => setFakeName(e.target.value)}
+                    placeholder="Esim. Tyhjä lasi ilman jälkiä"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Uusi valeselitys</label>
+                  <textarea
+                    rows={3}
+                    maxLength={160}
+                    value={fakeText}
+                    onChange={(e) => setFakeText(e.target.value)}
+                    placeholder="Mitä haluat kertoa etsiville tästä esineestä?..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500 resize-none"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-2.5 bg-red-800 hover:bg-red-700 disabled:bg-slate-800 text-slate-100 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-red-950/25 transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                  Käynnistä huijaus
+                </button>
+              </motion.div>
+            )}
+          </form>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// --- MAIN MAP SCREEN COMPONENT ---
 export default function MapScreen({
   playerId,
   gameCode,
@@ -36,8 +257,6 @@ export default function MapScreen({
   const [notifications, setNotifications] = useState<any[]>([]);
   const [selectedClueForDetail, setSelectedClueForDetail] = useState<any | null>(null);
   const [showRoleBrief, setShowRoleBrief] = useState(true);
-  
-  // Timer: 180 seconds default (3 minutes)
   const [timeLeft, setTimeLeft] = useState(180);
 
   const scenario = lobbyData.scenarioId ? SCENARIO_MAP[lobbyData.scenarioId as keyof typeof SCENARIO_MAP] : null;
@@ -45,34 +264,23 @@ export default function MapScreen({
   const myRole = myPlayer?.role || "vieras";
   const isHost = myPlayer?.isHost;
 
-  // Active Location object
   const activeLocation = LOCATIONS.find(l => l.id === activeLocationId) || LOCATIONS[0];
 
-  // 1. Firebase Listeners (for multiplayer)
   useEffect(() => {
     if (isSoloMode || !gameCode) return;
 
-    // Listen to players state to map current locations
     const playersRef = ref(db, `rooms/${gameCode}/players`);
     const unsubPlayers = onValue(playersRef, (snapshot) => {
       const val = snapshot.val();
-      if (val) {
-        setRoomPlayers(Object.values(val));
-      }
+      if (val) setRoomPlayers(Object.values(val));
     });
 
-    // Listen to sabotaged secrets
     const sabotageRef = ref(db, `rooms/${gameCode}/sabotagedClues`);
     const unsubSabotage = onValue(sabotageRef, (snapshot) => {
       const val = snapshot.val();
-      if (val) {
-        setSabotagedClues(val);
-      } else {
-        setSabotagedClues({});
-      }
+      setSabotagedClues(val || {});
     });
 
-    // Listen to notifications / witness logs
     const notifRef = ref(db, `rooms/${gameCode}/notifications`);
     const unsubNotif = onValue(notifRef, (snapshot) => {
       const val = snapshot.val();
@@ -85,13 +293,9 @@ export default function MapScreen({
       }
     });
 
-    // Listen to stage updates (if host triggers voting, other clients will transition)
     const statusRef = ref(db, `rooms/${gameCode}/status`);
     const unsubStatus = onValue(statusRef, (snapshot) => {
-      const statusValue = snapshot.val();
-      if (statusValue === "voting") {
-        onNextStage();
-      }
+      if (snapshot.val() === "voting") onNextStage();
     });
 
     return () => {
@@ -102,27 +306,21 @@ export default function MapScreen({
     };
   }, [isSoloMode, gameCode, onNextStage]);
 
-  // 2. Solo Simulation Timer & AI moves
   useEffect(() => {
     if (!isSoloMode) return;
 
-    // Fill simulated players initial locations
     const initialSims = Object.values(lobbyData.players).map((p: any) => ({
       ...p,
       activeLocationId: p.activeLocationId || LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)].id
     }));
     setRoomPlayers(initialSims);
 
-    // Initial hint for investigator
     if (myRole === "tutkija") {
       const tutorClue = BASE_CLUES.find(c => c.locationId === "paamokki");
-      if (tutorClue) {
-        setFoundClues([tutorClue.id]);
-      }
+      if (tutorClue) setFoundClues([tutorClue.id]);
     }
   }, [isSoloMode, myRole, lobbyData.players]);
 
-  // Handle countdown Timer
   useEffect(() => {
     if (timeLeft <= 0) {
       handleProceedToVoting();
@@ -131,7 +329,6 @@ export default function MapScreen({
 
     const timer = setInterval(() => {
       setTimeLeft(prev => prev - 1);
-      // AI simulation movements & discoveries (every 12 seconds)
       if (isSoloMode && Math.random() < 0.15) {
         simulateAIMovement();
       }
@@ -140,11 +337,9 @@ export default function MapScreen({
     return () => clearInterval(timer);
   }, [timeLeft, isSoloMode]);
 
-  // Helper: AI Simulation Movements
   const simulateAIMovement = () => {
     setRoomPlayers(prev => {
       const next = [...prev];
-      // Pick random simulated AI player
       const aiPlayers = next.filter(p => p.isAI);
       if (aiPlayers.length === 0) return prev;
       const targetAI = aiPlayers[Math.floor(Math.random() * aiPlayers.length)];
@@ -152,7 +347,6 @@ export default function MapScreen({
       const newLoc = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
       targetAI.activeLocationId = newLoc.id;
 
-      // Maybe they found a clue!
       const possibleClues = BASE_CLUES.filter(c => c.locationId === newLoc.id && !foundClues.includes(c.id));
       const textType = Math.random() < 0.4 ? "discovery" : "movement";
 
@@ -160,12 +354,9 @@ export default function MapScreen({
       if (textType === "discovery" && possibleClues.length > 0) {
         const found = possibleClues[Math.floor(Math.random() * possibleClues.length)];
         text = `${targetAI.name} löysi esineen "${found.name}" alueelta ${newLoc.name}.`;
-        
-        // Give AI more items
         targetAI.cluesFoundCount = (targetAI.cluesFoundCount || 0) + 1;
       }
 
-      // Add a simulated log
       const newNotif = {
         id: Math.random().toString(),
         text,
@@ -178,10 +369,8 @@ export default function MapScreen({
     });
   };
 
-  // Move our actual player to selected room
   const handleMoveToLocation = async (locId: string) => {
     setActiveLocationId(locId);
-
     const logText = `${myPlayer?.name || "Etsivä"} siirtyi alueelle ${LOCATIONS.find(l => l.id === locId)?.name}.`;
 
     if (isSoloMode) {
@@ -193,9 +382,8 @@ export default function MapScreen({
         timestamp: Date.now()
       }, ...old]);
     } else {
-      // Sync DB
       try {
-        const { push } = await import("firebase/database"); // KORJATTU: dynaaminen push-tuki varmistukseksi
+        const { push } = await import("firebase/database");
         await update(ref(db, `rooms/${gameCode}/players/${playerId}`), {
           activeLocationId: locId
         });
@@ -210,7 +398,6 @@ export default function MapScreen({
       }
     }
   };
-  // Searching action simulation
   const handleSearchClues = () => {
     if (searching) return;
     setSearching(true);
@@ -230,11 +417,7 @@ export default function MapScreen({
 
   const finishSearch = async () => {
     setSearching(false);
-
-    // Pick clues corresponding to active room
     const roomClues = BASE_CLUES.filter(c => c.locationId === activeLocationId);
-    
-    // Filter out already discovered
     const undiscovered = roomClues.filter(c => !foundClues.includes(c.id));
 
     if (undiscovered.length > 0) {
@@ -243,7 +426,6 @@ export default function MapScreen({
       setFoundClues(updatedList);
       setSelectedClueForDetail(selected);
 
-      // Increment counters
       if (isSoloMode) {
         setRoomPlayers(prev => prev.map(p => p.id === playerId ? { ...p, cluesFoundCount: (p.cluesFoundCount || 0) + 1 } : p));
         setNotifications(old => [{
@@ -255,13 +437,11 @@ export default function MapScreen({
       } else {
         try {
           const { push } = await import("firebase/database");
-          // Increment cluesCount
           const currentCount = myPlayer?.cluesFoundCount || 0;
           await update(ref(db, `rooms/${gameCode}/players/${playerId}`), {
             cluesFoundCount: currentCount + 1
           });
 
-          // Add public log
           const notifRef = ref(db, `rooms/${gameCode}/notifications`);
           await push(notifRef, {
             text: `${myPlayer?.name} löysi esineen "${selected.name}" kohteesta ${activeLocation.name}.`,
@@ -272,9 +452,11 @@ export default function MapScreen({
           console.warn("DB write failed", err);
         }
       }
+    } else {
+      alert("Tämä huone on jo tutkittu perusteellisesti. Ei uusia vihjeitä!");
     }
   };
-  // Syyllinen saves a sabotage
+
   const handleSaveSabotage = async (clueId: string, fakeName: string, fakeText: string) => {
     if (isSoloMode) {
       setSabotagedClues(prev => ({
@@ -297,7 +479,6 @@ export default function MapScreen({
           authorId: playerId
         });
 
-        // Also update player count
         const currentCount = myPlayer?.sabotagesAttempted || 0;
         await update(ref(db, `rooms/${gameCode}/players/${playerId}`), {
           sabotagesAttempted: currentCount + 1
@@ -314,7 +495,7 @@ export default function MapScreen({
       }
     }
   };
-  // Moving game state to manual voting
+
   const handleProceedToVoting = async () => {
     if (isSoloMode) {
       onNextStage({
@@ -336,20 +517,18 @@ export default function MapScreen({
     }
   };
 
-  // Format countdown clock
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
   return (
-    <div className="flex flex-col min-h-[85vh] w-full max-w-lg mx-auto px-1 py-4">
+    <div className="flex flex-col min-h-[85vh] w-full max-w-lg mx-auto px-1 py-4 text-slate-100" style={{ fontFamily: "sans-serif" }}>
       {/* Investigation Bar Info */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4 flex justify-between items-center shadow-md">
         <div>
           <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest leading-none mb-1">
             ETSI VIHJEITÄ MÖKILTÄ
           </p>
-        <h2 className="text-sm font-bold text-slate-100 flex items-center gap-1.5">
+          <h2 className="text-sm font-bold text-slate-100 flex items-center gap-1.5">
             <Compass className="w-4 h-4 text-slate-400" />
             Mökkialueet & Todisteet
           </h2>
@@ -364,10 +543,11 @@ export default function MapScreen({
 
       {/* Collapsible Role Story Brief banner */}
       {scenario && (
-        <div className="bg-slate-900/90 border border-slate-850 rounded-xl mb-4 overflow-hidden">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-xl mb-4 overflow-hidden">
           <button
+            type="button"
             onClick={() => setShowRoleBrief(!showRoleBrief)}
-            className="w-full px-4 py-2.5 flex justify-between items-center text-left text-xs font-bold text-slate-300 hover:bg-slate-800/50 transition-colors uppercase tracking-wider cursor-pointer"
+            className="w-full px-4 py-2.5 flex justify-between items-center text-left text-xs font-bold text-slate-300 hover:bg-slate-800/50 transition-colors uppercase tracking-wider cursor-pointer border-none bg-transparent"
           >
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -387,7 +567,7 @@ export default function MapScreen({
                 transition={{ duration: 0.2 }}
                 className="px-4 pb-3 pt-1 border-t border-slate-800"
               >
-                <div className="space-y-2">
+                <div className="space-y-2 pt-2">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-bold text-slate-400">
                       Skenaario: <span className="text-red-400">{scenario.name}</span>
@@ -415,7 +595,7 @@ export default function MapScreen({
         </div>
       )}
 
-      {/* Witness Log Banner */}
+      {/* Witness Log Banner upotettuna */}
       <WitnessBanner notifications={notifications} />
 
       {/* Primary content layout split in areas */}
@@ -429,6 +609,36 @@ export default function MapScreen({
             {LOCATIONS.map((loc) => {
               const isActive = loc.id === activeLocationId;
               const countOfPeople = roomPlayers.filter(p => p.activeLocationId === loc.id).length;
+              return (
+                <button
+                  key={loc.id}
+                  type="button"
+                  onClick={() => handleMoveToLocation(loc.id)}
+                  className={`relative p-3 rounded-xl border text-left transition-all flex flex-col justify-between h-[80px] cursor-pointer group ${
+                    isActive 
+                      ? "bg-red-950/20 border-red-500/80 text-slate-100 shadow-md shadow-red-950/10" 
+                      : "bg-slate-950 border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <div className="flex justify-between items-start w-full">
+                    <span className="text-xs font-bold leading-tight group-hover:text-red-400 transition-colors">
+                      {loc.name}
+                    </span>
+                    {countOfPeople > 0 && (
+                      <span className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 bg-slate-800 text-slate-300 border border-slate-750 font-bold rounded-lg leading-none">
+                        <User className="w-2.5 h-2.5 shrink-0 text-slate-400" />
+                        {countOfPeople}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[9px] text-slate-500 leading-none">
+                    {isActive ? "📍 Tutkitaan" : "Mene huoneeseen"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         {/* Right pane / Bottom pane: Selected Area actions */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4">
           <div>
@@ -471,13 +681,14 @@ export default function MapScreen({
           {/* Action triggers inside specific room */}
           <div className="space-y-3">
             <button
+              type="button"
               onClick={handleSearchClues}
               disabled={searching}
               className="w-full py-3 bg-red-800 hover:bg-red-700 disabled:bg-slate-800 text-slate-100 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-950/25"
             >
               {searching ? (
                 <>
-<div className="w-4 h-4 rounded-full border-2 border-slate-300 border-t-red-400 animate-spin" />
+                  <div className="w-4 h-4 rounded-full border-2 border-slate-300 border-t-red-400 animate-spin" />
                   Etsitään ({searchProgress}%)
                 </>
               ) : (
@@ -501,7 +712,6 @@ export default function MapScreen({
           </div>
         </div>
       </div>
-
       {/* Journal and Syyllisen Panel Section */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-5 flex-1 flex flex-col">
         <div className="flex justify-between items-center mb-4">
@@ -513,6 +723,7 @@ export default function MapScreen({
           {/* Exclusive button for Syyllinen role */}
           {myRole === "syyllinen" && (
             <button
+              type="button"
               onClick={() => setSabotageOpen(true)}
               className="px-3 py-1.5 bg-purple-950 border border-purple-500/40 hover:bg-purple-900 rounded-xl text-purple-300 text-xs font-bold flex items-center gap-1.5 shadow-lg cursor-pointer transition-colors"
             >
@@ -526,21 +737,19 @@ export default function MapScreen({
           {foundClues.map((clueId) => {
             const originalClue = BASE_CLUES.find(c => c.id === clueId);
             if (!originalClue) return null;
-            // Check if this clue has been sabotaged/falsified
+
             const sabotage = sabotagedClues[clueId];
             const isSabotaged = !!sabotage;
             
-            // Apply scenario override if not sabotaged
             const override = scenario?.clueOverrides?.[clueId];
-            const shownName = isSabotaged 
-              ? sabotage.fakeName 
-              : (override?.name || originalClue.name);
+            const shownName = isSabotaged ? sabotage.fakeName : (override?.name || originalClue.name);
 
             return (
               <button
                 key={clueId}
+                type="button"
                 onClick={() => setSelectedClueForDetail(originalClue)}
-                className="w-full p-3 rounded-xl border text-left flex justify-between items-center bg-slate-950 hover:bg-slate-900 border-slate-850 cursor-pointer"
+                className="w-full p-3 rounded-xl border text-left flex justify-between items-center bg-slate-950 hover:bg-slate-900 border-slate-800 cursor-pointer"
               >
                 <div>
                   <h4 className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
@@ -559,17 +768,13 @@ export default function MapScreen({
               </button>
             );
           })}
-          {foundClues.length === 0 && (
-            <div className="text-center py-6 border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
-              Mökkiä ei ole vielä tutkittu kävellen. Kulje huoneissa ja etsi esineitä etsivän puhelimeen!
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Manual progression trigger (for developer/host quick control) */}
+      {/* Manual progression trigger */}
       {(isSoloMode || isHost) && (
         <button
+          type="button"
           onClick={handleProceedToVoting}
           className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 rounded-xl font-bold text-xs flex items-center justify-center gap-2 tracking-wide cursor-pointer text-center"
         >
@@ -585,66 +790,40 @@ export default function MapScreen({
           const sabotage = sabotagedClues[clueId];
           const isSabotaged = !!sabotage;
           
-          // Apply scenario override if not sabotaged
           const override = scenario?.clueOverrides?.[clueId];
           const shownName = isSabotaged ? sabotage.fakeName : (override?.name || selectedClueForDetail.name);
-          
-          // KORJATTU: Käytetään normalText-kenttää descriptionin sijasta
-          const shownText = isSabotaged ? sabotage.fakeText : (myRole === "syyllinen" ? originalClueText?.syyllinenText : selectedClueForDetail.normalText);
-
-          // Get role-specific helpful insights defined in scenario.clueOverrides
-          const roleOverrideText = !isSabotaged
-            ? (myRole === "syyllinen" ? override?.syyllinenText : override?.normalText)
-            : null;
+          const shownText = isSabotaged ? sabotage.fakeText : (override?.normalText || selectedClueForDetail.normalText);
+          const roleOverrideText = !isSabotaged ? (myRole === "syyllinen" ? override?.syyllinenText : override?.normalText) : null;
 
           return (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
               onClick={() => setSelectedClueForDetail(null)}
             >
               <motion.div
-                initial={{ scale: 0.95, y: 15 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.95, y: 10 }}
+                initial={{ scale: 0.95, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }}
                 className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-hidden"
-                onClick={e => e.stopPropagation()} // Stop bubbling
+                onClick={e => e.stopPropagation()}
               >
-                {/* Upper line accent matching location */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-red-800" />
-
-                <h3 className="text-lg font-extrabold text-slate-100 mb-2 truncate">
-                  {shownName}
-                </h3>
+                <h3 className="text-lg font-extrabold text-slate-100 mb-2 truncate">{shownName}</h3>
                 <span className="inline-block text-[10px] px-2.5 py-0.5 bg-slate-950 border border-slate-800 font-bold text-red-400 uppercase tracking-widest rounded mb-4">
                   Sijainti: {LOCATIONS.find(l => l.id === selectedClueForDetail.locationId)?.name}
                 </span>
-                <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl mb-4 shadow-inner">
-                  <p className="text-xs text-slate-300 leading-relaxed italic">
-                    "{shownText}"
-                  </p>
+
+                <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl mb-4 shadow-inner">
+                  <p className="text-xs text-slate-300 leading-relaxed italic">"{shownText}"</p>
                 </div>
 
                 {roleOverrideText && (
                   <div className="p-3 bg-indigo-950/30 border border-indigo-500/20 rounded-xl mb-4">
-                    <p className="text-[10px] text-indigo-400 font-semibold leading-normal">
-                      💡 {myRole === "syyllinen" ? "Syyllisen ohje" : "Erityishavainto"}: {roleOverrideText}
-                    </p>
-                  </div>
-                )}
-
-                {isSabotaged && myRole === "syyllinen" && (
-                  <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-xl mb-4">
-                    <p className="text-[10px] text-red-400 font-semibold leading-normal">
-                      ⚠️ AI-muistutus: Olet väärentänyt tämän vihjeen! Muut pelaajat lukevat oheisen valheellisen merkinnän alkuperäisen sijaan.
-                    </p>
+                    <p className="text-[10px] text-indigo-400 font-semibold">💡 Huomio: {roleOverrideText}</p>
                   </div>
                 )}
 
                 <button
-                  onClick={() => setSelectedClueForDetail(null)}
+                  type="button" onClick={() => setSelectedClueForDetail(null)}
                   className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 rounded-xl font-bold text-xs cursor-pointer"
                 >
                   Sulje merkintä
@@ -655,14 +834,9 @@ export default function MapScreen({
         })()}
       </AnimatePresence>
 
-      {/* Sabotage overlay trigger */}
       <AnimatePresence>
         {sabotageOpen && (
-          <SabotageModal
-            onClose={() => setSabotageOpen(false)}
-            onSaveSabotage={handleSaveSabotage}
-            sabotagedMap={sabotagedClues}
-          />
+          <SabotageModal onClose={() => setSabotageOpen(false)} onSaveSabotage={handleSaveSabotage} sabotagedMap={sabotagedClues} />
         )}
       </AnimatePresence>
     </div>
