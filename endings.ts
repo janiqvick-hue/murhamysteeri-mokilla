@@ -1,6 +1,6 @@
 import type { Scenario, EndingType } from "../types";
 
-const STORYBOOK: Record<string, Partial<Record<EndingType, string>>> = {
+const STORYBOOK: Record<string, Record<EndingType, string>> = {
   saunan_salaisuus: {
     perfect_investigation:
       "Jokainen osoitti samaan suuntaan — ja tällä kertaa suunta oli oikea. Testamenttiasia, verinen pyyhe, käden muotoiset polttotahrat: todisteet puhuivat selkeämpää kieltä kuin kukaan osasi pelätä. Syyllinen ei pystynyt kiistämään mitään. Arvo Mäkisen kuolema sai vastauksen, ja Kaartjärvi sai rauhansa.",
@@ -27,7 +27,7 @@ const STORYBOOK: Record<string, Partial<Record<EndingType, string>>> = {
     secret_unsolved:
       "Äänestys hajosi — kenelläkään ei ollut enemmistöä. Laiturin varjo verhosi totuuden, ja Siiri Leinosen katoaminen jää Kaartjärven pohjavedeksi, ikuisesti.",
     perfect_criminal:
-      "Laituri ja sen varjot pitivät salaisuutensa. Syyllinen kävi oikeissa paikoissa, keräsi oikeat vihjeet, ja varmisti että jokainen katse osoitti muualle. Siiri Leinosen tarina päättyi ilman selitystä — ja tekijä lähti kotiin seuraavana aamuna kuin mitään ei olisi tapahtunut.",
+      "Laituri and sen varjot pitivät salaisuutensa. Syyllinen kävi oikeissa paikoissa, keräsi oikeat vihjeet, ja varmisti että jokainen katse osoitti muualle. Siiri Leinosen tarina päättyi ilman selitystä — ja tekijä lähti kotiin seuraavana aamuna kuin mitään ei olisi tapahtunut.",
   },
   kadonnut_vieras: {
     perfect_investigation:
@@ -41,7 +41,7 @@ const STORYBOOK: Record<string, Partial<Record<EndingType, string>>> = {
     secret_unsolved:
       "Äänestys jakautui. Petteri Salon kuolema jää mysteeriksi — kuten hänen tutkimuksensa kohdekin. Joku sai jäädä vapaaksi. Tällä kertaa.",
     perfect_criminal:
-      "Petteri Salon viimeinen toimeksianto epäonnistui — koska vastapuoli oli häntä parempi. Syyllinen liikkui salassa, peitti jälkensä, ja varmisti ettei kukaan kuuli hänen nimensä äänestyshuoneessa. Petteri makaa tuntemattomassa paikassa. Tekijä on jo matkalla kotiin.",
+      "Petteri Salon viimeinen toimeksianto epäonnistui — koska vastapuoli oli häntä parempi. Syyllinen liikkui salassa, peitti jälkensä, ja varmisti ettei kukaan kuullut hänen nimeään äänestyshuoneessa. Petteri makaa tuntemattomassa paikassa. Tekijä on jo matkalla kotiin.",
   },
 };
 
