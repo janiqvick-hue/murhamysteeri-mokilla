@@ -1,13 +1,10 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LOCATIONS } from "./utils/locations";
-import { ... } from "./clues";
-import { SCENARIO_MAP } from "./utils/scenarios";
+import { LOCATIONS } from "./locations";
+import { CLUES } from "./clues";
+import { SCENARIO_MAP } from "./scenarios";
 import { db } from "./firebase";
-import { ref, update, onValue } from "firebase/database";
-import {
-  Compass, MapPin, Eye, Bell, ShieldAlert, Sparkles, BookOpen, Clock, Skull, Search, Play, ChevronRight, User, X
+
 } from "lucide-react";
 
 // --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
