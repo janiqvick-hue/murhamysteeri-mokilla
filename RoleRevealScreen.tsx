@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ROLES } from "./roles";
-import { SCENARIO_MAP } from "./src/utils/scenarios";
+import { SCENARIO_MAP } from "./scenarios";
 import { db } from "./firebase";
 import { ref, update } from "firebase/database";
 import { 
