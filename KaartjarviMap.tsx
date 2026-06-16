@@ -1,248 +1,110 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { HUVILA_LOCATIONS } from "./huvilaLocations";
-import { HUVILA_PUZZLES } from "./huvilaPuzzles";
-import { HUVILA_SCENARIO, HUVILA_CLUE_DETAILS } from "./huvilaScenarios";
+import { motion, AnimatePresence } from "motion/react";
 import { 
-  Compass, MapPin, Key, HelpCircle, Lock, CheckCircle, ArrowLeft, FileText
+  Home, 
+  Flame, 
+  FlameKindling, 
+  Trees, 
+  Lock, 
+  Unlock, 
+  Key, 
+  Search, 
+  FileText, 
+  CheckCircle2, 
+  AlertCircle, 
+  Briefcase, 
+  ArrowLeft, 
+  Trophy, 
+  Sparkles, 
+  Info,
+  HelpCircle,
+  Hash,
+  Compass
 } from "lucide-react";
 
+// Tuodaan datatiedostot sieltä kaartjarvi-kansiosta, missä ne ovat tallessa
+import { HUVILA_LOCATIONS, HuvilaLocation, HuvilaClue } from "./kaartjarvi/huvilaLocations";
+import { HUVILA_PUZZLES, HuvilaPuzzle } from "./kaartjarvi/huvilaPuzzles";
+
+// Tunnelmalliset Unsplash-kuvat löydetyille todisteille
+const getClueImage = (clueId: string) => {
+  switch (clueId) {
+    case "takkatuli": return "https://unsplash.com";
+    case "lasi": return "https://unsplash.com";
+    case "laudeliina": return "https://unsplash.com";
+    case "saunakiulu": return "https://unsplash.com";
+    case "kirje": return "https://unsplash.com";
+    case "jalanjaljet": return "https://unsplash.com";
+    default: return "https://unsplash.com";
+  }
+};
+
+const getItemIconBadge = (item: string) => {
+  switch (item.toLowerCase()) {
+    case "messinkiavain": return "🔑";
+    case "sorkkarauta": return "⚒️";
+    case "ranneketju": return "📿";
+    case "perintosormus": return "💍";
+    case "myrkkyrekisteri": return "🧪";
+    default: return "📦";
+  }
+};
+
+const getItemDisplayName = (item: string) => {
+  switch (item.toLowerCase()) {
+    case "messinkiavain": return "Messinkiavain";
+    case "sorkkarauta": return "Raskas sorkkarauta";
+    case "ranneketju": return "Marian hopeaketju";
+    case "perintosormus": return "Mikaelin kultainen sinettisormus";
+    case "myrkkyrekisteri": return "Kaliumsyanidi-pullo";
+    default: return item;
+  }
+};
+
 interface KaartjarviMapProps {
-  playerId: string;
+  onBackToLobby?: () => void;
+  onExitGame?: () => void;
   playerName: string;
-  onExitGame: () => void;
 }
 
-export default function KaartjarviMap({
-  playerId,
-  playerName,
-  onExitGame
-}: KaartjarviMapProps) {
-  const [currentLocId, setCurrentLocId] = useState("paahuvila");
-  const [unlockedLocations, setUnlockedLocations] = useState<string[]>(["paahuvila", "grillikota", "puuvarasto"]);
+export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }: KaartjarviMapProps) {
+  const handleExit = () => {
+    if (onExitGame) onExitGame();
+    else if (onBackToLobby) onBackToLobby();
+  };
+
+  const [locations, setLocations] = useState<HuvilaLocation[]>(HUVILA_LOCATIONS);
+  const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(HUVILA_PUZZLES);
   const [inventory, setInventory] = useState<string[]>([]);
-  const [solvedPuzzles, setSolvedPuzzles] = useState<string[]>([]);
-  const [showStoryBrief, setShowStoryBrief] = useState(true);
-  const [selectedClueForDetail, setSelectedClueForDetail] = useState<any | null>(null);
+  const [activeLocId, setActiveLocId] = useState<string>("paahuvila");
   
-  const [inputAnswer, setInputAnswer] = useState("");
-  const [puzzleError, setPuzzleError] = useState("");
-  const [puzzleSuccessText, setPuzzleSuccessText] = useState("");
+  const [clueOverlay, setClueOverlay] = useState<{
+    id?: string;
+    title: string;
+    description: string;
+    dialog: string;
+    itemEarned?: string;
+  } | null>(null);
 
-  const currentLoc = HUVILA_LOCATIONS.find(l => l.id === currentLocId) || HUVILA_LOCATIONS;
-  const roomPuzzle = HUVILA_PUZZLES.find(p => p.locationId === currentLocId && !solvedPuzzles.includes(p.id));
+  const [solvingPuzzleId, setSolvingPuzzleId] = useState<string | null>(null);
+  const [codeInputValue, setCodeInputValue] = useState<string>("");
+  const [puzzleError, setPuzzleError] = useState<string>("");
 
-  const handleMove = (locId: string) => {
-    const targetLoc = HUVILA_LOCATIONS.find(l => l.id === locId);
-    if (!targetLoc) return;
+  const [isAccusationMode, setIsAccusationMode] = useState<boolean>(false);
+  const [selectedAccused, setSelectedAccused] = useState<string>("");
+  const [endingResult, setEndingResult] = useState<{
+    success: boolean;
+    title: string;
+    explanation: string;
+    detectiveRank: string;
+    score: number;
+  } | null>(null);
 
-    if (targetLoc.isLocked && !unlockedLocations.includes(locId)) {
-      if (targetLoc.requiredItemId && inventory.includes(targetLoc.requiredItemId)) {
-        setUnlockedLocations(prev => [...prev, locId]);
-        setCurrentLocId(locId);
-        alert(`Käytit esineen: ${targetLoc.requiredItemId}. Ovi avautui onnistuneesti!`);
-      } else {
-        setPuzzleError("Ovi on visusti lukossa. Tarvitset sopivan avaimen avataksesi sen.");
-        setTimeout(() => setPuzzleError(""), 3000);
-      }
-      return;
-    }
+  const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
+    "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
+    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista, kuka myrkytti Mikaelin."
+  ]);
 
-    setCurrentLocId(locId);
-    setPuzzleError("");
-    setPuzzleSuccessText("");
-    setInputAnswer("");
+  const logAtmosphere = (msg: string) => {
+    setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
   };
-
-  const handleVerifyAnswer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!roomPuzzle || !inputAnswer.trim()) return;
-
-    if (inputAnswer.trim() === roomPuzzle.correctAnswer) {
-      setSolvedPuzzles(prev => [...prev, roomPuzzle.id]);
-      if (roomPuzzle.rewardItemId) {
-        setInventory(prev => [...prev, roomPuzzle.rewardItemId]);
-      }
-      setPuzzleSuccessText(roomPuzzle.rewardText);
-      setInputAnswer("");
-      setPuzzleError("");
-    } else {
-      setPuzzleError("Väärä koodi tai ratkaisu! Lukko ei hievahdakaan.");
-      setTimeout(() => setPuzzleError(""), 4000);
-    }
-  };
-  return (
-    <div className="flex flex-col min-h-[85vh] w-full max-w-lg mx-auto px-1 py-4 text-slate-100" style={{ fontFamily: "sans-serif" }}>
-      {/* Yläpalkki ja Kaartjärvi-info */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4 flex justify-between items-center shadow-md">
-        <div>
-          <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest leading-none mb-1">
-            LOPEN KAARTJÄRVI: ARVOITUS HUVILALLA
-          </p>
-          <h2 className="text-sm font-bold text-slate-100 flex items-center gap-1.5">
-            <Compass className="w-4 h-4 text-slate-400" />
-            Yksinpeli-seikkailu
-          </h2>
-        </div>
-
-        {/* Takaisin päävalikkoon -nappi */}
-        <button
-          type="button"
-          onClick={onExitGame}
-          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:bg-slate-900 rounded-lg text-slate-400 hover:text-slate-200 font-bold text-xs shadow-inner cursor-pointer border-none"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Päävalikko</span>
-        </button>
-      </div>
-
-      {/* Alustava dynaaminen Tarinalaatikko (Story Brief) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl mb-4 overflow-hidden shadow-md">
-        <button
-          type="button"
-          onClick={() => setShowStoryBrief(!showStoryBrief)}
-          className="w-full px-4 py-2.5 flex justify-between items-center text-left text-xs font-bold text-slate-300 hover:bg-slate-800/50 transition-colors uppercase tracking-wider cursor-pointer border-none bg-transparent"
-        >
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            <span>Huvilan Taustatarina & Tilanne</span>
-          </div>
-          <span className="text-[10px] text-slate-500">
-            {showStoryBrief ? "Piilota ▲" : "Näytä ▼"}
-          </span>
-        </button>
-        
-        <AnimatePresence initial={false}>
-          {showStoryBrief && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="px-4 pb-3 pt-1 border-t border-slate-800"
-            >
-              <div className="space-y-2 pt-2 text-xs">
-                <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 border-b border-slate-800 pb-1.5 mb-1.5">
-                  <span>Mysteeri: <span className="text-amber-400">{HUVILA_SCENARIO.name}</span></span>
-                  <span>Uhri: <span className="text-slate-200">{HUVILA_SCENARIO.victim}</span></span>
-                </div>
-                <p className="text-slate-300 leading-relaxed italic border-l-2 border-amber-500/40 pl-2">
-                  {HUVILA_SCENARIO.setting}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Pelaajan reppu / Tasku (Inventory) - Klikattavat esineet */}
-      <div className="bg-slate-950 border border-slate-900 p-3 rounded-xl mb-4">
-        <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-          💼 Reppusi sisältö (Klikkaa esinettä tutkiaksesi):
-        </span>
-        <div className="flex flex-wrap gap-1.5">
-          {inventory.map((itemId) => {
-            const clueDetails = HUVILA_CLUE_DETAILS[itemId as keyof typeof HUVILA_CLUE_DETAILS];
-            return (
-              <button
-                key={itemId}
-                type="button"
-                onClick={() => setSelectedClueForDetail(clueDetails || { title: itemId, text: "Yksinkertainen työkalu." })}
-                className="text-[10px] px-2.5 py-1 rounded-full border bg-amber-950/30 border-amber-900/60 text-amber-300 hover:bg-amber-900/40 font-bold flex items-center gap-1 transition-colors cursor-pointer border-solid"
-              >
-                <Key className="w-3 h-3 text-amber-400" />
-                {clueDetails ? clueDetails.title : itemId}
-              </button>
-            );
-          })}
-          {inventory.length === 0 && (
-            <span className="text-xs text-slate-600 italic py-0.5">Reppusi on vielä tyhjä. Etsi esineitä ratkomalla pulmia!</span>
-          )}
-        </div>
-      </div>
-      {/* Alueet ja toimintapaneelit */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-        {/* Vasen puoli: Sijaintien valintapainikkeet */}
-        <div className="bg-slate-900/45 border border-slate-800/80 rounded-2xl p-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Siirry kohteeseen</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {HUVILA_LOCATIONS.map((loc) => {
-              const isActive = loc.id === currentLocId;
-              const isLockedNow = loc.isLocked && !unlockedLocations.includes(loc.id);
-
-              return (
-                <button
-                  key={loc.id}
-                  type="button"
-                  onClick={() => handleMove(loc.id)}
-                  className={`relative p-3 rounded-xl border text-left transition-all flex flex-col justify-between h-[80px] cursor-pointer group border-solid ${
-                    isActive 
-                      ? "bg-amber-950/20 border-amber-500/80 text-slate-100 shadow-md shadow-amber-950/10" 
-                      : "bg-slate-950 border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <div className="flex justify-between items-start w-full">
-                    <span className="text-xs font-bold leading-tight group-hover:text-amber-400 transition-colors">{loc.name}</span>
-                    {isLockedNow && <Lock className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />}
-                  </div>
-                  <span className="text-[9px] text-slate-500 leading-none">{isActive ? "📍 Olet tässä" : isLockedNow ? "🔒 Lukittu" : "Tutki kohdetta"}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Oikea puoli: Valitun huoneen kuvaus ja pulmat */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-md">
-          <div>
-            <div className="flex items-center gap-2 text-amber-500 mb-2"><MapPin className="w-5 h-5" /><h3 className="text-lg font-extrabold text-slate-100">{currentLoc.name}</h3></div>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">{currentLoc.description}</p>
-
-            {/* Virhe- ja onnistumisilmoitukset */}
-            <AnimatePresence mode="wait">
-              {puzzleError && (
-                <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 bg-red-950/20 border border-red-500/20 rounded-xl mb-3 flex items-center gap-2 text-xs text-red-400">
-                  <Lock className="w-4 h-4 shrink-0" /><span>{puzzleError}</span>
-                </motion.div>
-              )}
-
-              {puzzleSuccessText && (
-                <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-emerald-950/30 border border-emerald-500/30 rounded-xl mb-3 space-y-2 text-xs text-emerald-300">
-                  <div className="flex items-center gap-2 font-bold uppercase tracking-wider"><CheckCircle className="w-4 h-4 text-emerald-400" /><span>Mysteeri Ratkesi!</span></div>
-                  <p className="leading-relaxed italic">"{puzzleSuccessText}"</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Koodilukko-osio */}
-            {roomPuzzle && !puzzleSuccessText && (
-              <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-4 shadow-inner">
-                <div className="flex gap-2 items-start"><HelpCircle className="w-4.5 h-4.5 text-amber-500 shrink-0 mt-0.5" /><div><h4 className="text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-1">Koodilukon arvoitus:</h4><p className="text-xs text-slate-300 leading-relaxed italic">"{roomPuzzle.question}"</p></div></div>
-                <form onSubmit={handleVerifyAnswer} className="flex gap-2">
-                  <input type="text" maxLength={15} value={inputAnswer} onChange={(e) => setInputAnswer(e.target.value)} placeholder="Syötä ratkaisu..." className="flex-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-amber-500" required />
-                  <button type="submit" className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-slate-100 font-bold text-xs rounded-xl transition-all cursor-pointer border-none">Kokeile</button>
-                </form>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Esineen DETAIL Popup-ikkuna */}
-      <AnimatePresence>
-        {selectedClueForDetail && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedClueForDetail(null)}>
-            <motion.div initial={{ scale: 0.95, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-hidden text-center" onClick={e => e.stopPropagation()}>
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-amber-600" />
-              <div className="p-2.5 bg-amber-950/20 border border-amber-500/20 rounded-full w-fit mx-auto mb-3 text-amber-400"><FileText className="w-5 h-5" /></div>
-              <h3 className="text-base font-extrabold text-slate-100 mb-1">{selectedClueForDetail.title}</h3>
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-4">Johtolangan analyysi</p>
-              <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl mb-4 shadow-inner text-left"><p className="text-xs text-slate-300 leading-relaxed italic">"{selectedClueForDetail.text}"</p></div>
-              <button type="button" onClick={() => setSelectedClueForDetail(null)} className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 rounded-xl font-bold text-xs cursor-pointer border-none">Sulje tarkastelu</button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
