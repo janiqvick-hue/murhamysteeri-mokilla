@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { db } from "./firebase";
 import { ref, set, onValue, update } from "firebase/database";
-import { pickRandomScenario } from "./scenarios";
+
 import { assignRoles } from "./roles";
 import { Users, Copy, Check, Play, Compass } from "lucide-react";
 
@@ -16,6 +16,9 @@ interface LobbyScreenProps {
   setIsSoloMode: (solo: boolean) => void;
   onGameStarted: (lobbyData: any) => void;
 }
+const pickRandomScenario = () => {
+  return Math.floor(Math.random() * 3) + 1; // Arpoo skenaarion 1, 2 tai 3 väliltä
+};
 
 export default function LobbyScreen({
   playerId,
