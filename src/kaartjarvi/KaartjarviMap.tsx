@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Home, 
   Flame, 
@@ -21,26 +21,21 @@ import {
   Hash,
   Compass
 } from "lucide-react";
-import { HUVILA_LOCATIONS, HuvilaLocation, HuvilaClue } from "./huvilaLocations";
-import { HUVILA_PUZZLES, HuvilaPuzzle } from "./huvilaPuzzles";
 
-// Kauniit ja tunnelmalliset Unsplash-lähikuvat löydetyille todisteille popup-ikkunaan
+// Haetaan datatiedostot oikeasta alikansiosta
+import { HUVILA_LOCATIONS, HuvilaLocation, HuvilaClue } from "./kaartjarvi/huvilaLocations";
+import { HUVILA_PUZZLES, HuvilaPuzzle } from "./kaartjarvi/huvilaPuzzles";
+
+// Tunnelmalliset Unsplash-lähikuvat löydetyille todisteille
 const getClueImage = (clueId: string) => {
   switch (clueId) {
-    case "takkatuli":
-      return "https://unsplash.com"; // Hehkuva hiillos
-    case "lasi":
-      return "https://unsplash.com"; // Särkynyt kristalli
-    case "laudeliina":
-      return "https://unsplash.com"; // Punertava tekstiili
-    case "saunakiulu":
-      return "https://unsplash.com"; // Kuparinkiulun vesiheijastukset
-    case "kirje":
-      return "https://unsplash.com"; // Uhkauskirjeen kulma tuhkassa
-    case "jalanjaljet":
-      return "https://unsplash.com"; // Mudanjäljet
-    default:
-      return "https://unsplash.com";
+    case "takkatuli": return "https://unsplash.com";
+    case "lasi": return "https://unsplash.com";
+    case "laudeliina": return "https://unsplash.com";
+    case "saunakiulu": return "https://unsplash.com";
+    case "kirje": return "https://unsplash.com";
+    case "jalanjaljet": return "https://unsplash.com";
+    default: return "https://unsplash.com";
   }
 };
 
@@ -73,19 +68,16 @@ interface KaartjarviMapProps {
 }
 
 export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }: KaartjarviMapProps) {
-  
   const handleExit = () => {
     if (onExitGame) onExitGame();
     else if (onBackToLobby) onBackToLobby();
   };
 
-  // --- Pelitilat ---
   const [locations, setLocations] = useState<HuvilaLocation[]>(HUVILA_LOCATIONS);
   const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(HUVILA_PUZZLES);
   const [inventory, setInventory] = useState<string[]>([]);
   const [activeLocId, setActiveLocId] = useState<string>("paahuvila");
   
-  // Dialogi & todisteruutu
   const [clueOverlay, setClueOverlay] = useState<{
     id?: string;
     title: string;
@@ -94,12 +86,10 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     itemEarned?: string;
   } | null>(null);
 
-  // Arvoituksen ratkaisutila
   const [solvingPuzzleId, setSolvingPuzzleId] = useState<string | null>(null);
   const [codeInputValue, setCodeInputValue] = useState<string>("");
   const [puzzleError, setPuzzleError] = useState<string>("");
 
-  // Oikeuskäsittely & Syyte
   const [isAccusationMode, setIsAccusationMode] = useState<boolean>(false);
   const [selectedAccused, setSelectedAccused] = useState<string>("");
   const [endingResult, setEndingResult] = useState<{
@@ -110,7 +100,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     score: number;
   } | null>(null);
 
-  // Tutkintaloki
   const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
     "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
     "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista, kuka myrkytti Mikaelin."
@@ -119,8 +108,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
   const logAtmosphere = (msg: string) => {
     setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
   };
-
-  const currentLoc = locations.find(l => l.id === activeLocId) || locations[0];
   const currentLoc = locations.find(l => l.id === activeLocId) || locations[0];
 
   const handleTravelTo = (locId: string) => {
@@ -231,7 +218,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     sum + loc.clues.filter(c => c.discovered).length, 0
   );
   const solvedPuzzlesCount = puzzles.filter(p => p.isSolved).length;
-
   const handleAccuse = (accusedId: string) => {
     setSelectedAccused(accusedId);
     let success = false;
@@ -276,17 +262,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     logAtmosphere("Aloitit uuden rikospaikkatutkinnan Lopen Kaartjärvellä.");
   };
 
-  const getIcon = (name: string) => {
-    switch (name) {
-      case "Home": return <Home style={{ width: '20px', height: '20px', color: '#fbbf24' }} />;
-      case "Flame": return <Flame style={{ width: '20px', height: '20px', color: '#818cf8' }} />;
-      case "FlameKindling": return <FlameKindling style={{ width: '20px', height: '20px', color: '#f87171' }} />;
-      case "Trees": return <Trees style={{ width: '20px', height: '20px', color: '#34d399' }} />;
-      default: return <Compass style={{ width: '20px', height: '20px', color: '#60a5fa' }} />;
-    }
-  };
-
-  // --- Puhtaat Inline-kauneustyylit helpolle integraatiolle ilman Tailwind riippuvuuksia ---
+  // --- Puhtaat Inline-kauneustyylit integraatiolle ilman Tailwindia ---
   const containerStyle: React.CSSProperties = {
     maxWidth: '1000px',
     margin: '0 auto',
@@ -334,6 +310,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     textTransform: 'uppercase',
     marginLeft: '8px'
   };
+
   const titleStyle: React.CSSProperties = {
     fontSize: '28px',
     fontWeight: 900,
@@ -546,7 +523,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     fontWeight: 'bold',
     color: '#cbd5e1'
   };
-
   if (!currentLoc || typeof currentLoc.clues === 'undefined') return null;
 
   return (
@@ -585,6 +561,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           <button onClick={() => setIsAccusationMode(true)} style={{ padding: '6px 14px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Haasta Syyllinen</button>
         </div>
       </div>
+
       <div style={responsiveGrid}>
         <div>
           <div style={cardStyle}>
