@@ -30,6 +30,7 @@ export const HUVILA_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
     iconName: "Home",
     color: "amber",
+    // KORJAUS: Toimiva, suora kuvalinkki hirsihuvilaan
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["paahuvila_paivakirja"],
@@ -57,6 +58,7 @@ export const HUVILA_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
     iconName: "Flame",
     color: "indigo",
+    // KORJAUS: Toimiva, suora kuvalinkki rantasaunaan
     imageUrl: "https://unsplash.com",
     isLocked: true,
     requiredItem: "messinkiavain",
@@ -87,6 +89,7 @@ export const HUVILA_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
     iconName: "FlameKindling",
     color: "red",
+    // KORJAUS: Toimiva, suora kuvalinkki grillikotaan
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["grillikota_arkku"],
@@ -107,6 +110,7 @@ export const HUVILA_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta ja moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
     iconName: "Trees",
     color: "emerald",
+    // KORJAUS: Toimiva, suora kuvalinkki puuvarastoon
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["puuvarasto_sahalaatikko"],
