@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LOCATIONS } from "./utils/locations";
-import { BASE_CLUES } from "./utils/clues";
+import { ... } from "./clues";
 import { SCENARIO_MAP } from "./utils/scenarios";
 import { db } from "./firebase";
 import { ref, update, onValue } from "firebase/database";
