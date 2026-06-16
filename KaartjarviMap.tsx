@@ -22,7 +22,6 @@ import {
   Compass
 } from "lucide-react";
 
-// --- ERISTETYT DATAMALLIT SUORAAN TIEDOSTON SISÄLLÄ KANSIOVIRHEIDEN ESTÄMISEKSI ---
 export interface HuvilaLocation {
   id: string;
   name: string;
@@ -30,7 +29,8 @@ export interface HuvilaLocation {
   longDescription: string;
   iconName: string;
   color: string;
-  imageUrl: string;
+  bgGradient: string; // Korvataan rikkonainen kuva tyylikkäällä taustavärillä
+  visualSymbol: string; // Suuri symboli edustamaan paikkaa graafisesti
   isLocked: boolean;
   requiredItem?: string;
   unlockHint?: string;
@@ -45,6 +45,7 @@ export interface HuvilaClue {
   discovered: boolean;
   itemReward?: string;
   dialogText?: string;
+  visualSymbol: string; // Todisteen oma kuvaileva symboli popupiin
 }
 
 export interface HuvilaPuzzle {
@@ -61,250 +62,6 @@ export interface HuvilaPuzzle {
   rewardItemName: string;
   solveMessage: string;
 }
-export const H_LOCATIONS: HuvilaLocation[] = [
-  {
-    id: "paahuvila",
-    name: "Päähuvila",
-    description: "Kaartjärven rannalla kohoava upea päärakennus.",
-    longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
-    iconName: "Home",
-    color: "amber",
-    // KORJAUS: Toimiva kuvalinkki hirsihuvilaan
-    imageUrl: "https://wikimedia.org",
-    isLocked: false,
-    puzzles: ["paahuvila_paivakirja"],
-    clues: [
-      {
-        id: "takkatuli",
-        name: "Hiiltyneet paperit takassa",
-        description: "Takan hehkusta löytyy puolittain palanut sopimuspaperi, jossa mainitaan Kaartjärven tonttijako ja salaperäinen miljoonaomaisuus.",
-        discovered: false,
-        dialogText: "Löysit takan raosta tummuneen paperinkulman! Siinä lukee: '...lopullinen tonttiosuus siirtyy kokonaisuudessaan, mikäli ensisijainen perijä poistuu keskuudestamme...'"
-      },
-      {
-        id: "lasi",
-        name: "Särkynyt viinilasi",
-        description: "Hienostunut kristallilasi, jonka pohjalta löytyy outoa, tahmeaa vaaleaa sakkaa. Lasi tuoksuu kitkerältä mantelilta.",
-        discovered: false,
-        dialogText: "Tutkit kristallilasin särkyneitä palasia. Haistat kitkerän mantelin tuoksun – klassinen syanidin tai muun vahvan myrkyn merkki!"
-      }
-    ]
-  },
-  {
-    id: "hirsirantasauna",
-    name: "Hirsirantasauna",
-    description: "Perinteinen rantasauna. Lukittu paksulla salvalla, joka vaatii messinkisen avaimen.",
-    longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
-    iconName: "Flame",
-    color: "indigo",
-    // KORJAUS: Toimiva kuvalinkki rantasaunaan
-    imageUrl: "https://unsplash.com",
-    isLocked: true,
-    requiredItem: "messinkiavain",
-    unlockHint: "Ovi on tiukasti lukossa. Tarvitset messinkisen avaimen avataksesi tämän seikkailureitin rantasaunaan.",
-    puzzles: ["hirsirantasauna_lattialauta"],
-    clues: [
-      {
-        id: "laudeliina",
-        name: "Verinen laudeliina",
-        description: "Lauteiden alle rytistetty mustunut pellavaliina, jossa on pyyhitty jotakin punaista ja tahmeaa.",
-        discovered: false,
-        dialogText: "Nostit laudeliinan valoon. Se ei ole marjamehua – joku on pyyhkinyt tähän verta ja yrittänyt piilottaa sen lauteiden väliin!"
-      },
-      {
-        id: "saunakiulu",
-        name: "Kaatunut kiulu",
-        description: "Kuparinen kiulu, jonka pohjalta löytyy hukkunut ranneketju riipuksineen. Riipukseen on kaiverrettu kirjaimet 'M.K.'.",
-        discovered: false,
-        itemReward: "ranneketju",
-        dialogText: "Löysit kiulun pohjalta hienon hopeisen ranneketjun. Se kuuluu Marialle! Toit sen heti talteen."
-      }
-    ]
-  },
-  {
-    id: "grillikota",
-    name: "Grillikota",
-    description: "Tunnelmallinen grillikota niemenkärjessä. Ovi raollaan.",
-    longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
-    iconName: "FlameKindling",
-    color: "red",
-    // KORJAUS: Toimiva kuvalinkki grillikotaan
-    imageUrl: "https://unsplash.com",
-    isLocked: false,
-    puzzles: ["grillikota_arkku"],
-    clues: [
-      {
-        id: "kirje",
-        name: "Tuhkasta pelastettu kirje",
-        description: "Kytevästä tuhkasta löytyy hiiltynyt kirjeenpätkä: 'Minä tiedän mitä teit viime kesänä Kaartjärvellä. Jos et maksa...'",
-        discovered: false,
-        dialogText: "Varovasti nostat hiiltyneen paperinpalan tuhkasta. Kiristyskirje! Kirjoittaja tuntui tietävän jonkin synkän salaisuuden viime kesältä."
-      }
-    ]
-  },
-  {
-    id: "puuvarasto",
-    name: "Puuvarasto",
-    description: "Kylmä puuvarasto päärakennuksen takana. Täältä haetaan takkapuut.",
-    longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta and moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
-    iconName: "Trees",
-    color: "emerald",
-    // KORJAUS: Toimiva kuvalinkki puuvarastoon
-    imageUrl: "https://unsplash.com",
-    isLocked: false,
-    puzzles: ["puuvarasto_sahalaatikko"],
-    clues: [
-      {
-        id: "jalanjaljet",
-        name: "Kuraiset saappaankuvat",
-        description: "Varaston lattialla on suuret kuraiset mudanjäljet, jotka vastaavat täydellisesti urheilujalkineita tai saappaita karkealla kuviolla.",
-        discovered: false,
-        dialogText: "Jäljet näyttävät tuoreilta. Joku on kulkenut tästä aivan hiljattain myrskyssä kantamatta mitään puita mukanaan."
-      }
-    ]
-  }
-];
-
-export const H_PUZZLES: HuvilaPuzzle[] = [
-  {
-    id: "paahuvila_paivakirja",
-    title: "Mikaelin nahkainen työpöydän päiväkirja",
-    description: "Päähuvilan työpöydällä lojuu Mikaelin lukittu päiväkirja. Kannen messinkisessä numerolukossa on neljä numeroa. Päiväkirjan pinnassa lukee kaiverrus: 'Perustamisvuoteni ja kuukauteni'. Vanhoista papereista selviää, että huvilan peruskivi muurattiin kesäkuussa (kuukausi 06) vuonna 1972.",
-    locationId: "paahuvila",
-    isSolved: false,
-    type: "code",
-    requiredCode: "0672",
-    hint: "Kaiverrus viittaa 'perustamisvuoteen ja kuukauteen'. Kokeile yhdistää kuukausi 06 ja kaksinumeroinen vuosi 72.",
-    rewardItem: "messinkiavain",
-    rewardItemName: "Messinkiavain",
-    solveMessage: "Naks! Lukko aukeaa ja päiväkirjan välistä putoaa vanha, painava messinkiavain!"
-  },
-  {
-id: "puuvarasto_sahalaatikko",
-    title: "Varaston lukittu suojakaappi",
-    description: "Kylmän puuvaraston metallinen työkaluarkku on lukittu punaiseksi maalatulla koodilukolla. Arkkuun on liimattu varoitustarra: 'Emergency: Syötä kansallinen yleinen hätänumero nähdäksesi raivaustaltat'.",
-    locationId: "puuvarasto",
-    isSolved: false,
-    type: "code",
-    requiredCode: "112",
-    hint: "Kysymyksessä etsitään yleistä virallista hätänumeroa, jota käytetään hätätilanteissa kaikkialla Suomessa.",
-    rewardItem: "sorkkarauta",
-    rewardItemName: "Raskas terässorkkarauta",
-    solveMessage: "Klops! Arkun lukko avautuu kolahtaen. Sisältä löytyy painava terässorkkarauta!"
-  },
-  {
-    id: "grillikota_arkku",
-    title: "Grillikodan vanha rauta-arkku",
-    description: "Kodan penkin alle on puoliksi haudattu raskas raudoitettu puuarkku. Se on lukittu paksulla, ruosteisella riippulukolla, joka vaatisi voimakasta mekaanista vääntövoimaa vipuvarrella.",
-    locationId: "grillikota",
-    isSolved: false,
-    type: "item",
-    requiredItem: "sorkkarauta",
-    hint: "Tämän ruosteisen riippulukon murtamiseen tarvitset kunnon vipuvarsityökalun puuvarastosta (esim. sorkkarauta).",
-    rewardItem: "perintosormus",
-    rewardItemName: "Uhrin kultainen sinettisormus",
-    solveMessage: "RÄKS! Käytit sorkkarautaa repiäksesi ruosteisen riippulukon auki voimalla."
-  },
-  {
-    id: "hirsirantasauna_lattialauta",
-    title: "Saunan kiukaan hiilihautalokero",
-    description: "Rantasaunan kuuman kiukaan pohjalla on pieni nokeentunut metalliluukku, jonka päällä on kolminumeroinen kiekkolukko. Luukun reunaan on hätäisesti raapustettu vihje: 'Veden kiehumispiste celsiuksina'.",
-    locationId: "hirsirantasauna",
-    isSolved: false,
-    type: "code",
-    requiredCode: "100",
-    hint: "Mieti, missä celsiusasteessa puhdas vesi alkaa kiehua höyryksi.",
-    rewardItem: "myrkkyrekisteri",
-    rewardItemName: "Tyhjä Kaliumsyanidi-pullo",
-    solveMessage: "NAPS! Luukku liukuu sivuun. Nokisesta kolosta paljastuu tyhjä apteekkipullo!"
-  }
-];
-
-// KORJAUS: Päivitetty toimivat suorat kuvatiedostolinkit todisteille, jotta popup-ikkunat latautuvat virheettömästi
-const getClueImage = (clueId: string) => {
-  switch (clueId) {
-    case "takkatuli": return "https://unsplash.com";
-    case "lasi": return "https://unsplash.com";
-    case "laudeliina": return "https://unsplash.com";
-    case "saunakiulu": return "https://unsplash.com";
-    case "kirje": return "https://unsplash.com";
-    case "jalanjaljet": return "https://unsplash.com";
-    default: return "https://unsplash.com";
-  }
-};
-
-const getItemIconBadge = (item: string) => {
-  switch (item.toLowerCase()) {
-    case "messinkiavain": return "🔑";
-    case "sorkkarauta": return "⚒️";
-    case "ranneketju": return "📿";
-    case "perintosormus": return "💍";
-    case "myrkkyrekisteri": return "🧪";
-    default: return "📦";
-  }
-};
-
-const getItemDisplayName = (item: string) => {
-  switch (item.toLowerCase()) {
-    case "messinkiavain": return "Messinkiavain";
-    case "sorkkarauta": return "Raskas sorkkarauta";
-    case "ranneketju": return "Marian hopeaketju";
-    case "perintosormus": return "Mikaelin kultainen sinettisormus";
-    case "myrkkyrekisteri": return "Kaliumsyanidi-pullo";
-    default: return item;
-  }
-};
-
-interface KaartjarviMapProps {
-  onBackToLobby?: () => void;
-  onExitGame?: () => void;
-  playerName: string;
-}
-
-export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }: KaartjarviMapProps) {
-  const handleExit = () => {
-    if (onExitGame) onExitGame();
-    else if (onBackToLobby) onBackToLobby();
-  };
-
-  const [locations, setLocations] = useState<HuvilaLocation[]>(H_LOCATIONS);
-  const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(H_PUZZLES);
-  const [inventory, setInventory] = useState<string[]>([]);
-  const [activeLocId, setActiveLocId] = useState<string>("paahuvila");
-  
-  const [clueOverlay, setClueOverlay] = useState<{
-    id?: string;
-    title: string;
-    description: string;
-    dialog: string;
-    itemEarned?: string;
-  } | null>(null);
-
-  const [solvingPuzzleId, setSolvingPuzzleId] = useState<string | null>(null);
-  const [codeInputValue, setCodeInputValue] = useState<string>("");
-  const [puzzleError, setPuzzleError] = useState<string>("");
-
-  const [isAccusationMode, setIsAccusationMode] = useState<boolean>(false);
-  const [selectedAccused, setSelectedAccused] = useState<string>("");
-  const [endingResult, setEndingResult] = useState<{
-    success: boolean;
-    title: string;
-    explanation: string;
-    detectiveRank: string;
-    score: number;
-  } | null>(null);
-
-  const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
-    "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
-    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista murhaaja!"
-  ]);
-
-
-  const logAtmosphere = (msg: string) => {
-    setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
-  };
-
-  // KORJAUS: Varmistettu, ettei oletussijainti kaada peliä tyhjänä
   const currentLoc = locations.find(l => l.id === activeLocId) || locations[0];
 
   const handleTravelTo = (locId: string) => {
@@ -317,6 +74,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         setActiveLocId(locId);
         logAtmosphere(`🔓 Avasit kohteen ${loc.name} repustasi löytyvällä esineellä: ${loc.requiredItem}!`);
         setClueOverlay({
+          visualSymbol: "🔓",
           title: `Kohde ${loc.name} avattu!`,
           description: `Käytit esineen: ${loc.requiredItem}.`,
           dialog: `Lukkopesä naksahtaa vaivattomasti auki kuunvalossa. Astut sisään varovasti...`
@@ -324,6 +82,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       } else {
         logAtmosphere(`🔒 ${loc.name} on lukittu. ${loc.unlockHint || "Tarvitset oikean esineen avataksesi oven."}`);
         setClueOverlay({
+          visualSymbol: "🔒",
           title: "Kohde lukittu!",
           description: loc.unlockHint || "Ovi vaatii sopivan avaimen tai tarvikkeen.",
           dialog: "Yrität painaa oven kahvaa, mutta se ei hievahdakaan. Sinun täytyy etsiä jostain muualta sopivia esineitä päästäksesi sisään."
@@ -335,7 +94,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     }
   };
 
-  const handleInspectClue = (clue: HuvilaClue) => {
+  const handleInspectClue = (clue: any) => {
     setLocations(prev => prev.map(loc => {
       if (loc.id === activeLocId) {
         return {
@@ -352,9 +111,8 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     }
 
     setClueOverlay({
-      id: clue.id,
+      visualSymbol: clue.visualSymbol,
       title: clue.name,
-
       description: clue.description,
       dialog: clue.dialogText || "Tutkit kohdetta tarkemmin ja huomaat jotakin epäilyttävää.",
       itemEarned: clue.itemReward
@@ -383,6 +141,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       }
       setSolvingPuzzleId(null);
       setClueOverlay({
+        visualSymbol: "🏆",
         title: `Pähkinä ratkaistu: ${puzzle.title}`,
         description: puzzle.solveMessage,
         dialog: `Sait haltuusi esineen: ${puzzle.rewardItemName}! Tämä auttaa sinua pääsemään pidemmälle rikospaikalla.`
@@ -401,6 +160,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       }
       setSolvingPuzzleId(null);
       setClueOverlay({
+        visualSymbol: "🏆",
         title: `Pikakoodi oikein!`,
         description: puzzle.solveMessage,
         dialog: `Upeaa päättelykykyä! Sait haltuusi esineen: ${puzzle.rewardItemName}. Rikostutkintasi etenee huimasti.`
@@ -466,7 +226,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       default: return <Compass style={{ width: '20px', height: '20px', color: '#60a5fa' }} />;
     }
   };
-  // --- Puhtaat Inline-kauneustyylit integraatiolle ilman Tailwindia ---
   const containerStyle: React.CSSProperties = {
     maxWidth: '1000px',
     margin: '0 auto',
@@ -546,6 +305,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 768 ? '1.25fr 1fr' : '1fr',
     gap: '20px',
   };
+
   const cardStyle: React.CSSProperties = {
     backgroundColor: '#0f172a',
     border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -563,13 +323,10 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     overflow: 'hidden',
     marginBottom: '16px',
     position: 'relative',
-    border: '1px solid rgba(255, 255, 255, 0.1)'
-  };
-
-  const locationImageStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover'
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   };
 
   const imageOvertextOverlay: React.CSSProperties = {
@@ -714,6 +471,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     overflow: 'hidden',
     margin: '10px 0'
   };
+
   const statsBadgeStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -725,7 +483,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     fontWeight: 'bold',
     color: '#cbd5e1'
   };
-
   if (!currentLoc || typeof currentLoc.clues === 'undefined') return null;
 
   return (
@@ -767,21 +524,23 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         </div>
       </div>
 
-      {/* RAKENNEGRIDI */}
+      {/* REKISTERIGRIDISTÖ */}
       <div style={responsiveGrid}>
-        {/* VASEN LOHKO - KOHDETUTKINTA */}
+        {/* VASEN LOHKO - AKTIIVISEN SIJAINNIN TIEDOT */}
         <div>
           <div style={cardStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               {getIcon(currentLoc.iconName)}
               <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{currentLoc.name}</h2>
             </div>
-            <div style={locationImageWrapper}>
-              {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
-              <img src={currentLoc.imageUrl} alt={currentLoc.name} style={locationImageStyle} />
-              <span style={imageOvertextOverlay}><span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fbbf24' }} />Ulkokamera</span>
+            
+            {/* KORJAUS: Rikkinäinen ulkopuolinen kuva korvattu dynaamisella väritaustalla ja jättisymbolilla */}
+            <div style={{ ...locationImageWrapper, background: currentLoc.bgGradient, height: '180px', borderRadius: '12px', marginBottom: '16px', position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <span style={{ fontSize: '64px', filter: 'drop-shadow(0px 10px 15px rgba(0,0,0,0.5))' }}>{currentLoc.visualSymbol}</span>
+              <span style={imageOvertextOverlay}><span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fbbf24' }} />Etsivän tutkintapaneeli</span>
             </div>
-            <p style={{ fontSize: '13px', color: '#cbd5e1', fontStyle: 'italic', borderLeft: '2px solid #fbbf24', paddingLeft: '12px' }}>"{currentLoc.longDescription}"</p>
+
+            <p style={{ fontSize: '13px', color: '#cbd5e1', fontStyle: 'italic', borderLeft: '2px solid #fbbf24', paddingLeft: '12px', lineHeight: '1.5' }}>"{currentLoc.longDescription}"</p>
             
             <h3 style={subHeaderStyle}><Search style={{ width: '14px', height: '14px' }} />Tutki kohteita</h3>
             <div style={interactiveListStyle}>
@@ -827,6 +586,15 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
 
           <div style={cardStyle}>
+            <h3 style={subHeaderStyle}><Briefcase style={{ width: '14px', height: '14px' }} />Reppu</h3>
+            {inventory.length === 0 ? <p style={{ fontSize: '11px', color: '#64748b' }}>Reppu on tyhjä.</p> : 
+              <div style={inventoryGridStyle}>
+                {inventory.map((item, idx) => <div key={idx} style={inventoryItemStyle}>{getItemIconBadge(item)} {getItemDisplayName(item)}</div>)}
+              </div>
+            }
+          </div>
+
+          <div style={cardStyle}>
             <h3 style={subHeaderStyle}><Info style={{ width: '14px', height: '14px' }} />Tutkinnan loki</h3>
             <div style={sidebarLogContainer}>
               {atmosphericLogs.map((log, index) => <div key={index} style={{ color: index === 0 ? '#fbbf24' : '#8e9aa8' }}>{log}</div>)}
@@ -841,20 +609,19 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           <div style={overlayBackdrop}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0' }}><Sparkles style={{ width: '14px', height: '14px' }} /> Löydetty todiste</h3>
-              {clueOverlay.id && (
-                <div style={{ width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px' }}>
-                  {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
-                  <img src={getClueImage(clueOverlay.id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              )}
-              <p style={{ fontSize: '12px', fontStyle: 'italic' }}>"{clueOverlay.description}"</p>
-              <p style={{ fontSize: '13px' }}>{clueOverlay.dialog}</p>
-              <button onClick={() => setClueOverlay(null)} style={{ width: '100%', padding: '8px', backgroundColor: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Jatka tutkimusta</button>
+              
+              {/* KORJAUS: Rikkinäinen popup-kuva korvattu suurella tunnelmallisella digisymbolilla */}
+              <div style={{ width: '100%', height: '100px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#020617', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: '48px' }}>{clueOverlay.visualSymbol || "🔍"}</span>
+              </div>
+
+              <p style={{ fontSize: '12px', fontStyle: 'italic', color: '#fbbf24' }}>"{clueOverlay.description}"</p>
+              <p style={{ fontSize: '13px', lineHeight: '1.4' }}>{clueOverlay.dialog}</p>
+              <button onClick={() => setClueOverlay(null)} style={{ width: '100%', padding: '8px', backgroundColor: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}>Jatka tutkimusta</button>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-
       {/* PUZZLE POPUP */}
       <AnimatePresence>
         {solvingPuzzleId && (() => {
@@ -900,7 +667,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
                 )}
                 {puzzleError && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '12px', padding: '8px 10px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', color: '#f87171', fontSize: '11px' }}>
-                    <AlertCircle style={{ width: '13px', height: '13px', shrink: 0 }} />
+                    <AlertCircle style={{ width: '13px', height: '13px' }} />
                     <span>{puzzleError}</span>
                   </div>
                 )}
@@ -939,7 +706,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
         )}
       </AnimatePresence>
-      {/* ENDING MODAL - LOPPURAPORTTI */}
+      {/* ENDING MODAL */}
       <AnimatePresence>
         {endingResult && (
           <div style={overlayBackdrop}>
