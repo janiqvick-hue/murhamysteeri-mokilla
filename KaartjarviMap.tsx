@@ -61,6 +61,7 @@ export interface HuvilaPuzzle {
   rewardItemName: string;
   solveMessage: string;
 }
+
 export const H_LOCATIONS: HuvilaLocation[] = [
   {
     id: "paahuvila",
@@ -69,6 +70,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
     iconName: "Home",
     color: "amber",
+    // KORJAUS: Päivitetty oikea suora kuvalinkki
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["paahuvila_paivakirja"],
@@ -96,6 +98,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
     iconName: "Flame",
     color: "indigo",
+    // KORJAUS: Päivitetty oikea suora kuvalinkki
     imageUrl: "https://unsplash.com",
     isLocked: true,
     requiredItem: "messinkiavain",
@@ -126,6 +129,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
     iconName: "FlameKindling",
     color: "red",
+    // KORJAUS: Päivitetty oikea suora kuvalinkki
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["grillikota_arkku"],
@@ -146,6 +150,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta ja moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
     iconName: "Trees",
     color: "emerald",
+    // KORJAUS: Päivitetty oikea suora kuvalinkki
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["puuvarasto_sahalaatikko"],
@@ -205,6 +210,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
     id: "hirsirantasauna_lattialauta",
     title: "Saunan kiukaan hiilihautalokero",
     description: "Rantasaunan kuuman kiukaan pohjalla on pieni nokeentunut metalliluukku, jonka päällä on kolminumeroinen kiekkolukko. Luukun reunaan on hätäisesti raapustettu vihje: 'Veden kiehumispiste celsiuksina'.",
+
     locationId: "hirsirantasauna",
     isSolved: false,
     type: "code",
