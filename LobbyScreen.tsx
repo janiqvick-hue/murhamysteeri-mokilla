@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { db } from "./firebase";
 import { ref, set, onValue, update } from "firebase/database";
 import { pickRandomScenario } from "./scenarios";
-import { assignRoles } from "./roolit";
+import { assignRoles } from "./roles";
 import { Users, Copy, Check, Play, Compass } from "lucide-react";
 
 interface LobbyScreenProps {
