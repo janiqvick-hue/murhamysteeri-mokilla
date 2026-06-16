@@ -6,7 +6,7 @@ import VotingScreen from "./VotingScreen";
 import KaartjarviMap from "./KaartjarviMap";
 
 export default function App() {
-  // Pelitila laajennettu sisältämään päävalikon ("menu") ja yksinpelin ("kaartjarvi")
+  // Pelitila laajennettu sisältämään päävalikon ("menu"), moninpelin ("multiplayer") ja yksinpelin ("kaartjarvi")
   const [mode, setMode] = useState<"menu" | "multiplayer" | "kaartjarvi">("menu");
   
   // Pelaajan anonyymi ID ja valitut perustiedot
@@ -31,9 +31,54 @@ export default function App() {
     setResultsData(null);
     setGameState("lobby");
     setMode("menu");
+    setIsSoloMode(false);
   };
 
   const currentStage = lobbyData?.status || "lobby";
+
+  // JOS PELAAJA VALITSEE YKSINPELIN: Ohjataan suoraan Kaartjärven pelimoottoriin
+  if (mode === "kaartjarvi") {
+    // Jos nimeä ei ole vielä annettu, kysytään se tyylikkäästi ennen pelin alkua
+    if (!playerName.trim()) {
+      return (
+        <div style={{ minHeight: "100vh", backgroundColor: "#020617", color: "#cbd5e1", fontFamily: 'system-ui, -apple-system', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px", boxSizing: "border-box" }}>
+          <div style={{ backgroundColor: "#0f172a", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "20px", padding: "40px 32px", maxWidth: "480px", width: "100%", boxShadow: "0 20px 40px -15px rgba(0,0,0,0.5)", textAlign: "center", boxSizing: "border-box" }}>
+            <div style={{ fontSize: "32px", marginBottom: "12px" }}>👔📜</div>
+            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", margin: "0 0 16px 0" }}>Kirjoita etsivän nimesi</h2>
+            <input 
+              type="text"
+              placeholder="Esim. Etsivä Koskinen"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              style={{ width: "100%", padding: "12px", backgroundColor: "#020617", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", color: "#ffffff", fontSize: "14px", textAlign: "center", marginBottom: "16px", fontWeight: "bold" }}
+            />
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button 
+                onClick={() => setMode("menu")}
+                style={{ flex: 1, padding: "12px", backgroundColor: "#1e293b", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
+              >
+                Peruuta
+              </button>
+              <button 
+                disabled={!playerName.trim()}
+                onClick={() => setMode("kaartjarvi")} 
+                style={{ flex: 1, padding: "12px", backgroundColor: "#10b981", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px", opacity: playerName.trim() ? 1 : 0.5 }}
+              >
+                Aloita tutkinta
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <KaartjarviMap 
+        playerName={playerName}
+        onExitGame={handleResetGame}
+      />
+    );
+  }
 
   // --- Puhtaat Inline-tyylit päävalikolle ---
   const menuContainerStyle: React.CSSProperties = {
@@ -86,19 +131,6 @@ export default function App() {
     gap: "4px",
     transition: "transform 0.15s ease"
   });
-
-  const nameInputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#020617",
-    border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: "8px",
-    color: "#ffffff",
-    fontSize: "14px",
-    textAlign: "center",
-    marginBottom: "16px",
-    fontWeight: "bold"
-  };
   // --- RENDELÖINTI NÄKYMIEN MUKAAN ---
 
   // NÄKYMÄ 1: PÄÄVALIKKO
@@ -122,11 +154,12 @@ export default function App() {
             <span style={{ fontSize: "11px", fontWeight: "normal", color: "#c7d2fe" }}>Pelaa ryhmässä puhelimilla (vaatii huoneen)</span>
           </button>
 
+          {/* KORJAUS: Tämä painike ohjaa nyt puhtaasti yksinpeliin (kaartjarvi) ilman moninpelin ylikirjoituksia */}
           <button 
-            onClick={() => setMode("multiplayer")} // Vaihdettu varuilta multiplayeriksi, jos kaartjarvi-tila herjaa
+            onClick={() => setMode("kaartjarvi")}
             style={menuButtonStyle("solo")}
-            onClickCapture={() => setMode("multiplayer")}
-            onClick={() => setMode("multiplayer")}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#334155"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#1e293b"}
           >
             <span>🕵️ Kaartjärven Huvila (Yksinpeli)</span>
             <span style={{ fontSize: "11px", fontWeight: "normal", color: "#94a3b8" }}>Tarinarikas rikostutkinta, arvoituksia ja esineitä</span>
@@ -136,7 +169,7 @@ export default function App() {
     );
   }
 
-  // NÄKYMÄ 2: MONINPELIN ALOITUS TAI YKSINPELI
+  // NÄKYMÄ 2: KLASSINEN MONINPELI
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#020617", color: "#cbd5e1" }}>
       {gameState === "lobby" && (
@@ -151,6 +184,7 @@ export default function App() {
           onGameStarted={handleGameStarted}
         />
       )}
+
       {gameState === "reveal" && currentStage === "reveal" && (
         <RoleRevealScreen
           playerId={playerId}
