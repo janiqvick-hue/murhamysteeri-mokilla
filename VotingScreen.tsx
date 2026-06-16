@@ -4,7 +4,7 @@ import { db } from "./firebase";
 import { ref, update, onValue } from "firebase/database";
 import { ACHIEVEMENTS } from "./achievements";
 import { ROLES } from "./roles";
-import { SCENARIO_MAP } from "./utils/scenarios";
+import { SCENARIO_MAP } from "./scenarios";
 import { 
   Users, Check, ShieldAlert, Award, Skull, Vote, Play, AlertCircle, HelpCircle, BarChart2, Star, RotateCcw, CheckCircle, EyeOff, Search, AlertTriangle
 } from "lucide-react";
