@@ -1,340 +1,529 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LOCATIONS } from "./locations";
-import { CLUES } from "./clues";
-import { SCENARIO_MAP } from "./scenarios";
-import { db } from "./firebase";
 import { 
-  Compass, MapPin, Key, HelpCircle, Lock, CheckCircle, ArrowLeft, FileText, Search, ShieldAlert, Users, Trophy
+  Home, 
+  Flame, 
+  FlameKindling, 
+  Trees, 
+  Lock, 
+  Unlock, 
+  Key, 
+  Search, 
+  FileText, 
+  CheckCircle2, 
+  AlertCircle, 
+  Briefcase, 
+  ArrowLeft, 
+  Trophy, 
+  Sparkles, 
+  Info,
+  HelpCircle,
+  Hash,
+  Compass
 } from "lucide-react";
 
-// --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
-interface WitnessNotification {
-  id: string;
-  text: string;
-  type: "movement" | "sabotage" | "discovery" | "system";
-  timestamp: number;
+// Haetaan datatiedostot varmasti oikeasta kaartjarvi-alikansiosta
+import { HUVILA_LOCATIONS, HuvilaLocation, HuvilaClue } from "./kaartjarvi/huvilaLocations";
+import { HUVILA_PUZZLES, HuvilaPuzzle } from "./kaartjarvi/huvilaPuzzles";
+
+const getClueImage = (clueId: string) => {
+  switch (clueId) {
+    case "takkatuli": return "https://unsplash.com";
+    case "lasi": return "https://unsplash.com";
+    case "laudeliina": return "https://unsplash.com";
+    case "saunakiulu": return "https://unsplash.com";
+    case "kirje": return "https://unsplash.com";
+    case "jalanjaljet": return "https://unsplash.com";
+    default: return "https://unsplash.com";
+  }
+};
+
+const getItemIconBadge = (item: string) => {
+  switch (item.toLowerCase()) {
+    case "messinkiavain": return "🔑";
+    case "sorkkarauta": return "⚒️";
+    case "ranneketju": return "📿";
+    case "perintosormus": return "💍";
+    case "myrkkyrekisteri": return "🧪";
+    default: return "📦";
+  }
+};
+
+const getItemDisplayName = (item: string) => {
+  switch (item.toLowerCase()) {
+    case "messinkiavain": return "Messinkiavain";
+    case "sorkkarauta": return "Raskas sorkkarauta";
+    case "ranneketju": return "Marian hopeaketju";
+    case "perintosormus": return "Mikaelin kultainen sinettisormus";
+    case "myrkkyrekisteri": return "Kaliumsyanidi-pullo";
+    default: return item;
+  }
+};
+
+interface KaartjarviMapProps {
+  onBackToLobby?: () => void;
+  onExitGame?: () => void;
+  playerName: string;
 }
 
-function WitnessBanner({ notifications }: { notifications: WitnessNotification[] }) {
-  const activeNotifications = [...notifications]
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, 2);
-
-  if (activeNotifications.length === 0) return null;
-
-  return (
-    <div className="w-full space-y-2 pointer-events-none mb-4">
-      <AnimatePresence>
-        {activeNotifications.map((notif) => {
-          let icon = <Bell className="w-4 h-4 text-amber-400" />;
-          let bgColor = "bg-slate-900/95 border-amber-500/20 text-slate-200";
-
-          if (notif.type === "sabotage") {
-            icon = <ShieldAlert className="w-4 h-4 text-red-400 animate-pulse" />;
-            bgColor = "bg-red-950/90 border-red-500/30 text-red-200";
-          } else if (notif.type === "discovery") {
-            icon = <Sparkles className="w-4 h-4 text-cyan-400" />;
-            bgColor = "bg-slate-900/95 border-cyan-500/20 text-slate-100";
-          } else if (notif.type === "movement") {
-            icon = <Eye className="w-4 h-4 text-emerald-400" />;
-            bgColor = "bg-slate-900/90 border-slate-800 text-slate-300";
-          }
-
-          return (
-            <motion.div
-              key={notif.id}
-              initial={{ opacity: 0, y: -15, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.9 }}
-              className={`flex items-center gap-3 p-3 rounded-xl border shadow-lg backdrop-blur-md w-full ${bgColor}`}
-            >
-              <div className="shrink-0 p-1.5 bg-black/40 rounded-lg">{icon}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold leading-normal truncate">{notif.text}</p>
-                <span className="text-[9px] text-slate-500 font-mono">
-                  {new Date(notif.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                </span>
-              </div>
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// --- MAP SCREEN PROPS MÄÄRITTELYT ---
-interface MapScreenProps {
-  playerId: string;
-  gameCode: string;
-  isSoloMode: boolean;
-  lobbyData: any;
-  onNextStage: (resultsData?: any) => void;
-}
-
-// --- SABOTAGE MODAL UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
-interface SabotageModalProps {
-  onClose: () => void;
-  onSaveSabotage: (clueId: string, fakeName: string, fakeText: string) => void;
-  sabotagedMap: Record<string, any>;
-}
-
-function SabotageModal({ onClose, onSaveSabotage, sabotagedMap }: SabotageModalProps) {
-  const [selectedClueId, setSelectedClueId] = useState("");
-  const [fakeName, setFakeName] = useState("");
-  const [fakeText, setFakeText] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const selectedClue = BASE_CLUES.find(c => c.id === selectedClueId);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedClueId || !fakeName.trim() || !fakeText.trim()) return;
-
-    setSubmitting(true);
-    onSaveSabotage(selectedClueId, fakeName.trim(), fakeText.trim());
-    setSuccess(true);
-    
-    setTimeout(() => {
-      setSuccess(false);
-      setSubmitting(false);
-      onClose();
-    }, 1500);
+export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }: KaartjarviMapProps) {
+  const handleExit = () => {
+    if (onExitGame) onExitGame();
+    else if (onBackToLobby) onBackToLobby();
   };
 
-  const handleClueSelect = (id: string) => {
-    setSelectedClueId(id);
-    const existing = sabotagedMap[id];
-    if (existing) {
-      setFakeName(existing.fakeName);
-      setFakeText(existing.fakeText || existing.fakeDescription);
-    } else {
-      const original = BASE_CLUES.find(c => c.id === id);
-      setFakeName(original ? original.name : "");
-      setFakeText("");
-    }
+  const [locations, setLocations] = useState<HuvilaLocation[]>(HUVILA_LOCATIONS);
+  const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(HUVILA_PUZZLES);
+  const [inventory, setInventory] = useState<string[]>([]);
+  const [activeLocId, setActiveLocId] = useState<string>("paahuvila");
+  
+  const [clueOverlay, setClueOverlay] = useState<{
+    id?: string;
+    title: string;
+    description: string;
+    dialog: string;
+    itemEarned?: string;
+  } | null>(null);
+
+  const [solvingPuzzleId, setSolvingPuzzleId] = useState<string | null>(null);
+  const [codeInputValue, setCodeInputValue] = useState<string>("");
+  const [puzzleError, setPuzzleError] = useState<string>("");
+
+  const [isAccusationMode, setIsAccusationMode] = useState<boolean>(false);
+  const [selectedAccused, setSelectedAccused] = useState<string>("");
+  const [endingResult, setEndingResult] = useState<{
+    success: boolean;
+    title: string;
+    explanation: string;
+    detectiveRank: string;
+    score: number;
+  } | null>(null);
+
+  const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
+    "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
+    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista, kuka myrkytti Mikaelin."
+  ]);
+
+  const logAtmosphere = (msg: string) => {
+    setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
+  };
+  const exitButtonStyle: React.CSSProperties = {
+    padding: '10px 16px',
+    backgroundColor: '#1e293b',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    color: '#cbd5e1',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'all 0.2s ease-in-out'
   };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.95, y: 15 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.95, y: 10 }}
-        className="bg-slate-900 border border-red-900/40 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
-      >
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 to-amber-600" />
+  const responsiveGrid: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 768 ? '1.25fr 1fr' : '1fr',
+    gap: '20px',
+  };
 
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-2">
-            <Skull className="w-5 h-5 text-red-500 animate-pulse" />
-            <h3 className="text-md font-bold text-slate-100 uppercase tracking-wide">
-              Syyllisen Sabotaasipaneeli
-            </h3>
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: '#0f172a',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '16px',
+    padding: '24px',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+    marginBottom: '20px',
+    position: 'relative'
+  };
+
+  const locationImageWrapper: React.CSSProperties = {
+    width: '100%',
+    height: '220px',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    marginBottom: '16px',
+    position: 'relative',
+    border: '1px solid rgba(255, 255, 255, 0.1)'
+  };
+
+  const locationImageStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  };
+
+  const imageOvertextOverlay: React.CSSProperties = {
+    position: 'absolute',
+    bottom: '12px',
+    left: '12px',
+    backgroundColor: 'rgba(2, 6, 17, 0.85)',
+    color: '#fbbf24',
+    fontFamily: 'monospace',
+    fontSize: '9px',
+    fontWeight: 'bold',
+    padding: '4px 8px',
+    borderRadius: '6px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  };
+
+  const subHeaderStyle: React.CSSProperties = {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    color: '#e2e8f0',
+    letterSpacing: '0.05em',
+    marginBottom: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  };
+  const interactiveListStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginBottom: '20px'
+  };
+
+  const clueItemStyle = (discovered: boolean): React.CSSProperties => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px 16px',
+    backgroundColor: discovered ? 'rgba(30, 41, 59, 0.6)' : '#1e293b',
+    border: discovered ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease'
+  });
+
+  const travelGridStyle: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '10px'
+  };
+
+  const mapItemStyle = (active: boolean, locked: boolean): React.CSSProperties => ({
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: '14px',
+    backgroundColor: active ? 'rgba(99, 102, 241, 0.15)' : '#1a2236',
+    border: active ? '2.5px solid #6366f1' : '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    textAlign: 'left',
+    transition: 'all 0.2s ease',
+    opacity: locked ? 0.75 : 1
+  });
+
+  const sidebarLogContainer: React.CSSProperties = {
+    padding: '12px',
+    backgroundColor: '#020617',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '10px',
+    fontSize: '11px',
+    fontFamily: 'monospace',
+    color: '#a1a1aa',
+    height: '110px',
+    overflowY: 'auto',
+    lineHeight: '1.5',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px'
+  };
+
+  const inventoryGridStyle: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+    gap: '8px'
+  };
+
+  const inventoryItemStyle: React.CSSProperties = {
+    padding: '8px 12px',
+    backgroundColor: '#121b2e',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '10px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    color: '#cbd5e1',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  };
+
+  const overlayBackdrop: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(2, 6, 17, 0.9)',
+    zIndex: 999,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '16px',
+    backdropFilter: 'blur(4px)',
+    boxSizing: 'border-box'
+  };
+
+  const popupBoxStyle: React.CSSProperties = {
+    backgroundColor: '#0f172a',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    padding: '24px',
+    borderRadius: '16px',
+    maxWidth: '420px',
+    width: '100%',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    boxSizing: 'border-box',
+    position: 'relative'
+  };
+
+  const progressBarStyle: React.CSSProperties = {
+    height: '6px',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: '10px',
+    width: '100%',
+    overflow: 'hidden',
+    margin: '10px 0'
+  };
+
+  const statsBadgeStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: '8px',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    color: '#cbd5e1'
+  };
+  if (!currentLoc || typeof currentLoc.clues === 'undefined') return null;
+
+  return (
+    <div style={containerStyle}>
+      {/* YLÄPALKKI */}
+      <div style={headerStyle}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span style={badgeStyle}>Yksinpeliseikkailu</span>
+            <span style={{ fontSize: '10px', color: '#475569' }}>•</span>
+            <span style={codeBadgeStyle}>Lopen Kaartjärvi</span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <h1 style={titleStyle}>Huvilan Varjot</h1>
+          <p style={{ fontSize: '12px', color: '#94a3b8', margin: '6px 0 0 0' }}>
+            Etsivä <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>{playerName || "Salapoliisi"}</span>, ratkaise murha!
+          </p>
         </div>
-
-        <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-          Kuulut murhaajiin. Voit väärentää minkä tahansa mökin vihjeen syöttämällä valheellista tietoa etsivien puhelimiin.
-        </p>
-
-        {success ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="py-12 flex flex-col items-center text-center justify-center space-y-3"
-          >
-            <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-full text-red-400 animate-bounce">
-              <ShieldAlert className="w-8 h-8" />
-            </div>
-            <h4 className="text-sm font-bold text-red-400 uppercase tracking-widest">Vihje Sabotoitu livenä!</h4>
-          </motion.div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
-                Valitse väärennettävä vihje
-              </label>
-              <select
-                value={selectedClueId}
-                onChange={(e) => handleClueSelect(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500 cursor-pointer"
-                required
-              >
-                <option value="">-- Valitse johto-lanka --</option>
-                {BASE_CLUES.map((clue) => {
-                  const loc = LOCATIONS.find(l => l.id === clue.locationId);
-                  const isAlreadySabotaged = !!sabotagedMap[clue.id];
-                  return (
-                    <option key={clue.id} value={clue.id}>
-                      {clue.name} ({loc ? loc.name : ""}) {isAlreadySabotaged ? "🛑" : ""}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            {selectedClueId && (
-              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                <div className="p-3 bg-slate-950 border border-slate-850 rounded-xl">
-                  <span className="block text-[10px] text-amber-500/80 font-bold uppercase tracking-wider mb-0.5">Alkuperäinen esine:</span>
-                  <p className="text-xs font-bold text-slate-300 mb-1">{selectedClue?.name}</p>
-                  <p className="text-[11px] text-slate-500 italic leading-snug">"{selectedClue?.normalText}"</p>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
-                    Väärennetty nimi / esine
-                  </label>
-                  <input
-                    type="text"
-                    value={fakeName}
-                    onChange={(e) => setFakeName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500"
-                    placeholder="Esim. Tyhjä kahvikuppi"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
-                    Väärennetty vihjeteksti (Mitä muut näkevät)
-                  </label>
-                  <textarea
-                    value={fakeText}
-                    onChange={(e) => setFakeText(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-red-500 resize-none leading-normal"
-                    placeholder="Kirjoita harhaanjohtava tarina tai havainto..."
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-2.5 bg-red-700 hover:bg-red-600 font-bold rounded-xl text-slate-100 border-none cursor-pointer text-xs uppercase tracking-wider transition-colors disabled:opacity-50 shadow-lg mt-2"
-                >
-                  {submitting ? "Päivitetään..." : "Tallenna ja Sabotoi ⚡"}
-                </button>
-              </motion.div>
-            )}
-          </form>
-        )}
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// --- PÄÄKOMPONENTTI: MAP SCREEN ---
-export default function MapScreen({ playerId, gameCode, isSoloMode, lobbyData, onNextStage }: MapScreenProps) {
-  const [showSabotage, setShowSabotage] = useState(false);
-  const [sabotagedClues, setSabotagedClues] = useState<Record<string, any>>({});
-  const [notifications, setNotifications] = useState<WitnessNotification[]>([]);
-
-  // Kuunnellaan huoneen tapahtumia livenä moninpelissä tai simuloidaan bot-pelissä
-  useEffect(() => {
-    if (isSoloMode || !gameCode) return;
-    const roomRef = ref(db, `rooms/${gameCode}`);
-    const unsubscribe = onValue(roomRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        if (data.sabotage) setSabotagedClues(data.sabotage);
-        if (data.notifications) setNotifications(Object.values(data.notifications));
-        if (data.status === "voting") onNextStage(data.results || null);
-      }
-    });
-    return () => unsubscribe();
-  }, [gameCode, isSoloMode, onNextStage]);
-
-  const handleSaveSabotage = async (clueId: string, fakeName: string, fakeText: string) => {
-    if (isSoloMode) {
-      setSabotagedClues(prev => ({ ...prev, [clueId]: { fakeName, fakeText } }));
-    } else {
-      const updates: Record<string, any> = {};
-      updates[`rooms/${gameCode}/sabotage/${clueId}`] = { fakeName, fakeText, timestamp: Date.now() };
-      
-      // Luodaan samalla live-ilmoitus tapahtumasta muille mökkiläisille
-      const notifId = "n_" + Math.random().toString(36).substr(2, 9);
-      updates[`rooms/${gameCode}/notifications/${notifId}`] = {
-        id: notifId,
-        text: "⚠️ Jotain outoa tapahtui jossain päin mökkiä...",
-        type: "sabotage",
-        timestamp: Date.now()
-      };
-      await update(ref(db), updates);
-    }
-  };
-
-  const myRole = lobbyData?.players?.[playerId]?.role || "vieras";
-  const isSyyllinen = myRole === "syyllinen";
-
-  return (
-    <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px", fontFamily: "sans-serif", color: "#f8fafc" }}>
-      {/* Live-banneri tapahtumille */}
-      <WitnessBanner notifications={notifications} />
-
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-xl">
-        <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-full w-fit mx-auto mb-1">
-          <Compass className="w-8 h-8 text-red-500" />
-        </div>
-        <h2 className="text-xl font-black uppercase tracking-tight">Mökin Tutkimusvaihe</h2>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          Liiku mökin eri huoneissa, etsi todistusaineistoja ja tarkkaile muiden mökkiläisten liikkeitä.
-        </p>
-
-        {/* Syyllisen sabotaasinappula */}
-        {isSyyllinen && (
-          <button
-            type="button"
-            onClick={() => setShowSabotage(true)}
-            className="w-full py-2.5 bg-red-950/40 border border-red-900/50 hover:bg-red-900/30 font-bold rounded-xl text-red-400 text-xs uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Skull className="w-4 h-4" />
-            <span>Avaa Sabotaasipaneeli</span>
-          </button>
-        )}
-
-        {/* Eteenpäin äänestykseen (Isännälle tai Solo-botti-pelissä) */}
-        {(isSoloMode || lobbyData?.players?.[playerId]?.isHost) && (
-          <button
-            type="button"
-            onClick={async () => {
-              if (isSoloMode) {
-                onNextStage();
-              } else {
-                await update(ref(db, `rooms/${gameCode}`), { status: "voting" });
-              }
-            }}
-            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl text-slate-100 text-xs uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg"
-          >
-            <Play className="w-4 h-4" />
-            <span>Siirry Loppuäänestykseen 🗳️</span>
-          </button>
-        )}
+        <button onClick={handleExit} style={exitButtonStyle}>
+          <ArrowLeft style={{ width: '14px', height: '14px' }} />
+          Lopeta peli
+        </button>
       </div>
 
-      {/* Sabotaasi-modal */}
+      {/* EDISTYMISVALIKKO */}
+      <div style={{ ...cardStyle, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ flex: '1 1 250px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'bold', color: '#cbd5e1' }}>
+            <span>Etsivän edistyminen</span>
+            <span>{foundCluesCount} / {totalCluesCount} Löydetty</span>
+          </div>
+          <div style={progressBarStyle}>
+            <div style={{ height: '100%', backgroundColor: '#10b981', width: `${totalCluesCount ? (foundCluesCount / totalCluesCount) * 100 : 0}%`, transition: 'width 0.4s' }} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={statsBadgeStyle}><Search style={{ width: '13px', height: '13px' }} /> {foundCluesCount}/{totalCluesCount}</div>
+          <div style={statsBadgeStyle}><Trophy style={{ width: '13px', height: '13px' }} /> {solvedPuzzlesCount}/4</div>
+          <button onClick={() => setIsAccusationMode(true)} style={{ padding: '6px 14px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Haasta Syyllinen</button>
+        </div>
+      </div>
+
+      {/* PÄÄASENTELU */}
+      <div style={responsiveGrid}>
+        {/* VASEN LOHKO - AKTIIVINEN KOHDE */}
+        <div>
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              {getIcon(currentLoc.iconName)}
+              <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{currentLoc.name}</h2>
+            </div>
+            <div style={locationImageWrapper}>
+              <img src={currentLoc.imageUrl} alt={currentLoc.name} style={locationImageStyle} referrerPolicy="no-referrer" />
+              <span style={imageOvertextOverlay}><span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fbbf24' }} />Ulkokamera</span>
+            </div>
+            <p style={{ fontSize: '13px', color: '#cbd5e1', fontStyle: 'italic', borderLeft: '2px solid #fbbf24', paddingLeft: '12px' }}>"{currentLoc.longDescription}"</p>
+            
+            <h3 style={subHeaderStyle}><Search style={{ width: '14px', height: '14px' }} />Tutki kohteita</h3>
+            <div style={interactiveListStyle}>
+              {currentLoc.clues.map((clue) => (
+                <div key={clue.id} onClick={() => handleInspectClue(clue)} style={clueItemStyle(clue.discovered)}>
+                  <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{clue.name}</span>
+                  <span>{clue.discovered ? "✅" : "🔍"}</span>
+                </div>
+              ))}
+            </div>
+
+            {currentLoc.puzzles.length > 0 && (
+              <div>
+                <h3 style={subHeaderStyle}><HelpCircle style={{ width: '14px', height: '14px' }} />Alueen arvoitukset</h3>
+                {currentLoc.puzzles.map(puzId => {
+                  const puz = puzzles.find(p => p.id === puzId);
+                  if (!puz) return null;
+                  return (
+                    <div key={puz.id} onClick={() => !puz.isSolved && handleOpenPuzzle(puz.id)} style={{ padding: '12px', backgroundColor: '#1e293b', borderRadius: '8px', marginBottom: '6px', cursor: puz.isSolved ? 'default' : 'pointer' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{puz.title} {puz.isSolved ? "✅" : "🧩"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* OIKEA LOHKO - TONTTIKARTTA, REPPU & LOKI */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={cardStyle}>
+            <h3 style={subHeaderStyle}><Compass style={{ width: '14px', height: '14px' }} />Tonttikartta</h3>
+            <div style={travelGridStyle}>
+              {locations.map((loc) => (
+                <button key={loc.id} onClick={() => handleTravelTo(loc.id)} style={mapItemStyle(loc.id === activeLocId, loc.isLocked)}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    {getIcon(loc.iconName)}
+                    {loc.isLocked ? <Lock style={{ width: '12px' }} /> : <Unlock style={{ width: '12px' }} />}
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', marginTop: '4px' }}>{loc.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={subHeaderStyle}><Briefcase style={{ width: '14px', height: '14px' }} />Reppu</h3>
+            {inventory.length === 0 ? <p style={{ fontSize: '11px', color: '#64748b' }}>Reppu on tyhjä.</p> : 
+              <div style={inventoryGridStyle}>
+                {inventory.map((item, idx) => <div key={idx} style={inventoryItemStyle}>{getItemIconBadge(item)} {getItemDisplayName(item)}</div>)}
+              </div>
+            }
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={subHeaderStyle}><Info style={{ width: '14px', height: '14px' }} />Tutkinnan loki</h3>
+            <div style={sidebarLogContainer}>
+              {atmosphericLogs.map((log, index) => <div key={index} style={{ color: index === 0 ? '#fbbf24' : '#8e9aa8' }}>{log}</div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CLUE POPUP */}
       <AnimatePresence>
-        {showSabotage && (
-          <SabotageModal
-            onClose={() => setShowSabotage(false)}
-            onSaveSabotage={handleSaveSabotage}
-            sabotagedMap={sabotagedClues}
-          />
+        {clueOverlay && (
+          <div style={overlayBackdrop}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
+              <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0' }}><Sparkles style={{ width: '14px', height: '14px' }} /> Löydetty todiste</h3>
+              {clueOverlay.id && (
+                <div style={{ width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px' }}>
+                  <img src={getClueImage(clueOverlay.id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                </div>
+              )}
+              <p style={{ fontSize: '12px', fontStyle: 'italic' }}>"{clueOverlay.description}"</p>
+              <p style={{ fontSize: '13px' }}>{clueOverlay.dialog}</p>
+              <button onClick={() => setClueOverlay(null)} style={{ width: '100%', padding: '8px', backgroundColor: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Jatka tutkimusta</button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* PUZZLE POPUP */}
+      <AnimatePresence>
+        {solvingPuzzleId && (() => {
+          const puz = puzzles.find(p => p.id === solvingPuzzleId);
+          if (!puz) return null;
+          return (
+            <div style={overlayBackdrop}>
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 'bold' }}>Arvoitus: {puz.title}</h3>
+                  <button onClick={handleClosePuzzle} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}>X</button>
+                </div>
+                <p style={{ fontSize: '12px' }}>{puz.description}</p>
+                <p style={{ fontSize: '11px', color: '#fbbf24' }}>Vihje: {puz.hint}</p>
+                {puz.type === "code" ? (
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
+                    <input type="text" value={codeInputValue} onChange={(e) => setCodeInputValue(e.target.value)} placeholder="Koodi" style={{ flex: 1, padding: '6px', background: '#020617', border: '1px solid #334155', color: '#fff', borderRadius: '6px', textAlign: 'center' }} />
+                    <button onClick={() => handleSubmitCodePuzzle(puz)} style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Syötä</button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+                    {inventory.map((item, idx) => (
+                      <button key={idx} onClick={() => handleUseItemForPuzzle(puz, item)} style={{ padding: '8px', background: '#020617', border: '1px solid #334155', color: '#fff', borderRadius: '6px', cursor: 'pointer', textAlign: 'left' }}>
+                        {getItemIconBadge(item)} Käytä: {getItemDisplayName(item)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {puzzleError && <p style={{ color: '#f87171', fontSize: '11px', marginTop: '6px' }}>{puzzleError}</p>}
+              </motion.div>
+            </div>
+          );
+        })()}
+      </AnimatePresence>
+
+      {/* ACCUSATION MODAL */}
+      <AnimatePresence>
+        {isAccusationMode && !endingResult && (
+          <div style={overlayBackdrop}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 'bold' }}>Valitse syyllinen!</h3>
+                <button onClick={() => setIsAccusationMode(false)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>X</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { id: "maria", name: "Maria Koskela", desc: "Mikaelin serkku. Rantasaunan hopeaketju." },
+                  { id: "ville", name: "Ville Lindström", desc: "Veljenpoika. Grillikodan kiristyskirje." },
+                  { id: "heikki", name: "Heikki Nieminen", desc: "Sijoittajanaapuri. Puuvaraston jalanjäljet." }
+                ].map(sus => (
+                  <div key={sus.id} style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{sus.name}</div>
+                      <div style={{ fontSize: '10px', color: '#64748b' }}>{sus.desc}</div>
+                    </div>
+                    <button onClick={() => handleAccuse(sus.id)} style={{ padding: '4px 10px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}>Syyte</button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ENDING MODAL */}
+      <AnimatePresence>
+        {endingResult && (
+          <div style={overlayBackdrop}>
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} style={{ ...popupBoxStyle, border: endingResult.success ? '2px solid #10b981' : '2px solid #ef4444' }}>
+              <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+                <span style={{ fontSize: '32px' }}>{endingResult.success ? "🏆" : "🚨"}</span>
+                <h2 style={{ fontSize: '16px', fontWeight: 'bold', margin: '6px 0' }}>{endingResult.title}</h2>
+                <div style={{ fontSize: '11px', color: '#fbbf24' }}>{endingResult.detectiveRank} (Pisteet: {endingResult.score}%)</div>
+              </div>
+              <p style={{ fontSize: '12px', lineHeight: '1.5', backgroundColor: '#020617', padding: '10px', borderRadius: '8px' }}>{endingResult.explanation}</p>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
+                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
+                <button onClick={handleExit} style={{ flex: 1, padding: '10px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Päävalikkoon</button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
