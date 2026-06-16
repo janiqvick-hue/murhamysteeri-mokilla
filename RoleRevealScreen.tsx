@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ROLE_INFO } from "./src/utils/roles";
+import { ROLES } from "./roles";
 import { SCENARIO_MAP } from "./src/utils/scenarios";
 import { db } from "./firebase";
 import { ref, update } from "firebase/database";
