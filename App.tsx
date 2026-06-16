@@ -160,9 +160,10 @@ export default function App() {
               >
                 Peruuta
               </button>
+              {/* KORJAUS: onClick vaihtaa nyt tilan ja käynnistää yksinpelin */}
               <button 
                 disabled={!playerName.trim()}
-                onClick={() => {}} // Nimi tallennettu tilaan, renderöi pelin seuraavalla kierroksella
+                onClick={() => setMode("kaartjarvi")} 
                 style={{ flex: 1, padding: "12px", backgroundColor: "#10b981", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px", opacity: playerName.trim() ? 1 : 0.5 }}
               >
                 Aloita tutkinta
