@@ -31,13 +31,12 @@ export default function App() {
     setResultsData(null);
     setGameState("lobby");
     setMode("menu");
-    setPlayerName(""); // Nollataan nimi palatessa
     setIsSoloMode(false);
   };
 
   const currentStage = lobbyData?.status || "lobby";
 
-  // JOS PELAAJA ON ANTAKOOT NIMEN JA VALINNUT YKSINPELIN: Näytetään pelimoottori
+  // Ohjataan Kaartjärven pelimoottoriin
   if (mode === "kaartjarvi" && playerName.trim()) {
     return (
       <KaartjarviMap 
@@ -68,7 +67,7 @@ export default function App() {
     padding: "40px 32px",
     maxWidth: "480px",
     width: "100%",
-    boxShadow: "0 20px 40px -15 rgba(0,0,0,0.5)",
+    boxShadow: "0 20px 40px -15px rgba(0,0,0,0.5)",
     textAlign: "center",
     boxSizing: "border-box"
   };
@@ -111,12 +110,12 @@ export default function App() {
           <div style={{ fontSize: "40px", marginBottom: "12px" }}>🌲🏡🔍</div>
           <h1 style={menuTitleStyle}>Mökkimysteeri</h1>
           <p style={{ fontSize: "14px", color: "#94a3b8", margin: "0 0 24px 0", lineHeight: "1.5" }}>
-            Tervetuloa! Kirjoita ensin nimesi alta, ja valitse sen jälkeen haluamasi pelitila.
+            Tervetuloa! Kirjoita alta etsivän nimesi, ja valitse sen jälkeen haluamasi rikostapaus tai pelitila.
           </p>
 
-          {/* NIMIKENTTÄ SIIRRETTY ETUSIVULLE KAATUMISTEN ESTÄMISEKSI */}
-          <div style={{ marginBottom: "20px", textAlign: "left" }}>
-            <label style={{ display: "block", fontSize: "11px", fontWeight: "bold", color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>
+          {/* NIMIKENTTÄ */}
+          <div style={{ marginBottom: "24px", textAlign: "left" }}>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: "bold", color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.05em" }}>
               Etsivän / Pelaajan nimi
             </label>
             <input 
@@ -128,29 +127,65 @@ export default function App() {
             />
           </div>
 
-          <button 
-            disabled={isNameEmpty}
-            onClick={() => setMode("multiplayer")}
-            style={menuButtonStyle(isNameEmpty, "multi")}
-          >
-            <span>👥 Klassinen Moninpeli</span>
-            <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#c7d2fe" }}>Pelaa ryhmässä puhelimilla</span>
-          </button>
+          {/* JAKO-OSIO YKSINPELEILLE */}
+          <div style={{ textAlign: "left", margin: "16px 0 8px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "6px" }}>
+            <span style={{ fontSize: "11px", fontWeight: "bold", color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.05em" }}>🕵️‍♂️ Yksinpelitapaukset</span>
+          </div>
 
           <button 
             disabled={isNameEmpty}
             onClick={() => setMode("kaartjarvi")}
             style={menuButtonStyle(isNameEmpty, "solo")}
           >
-            <span>🕵️ Kaartjärven Huvila (Yksinpeli)</span>
-            <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#a7f3d0" }}>Tarinarikas rikostutkinta ja arvoitukset</span>
+            <span>Osa 1: Huvilan Varjot</span>
+            <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#a7f3d0" }}>Ratkaise Kaartjärven huvilan murha</span>
           </button>
+
+          {/* UUSI ETURIVI JATKO-OSALLE */}
+          <button 
+            disabled={true}
+            style={{
+              width: "100%",
+              padding: "16px",
+              margin: "8px 0",
+              backgroundColor: "#111827",
+              border: "1px dashed rgba(255,255,255,0.1)",
+              borderRadius: "12px",
+              color: "#4b5563",
+              fontSize: "14px",
+              fontWeight: "bold",
+              cursor: "not-allowed",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              opacity: 0.5
+            }}
+          >
+            <span>🔒 Osa 2: Kaartjärven Verivelka</span>
+            <span style={{ fontSize: "11px", fontWeight: "normal", color: "#374151" }}>Tulossa pian... (Uusi rikostutkinta)</span>
+          </button>
+
+          {/* JAKO-OSIO MONINPELILLE */}
+          <div style={{ textAlign: "left", margin: "24px 0 8px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "6px" }}>
+            <span style={{ fontSize: "11px", fontWeight: "bold", color: "#818cf8", textTransform: "uppercase", letterSpacing: "0.05em" }}>👥 Seurapeli</span>
+          </div>
+
+          <button 
+            disabled={isNameEmpty}
+            onClick={() => setMode("multiplayer")}
+            style={menuButtonStyle(isNameEmpty, "multi")}
+          >
+            <span>👥 Klassinen Moninpeli</span>
+            <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#c7d2fe" }}>Pelaa ryhmässä ystävien kanssa</span>
+          </button>
+
         </div>
       </div>
     );
   }
 
-  // NÄKYMÄ 2: MONINPELIN ALOITUS TAI PELIVAIHEET
+  // NÄKYMÄ 2: KLASSINEN MONINPELI
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#020617", color: "#cbd5e1" }}>
       {gameState === "lobby" && (
