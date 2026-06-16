@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { db } from "./firebase";
 import { ref, set, onValue, update } from "firebase/database";
-
 import { assignRoles } from "./roles";
 import { Users, Copy, Check, Play, Compass } from "lucide-react";
+import KaartjarviMap from "./KaartjarviMap";
+
+const pickRandomScenario = () => {
+  return Math.floor(Math.random() * 3) + 1;
+};
 
 interface LobbyScreenProps {
   playerId: string;
@@ -14,11 +17,8 @@ interface LobbyScreenProps {
   setGameCode: (code: string) => void;
   isSoloMode: boolean;
   setIsSoloMode: (solo: boolean) => void;
-  onGameStarted: (lobbyData: any) => void;
+  onGameStarted: (data: any) => void;
 }
-const pickRandomScenario = () => {
-  return Math.floor(Math.random() * 3) + 1; // Arpoo skenaarion 1, 2 tai 3 väliltä
-};
 
 export default function LobbyScreen({
   playerId,
@@ -28,98 +28,205 @@ export default function LobbyScreen({
   setGameCode,
   isSoloMode,
   setIsSoloMode,
-  onGameStarted
+  onGameStarted,
 }: LobbyScreenProps) {
-  const [inputName, setInputName] = useState(playerName || "");
-  const [inputCode, setInputCode] = useState(gameCode || "");
-  const [inLobby, setInLobby] = useState(false);
-  const [lobbyPlayers, setLobbyPlayers] = useState<any[]>([]);
-  const [isHost, setIsHost] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const generateRoomCode = () => {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-    for (let i = 0; i < 4; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); }
-    return code;
-  };
+  // Jos pelaaja valitsee yksinpelin, ohjataan hänet suoraan uuteen pelimoottoriin
+  const [startSoloAdventure, setStartSoloAdventure] = useState(false);
 
-  useEffect(() => {
-    if (!inLobby || !gameCode || isSoloMode) return;
-    const roomRef = ref(db, `rooms/${gameCode}`);
-    const unsubscribe = onValue(roomRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        if (data.status === "reveal") { onGameStarted(data); return; }
-        const playersList = Object.values(data.players || {}) as any[];
-        setLobbyPlayers(playersList);
-        const me = playersList.find((p: any) => p.id === playerId);
-        if (me?.isHost) setIsHost(true);
-      } else {
-        setErrorMessage("Huonetta ei enää löytynyt.");
-        setInLobby(false);
-      }
-    });
-    return () => unsubscribe();
-  }, [inLobby, gameCode, isSoloMode, playerId, onGameStarted]);
-
-  const handleCreateGame = async (solo: boolean) => {
-    if (!inputName.trim()) { setErrorMessage("Syötä nimi ensin!"); return; }
-    setLoading(true); setErrorMessage("");
-    const finalName = inputName.trim(); setPlayerName(finalName); setIsSoloMode(solo);
-    const code = generateRoomCode(); setGameCode(code);
-
-    if (solo) {
-      const hostPlayer = { id: playerId, name: finalName, isHost: true, cluesFoundCount: 0, sabotagesAttempted: 0 };
-      setLobbyPlayers([
-        hostPlayer,
-        { id: "ai_1", name: "Kalle (Bot)", isHost: false, isAI: true, cluesFoundCount: 0, sabotagesAttempted: 0 },
-        { id: "ai_2", name: "Sanna (Bot)", isHost: false, isAI: true, cluesFoundCount: 0, sabotagesAttempted: 0 },
-        { id: "ai_3", name: "Ville (Bot)", isHost: false, isAI: true, cluesFoundCount: 0, sabotagesAttempted: 0 }
-      ]);
-      setIsHost(true); setInLobby(true);
-    } else {
-      try {
-        await set(ref(db, `rooms/${code}`), {
-          code, status: "lobby", scenarioId: pickRandomScenario().id,
-          players: { [playerId]: { id: playerId, name: finalName, isHost: true, cluesFoundCount: 0, sabotagesAttempted: 0 } },
-          createdAt: Date.now()
-        });
-        setIsHost(true); setInLobby(true);
-      } catch (err: any) { setErrorMessage("Virhe: " + err.message); }
+  if (startSoloAdventure && playerName.trim()) {
+    return (
+      <KaartjarviMap 
+        playerName={playerName}
+        onExitGame={() => {
+          setStartSoloAdventure(false);
+          setIsSoloMode(false);
+        }}
+      />
+    );
+  }
+  const handleCreateGame = async () => {
+    if (!playerName.trim()) {
+      setError("Kirjoita ensin nimesi!");
+      return;
     }
-    setLoading(false);
+    
+    if (isSoloMode) {
+      setStartSoloAdventure(true);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+    setGameCode(code);
+
+    try {
+      const lobbyRef = ref(db, `lobbies/${code}`);
+      const initialData = {
+        code,
+        status: "lobby",
+        createdAt: Date.now(),
+        scenarioId: pickRandomScenario(),
+        players: {
+          [playerId]: {
+            id: playerId,
+            name: playerName,
+            isHost: true,
+            ready: true,
+          },
+        },
+      };
+      await set(lobbyRef, initialData);
+      
+      onValue(lobbyRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          onGameStarted(data);
+        }
+      });
+    } catch (err) {
+      setError("Pelin luominen epäonnistui. Tarkista Firebase-yhteys.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleJoinGame = async () => {
+    if (!playerName.trim() || !gameCode.trim()) {
+      setError("Täytä sekä nimesi että pelikoodi!");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    const code = gameCode.trim().toUpperCase();
+
+    try {
+      const lobbyRef = ref(db, `lobbies/${code}`);
+      onValue(lobbyRef, async (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          setError("Pelihuonetta ei löytynyt!");
+          setLoading(false);
+          return;
+        }
+        if (data.status !== "lobby") {
+          setError("Peli on jo alkanut!");
+          setLoading(false);
+          return;
+        }
+        
+        const playerRef = ref(db, `lobbies/${code}/players/${playerId}`);
+        await set(playerRef, {
+          id: playerId,
+          name: playerName,
+          isHost: false,
+          ready: true,
+        });
+      }, { onlyOnce: true });
+    } catch (err) {
+      setError("Huoneeseen liittyminen epäonnistui.");
+      setLoading(false);
+    }
+  };
+
+  const containerStyle: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    padding: "20px",
+    boxSizing: "border-box"
+  };
+
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: "#0f172a",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "16px",
+    padding: "32px 24px",
+    maxWidth: "420px",
+    width: "100%",
+    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
+    boxSizing: "border-box"
+  };
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full max-w-md mx-auto px-4 py-8 text-slate-100" style={{ fontFamily: "sans-serif" }}>
-      {!inLobby ? (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-4">
-          <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-full w-fit mx-auto"><Compass className="w-8 h-8 text-red-500" /></div>
-          <h1 className="text-2xl font-black uppercase tracking-tight">Murhamysteeri Mökillä</h1>
-          <input type="text" placeholder="Kirjoita oma nimesi..." value={inputName} onChange={(e) => setInputName(e.target.value)} className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-sm text-center" />
-          <button type="button" onClick={() => handleCreateGame(false)} className="w-full py-2.5 bg-red-700 hover:bg-red-600 text-slate-100 font-bold rounded-xl text-sm border-none cursor-pointer">Luo uusi live-peli 🌐</button>
-          <button type="button" onClick={() => handleCreateGame(true)} className="w-full py-2 bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold rounded-xl text-xs border-none cursor-pointer">Kokeile yksin (AI Botit) 🤖</button>
-          {errorMessage && <p className="text-xs text-red-400">⚠️ {errorMessage}</p>}
-        </motion.div>
-      ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-4">
-          <h2 className="text-lg font-bold">Odotushuone livenä ({gameCode})</h2>
-          <div className="space-y-2 text-left bg-slate-950 p-4 rounded-xl border border-slate-850">
-            {lobbyPlayers.map((p, idx) => <div key={idx} className="text-xs font-semibold">👤 {p.name} {p.isHost ? "(Isäntä)" : ""}</div>)}
+    <div style={containerStyle}>
+      <div style={cardStyle}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <span style={{ fontSize: "40px", display: "block", marginBottom: "8px" }}>🏡🔍</span>
+          <h2 style={{ fontSize: "24px", fontWeight: "bold", color: "#ffffff", margin: 0 }}>Mökkimysteeri</h2>
+          <p style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>Etsi todisteet ja paljasta murhaaja</p>
+        </div>
+
+        {error && (
+          <div style={{ padding: "10px", backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "8px", color: "#f87171", fontSize: "12px", marginBottom: "16px", textAlign: "center" }}>
+            {error}
           </div>
-          {isHost && <button type="button" onClick={async () => {
-            const assigned = assignRoles(lobbyPlayers.map(p => p.id));
-            const updates: Record<string, any> = {};
-            lobbyPlayers.forEach(p => { updates[`rooms/${gameCode}/players/${p.id}/role`] = assigned[p.id]; });
-            updates[`rooms/${gameCode}/status`] = "reveal";
-            updates[`rooms/${gameCode}/scenarioId`] = pickRandomScenario().id;
-            await update(ref(db), updates);
-          }} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-100 font-bold rounded-xl text-sm border-none cursor-pointer">Aloita peli 🚀</button>}
-        </motion.div>
-      )}
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: "bold", color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Pelaajan nimi</label>
+            <input
+              type="text"
+              placeholder="Kirjoita nimesi..."
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              style={{ width: "100%", padding: "10px", backgroundColor: "#020617", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", color: "#ffffff", fontSize: "14px", boxSizing: "border-box" }}
+            />
+          </div>
+
+          {/* YKSINPELIN VALINTAPAINIKE */}
+          <div 
+            onClick={() => setIsSoloMode(!isSoloMode)}
+            style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", backgroundColor: isSoloMode ? "rgba(245, 158, 11, 0.1)" : "rgba(255,255,255,0.02)", border: isSoloMode ? "1px solid #f59e0b" : "1px solid rgba(255,255,255,0.06)", borderRadius: "10px", cursor: "pointer", transition: "all 0.2s" }}
+          >
+            <span style={{ fontSize: "20px" }}>🕵️‍♂️</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "13px", fontWeight: "bold", color: isSoloMode ? "#f59e0b" : "#ffffff" }}>Pelaa yksinpelinä</div>
+              <div style={{ fontSize: "11px", color: "#64748b" }}>Kaartjärven Huvilan Varjot -tarina</div>
+            </div>
+            <input type="checkbox" checked={isSoloMode} readOnly style={{ cursor: "pointer" }} />
+          </div>
+
+          {!isSoloMode && (
+            <div>
+              <label style={{ display: "block", fontSize: "11px", fontWeight: "bold", color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Pelikoodi (Liity huoneeseen)</label>
+              <input
+                type="text"
+                placeholder="Esim. AB12"
+                value={gameCode}
+                onChange={(e) => setGameCode(e.target.value.toUpperCase())}
+                style={{ width: "100%", padding: "10px", backgroundColor: "#020617", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", color: "#ffffff", fontSize: "14px", textTransform: "uppercase", boxSizing: "border-box" }}
+              />
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+            <button
+              onClick={handleCreateGame}
+              disabled={loading}
+              style={{ width: "100%", padding: "12px", backgroundColor: isSoloMode ? "#f59e0b" : "#4f46e5", color: "#ffffff", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "14px", cursor: "pointer", opacity: loading ? 0.7 : 1 }}
+            >
+              {isSoloMode ? "Aloita tarinaseikkailu" : "Luo uusi pelihuone"}
+            </button>
+
+            {!isSoloMode && (
+              <button
+                onClick={handleJoinGame}
+                disabled={loading}
+                style={{ width: "100%", padding: "12px", backgroundColor: "#1e293b", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontWeight: "bold", fontSize: "14px", cursor: "pointer", opacity: loading ? 0.7 : 1 }}
+              >
+                Liity huoneeseen koodilla
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
