@@ -4,7 +4,8 @@ import { LOCATIONS } from "./locations";
 import { CLUES } from "./clues";
 import { SCENARIO_MAP } from "./scenarios";
 import { db } from "./firebase";
-
+import { 
+  Compass, MapPin, Key, HelpCircle, Lock, CheckCircle, ArrowLeft, FileText, Search, ShieldAlert, Users, Trophy
 } from "lucide-react";
 
 // --- WITNESS BANNER UPOTETTU SUORAAN TÄHÄN JUURITASOLLE ---
