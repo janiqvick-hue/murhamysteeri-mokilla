@@ -732,6 +732,10 @@ export interface HuvilaPuzzle {
                 <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
                 <button onClick={handleExit} style={{ flex: 1, padding: '10px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Päävalikkoon</button>
               </div>
+                          <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
+                <button onClick={handleExit} style={{ flex: 1, padding: '10px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Päävalikkoon</button>
+              </div>
             </motion.div>
           </div>
         )}
