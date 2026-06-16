@@ -1,13 +1,18 @@
 "use client";
-import React from 'react';
+import React, { useState } from "react";
+import type { Game, Mission } from "./types";
+import type { GameActions } from "./useGame";
+import { getMissionStatus, countCompletedMissions } from "./missions";
+import { computeEndingType, computePlayerAchievements } from "./achievements";
 
+// --- OSANÄKYMÄ 1: OTSikko JA LOPPURAPORTTI ---
 interface HeaderProps {
   isPerfectCriminal: boolean;
   syyllinenName: string;
   endingType: string;
 }
 
-export default function EndingHeader({ isPerfectCriminal, syyllinenName, endingType }: HeaderProps) {
+function EndingHeader({ isPerfectCriminal, syyllinenName, endingType }: HeaderProps) {
   const getMokkiEndingDetails = () => {
     switch (endingType) {
       case "perfect_investigation":
@@ -30,7 +35,7 @@ export default function EndingHeader({ isPerfectCriminal, syyllinenName, endingT
       {isPerfectCriminal && (
         <div style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #450a0a 100%)", padding: "20px", borderRadius: "12px", marginBottom: '20px', textAlign: 'center', border: '2px solid #ef4444' }}>
           <div style={{ fontSize: '40px' }}>🩸</div>
-          <h1 style={{ color: '#ef4444', margin: '10px 0' }}>TÄYDELLINEN RIKOLLINEN</h1>
+          <h1 style={{ color: '#ef4444', margin: '10px 0', fontSize: '22px', fontWeight: 'bold' }}>TÄYDELLINEN RIKOLLINEN</h1>
           <p style={{ color: '#cbd5e1', fontSize: '14px' }}>
             Syyllinen ei jäänyt kiinni — ja suoritti vähintään 2 salaista tehtävää.<br />
             Tämä on mökkimysteerin harvinaisin lopputulos.
@@ -62,11 +67,8 @@ export default function EndingHeader({ isPerfectCriminal, syyllinenName, endingT
     </>
   );
 }
-"use client";
-import React from 'react';
-import type { Game, Mission } from '../types';
-import { getMissionStatus, countCompletedMissions } from '../missions';
 
+// --- OSANÄKYMÄ 2: SYYLLISEN SALAISET TAVOITTEET ---
 interface MissionsProps {
   game: Game;
   activeMissions: Mission[];
@@ -76,7 +78,7 @@ interface MissionsProps {
   handleCompleteMission: (id: string) => void;
 }
 
-export default function EndingMissions({ game, activeMissions, syyllinenId, iAmSyyllinen, marking, handleCompleteMission }: MissionsProps) {
+function EndingMissions({ game, activeMissions, syyllinenId, iAmSyyllinen, marking, handleCompleteMission }: MissionsProps) {
   if (activeMissions.length === 0) return null;
   const completedCount = countCompletedMissions(game, activeMissions, syyllinenId);
 
@@ -116,17 +118,7 @@ export default function EndingMissions({ game, activeMissions, syyllinenId, iAmS
     </div>
   );
 }
-"use client";
-import React, { useState } from "react";
-import type { Game, Mission } from "./types";
-import type { GameActions } from "./useGame";
-import { countCompletedMissions } from "./missions";
-import { computeEndingType, computePlayerAchievements } from "./achievements";
-
-// Tuodaan uudet pilkotut komponentit
-import EndingHeader from "./ending/EndingHeader";
-import EndingMissions from "./ending/EndingMissions";
-
+// --- OSANÄKYMÄ 3: PÄÄKOMPONENTTI JA TULOKSET ---
 interface Props {
   game: Game;
   playerId: string;
@@ -155,7 +147,7 @@ export default function EndingScreen({ game, playerId, isHost, activeMissions, a
 
   const isPerfectCriminal = endingType === "perfect_criminal";
 
-  // Lasketaan äänet
+  // Lasketaan annetut äänet
   const voteCounts: Record<string, number> = {};
   for (const accusedId of Object.values(votes)) {
     voteCounts[accusedId] = (voteCounts[accusedId] ?? 0) + 1;
@@ -173,36 +165,43 @@ export default function EndingScreen({ game, playerId, isHost, activeMissions, a
   };
 
   return (
-    <div className={`screen ending-screen ${isPerfectCriminal ? "ending-screen--perfect-criminal" : ""}`}>
-      <div className="rain-overlay" />
-
-      {/* OSA 1: Yläosiot ja Bännerit */}
+    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif', color: '#f8fafc' }}>
+      {/* Otsikko- ja Tuloskortit */}
       <EndingHeader isPerfectCriminal={isPerfectCriminal} syyllinenName={syyllinenName} endingType={endingType} />
+      
+      {/* Tavoiteseuranta */}
+      <EndingMissions 
+        game={game} 
+        activeMissions={activeMissions} 
+        syyllinenId={syyllinenId} 
+        iAmSyyllinen={iAmSyyllinen} 
+        marking={marking} 
+        handleCompleteMission={handleCompleteMission} 
+      />
 
-      {/* OSA 2: Salaiset Tehtävät */}
-      <EndingMissions game={game} activeMissions={activeMissions} syyllinenId={syyllinenId} iAmSyyllinen={iAmSyyllinen} marking={marking} handleCompleteMission={handleCompleteMission} />
-
-      {/* OSA 3: Äänestystilasto ja Saavutukset */}
-      <div style={{ background: '#1e293b', padding: '15px', borderRadius: '8px', border: '1px solid #334155' }}>
-        <div style={{ fontWeight: 'bold', color: '#f59e0b', borderBottom: '1px solid #334155', paddingBottom: '5px', marginBottom: '10px' }}>Äänestystulokset mökillä:</div>
-        <div>
-          {sortedVotes.map(([id, count]) => (
-            <div key={id} style={{ display: 'flex', padding: '5px 0', borderBottom: '1px dashed #334155' }}>
-              <span>👤 {players[id]?.name ?? id} {id === syyllinenId && " 🩸 (Syyllinen)"}</span>
-              <span style={{ marginLeft: 'auto', fontWeight: 'bold' }}>{count} ääntä</span>
+      {/* Äänestystulosten listaus */}
+      <div style={{ background: '#1e293b', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #334155' }}>
+        <div style={{ fontWeight: 'bold', marginBottom: '10px', fontSize: '14px', borderBottom: '1px solid #334155', paddingBottom: '5px' }}>🗳️ Äänestyksen lopputulokset</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {sortedVotes.map(([accusedId, count]) => (
+            <div key={accusedId} style={{ display: 'flex', justifyBetween: 'space-between', fontSize: '13px', background: '#0f172a', padding: '8px', borderRadius: '6px' }}>
+              <span>👤 {players[accusedId]?.name || "Tuntematon"}</span>
+              <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{count} ääntä</span>
             </div>
           ))}
+          {sortedVotes.length === 0 && (
+            <div style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic', textAlign: 'center' }}>Kukaan ei antanut ääniä loppuvaiheessa.</div>
+          )}
         </div>
       </div>
 
-      {myAchievements && myAchievements.length > 0 && (
-        <div style={{ marginTop: '20px', background: '#13141f', padding: '15px', borderRadius: '8px', border: '1px solid #ec4899', textAlign: 'center' }}>
-          <h4 style={{ color: '#ec4899', margin: '0 0 5px 0' }}>🏆 Henkilökohtaiset saavutuksesi:</h4>
-          {myAchievements.map((ach, idx) => (
-            <div key={idx} style={{ fontWeight: 'bold', color: '#fcd34d', fontSize: '16px' }}>✨ {ach}</div>
-          ))}
+      {/* Pelaajan omat saavutukset */}
+      <div style={{ background: '#0f172a', padding: '15px', borderRadius: '8px', border: '1px solid #1e293b', textAlign: 'center' }}>
+        <div style={{ fontWeight: 'bold', color: '#fcd34d', fontSize: '14px', marginBottom: '5px' }}>🏆 Henkilökohtaiset saavutuksesi</div>
+        <div style={{ fontSize: '13px', color: '#cbd5e1' }}>
+          {myAchievements && myAchievements.length > 0 ? myAchievements.join(", ") : "Osallistuit ansiokkaasti mökkiviikonloppuun."}
         </div>
-      )}
+      </div>
     </div>
   );
 }
