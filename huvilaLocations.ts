@@ -1,84 +1,122 @@
-export interface HuvilaPOI {
-  id: string;
-  name: string;
-  description: string;
-}
-
 export interface HuvilaLocation {
   id: string;
   name: string;
   description: string;
+  longDescription: string;
+  iconName: string; 
+  color: string; 
+  imageUrl: string; 
   isLocked: boolean;
-  requiredItemId?: string;
-  pois: HuvilaPOI[]; // Lista huoneesta löytyvistä tutkimuspisteistä
+  requiredItem?: string; 
+  unlockHint?: string; 
+  clues: HuvilaClue[];
+  puzzles: string[]; 
+}
+
+export interface HuvilaClue {
+  id: string;
+  name: string;
+  description: string;
+  discovered: boolean;
+  itemReward?: string; 
+  dialogText?: string; 
 }
 
 export const HUVILA_LOCATIONS: HuvilaLocation[] = [
   {
     id: "paahuvila",
-    name: "🏛️ Suuri Päähuvila",
-    description: "Kaksikerroksinen luksushuvila Kaartjärven rannalla. Olohuoneen pöydällä lojuu vanha päiväkirja, jonka lukko on lukittu nelinumeroisella koodilla. Saunan avain näyttää olevan lukon takana.",
+    name: "Päähuvila",
+    description: "Kaartjärven rannalla kohoava upea päärakennus.",
+    longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
+    iconName: "Home",
+    color: "amber",
+    imageUrl: "https://unsplash.com",
     isLocked: false,
-    pois: [
+    puzzles: ["paahuvila_paivakirja"],
+    clues: [
       {
-        id: "takka",
-        name: "Olohuoneen suuri takka",
-        description: "Takan reunuksella on vanha valokuvakehys. Kuvassa Henrik Kaartinen poseeraa huvilan edustalla vuonna 1984. Henrik on ympyröinyt kuvaan huvilan eteläsivun ikkunat (niitä on täsmälleen 8)."
+        id: "takkatuli",
+        name: "Hiiltyneet paperit takassa",
+        description: "Takan hehkusta löytyy puolittain palanut sopimuspaperi, jossa mainitaan Kaartjärven tonttijako ja salaperäinen miljoonaomaisuus.",
+        discovered: false,
+        dialogText: "Löysit takan raosta tummuneen paperinkulman! Siinä lukee: '...lopullinen tonttiosuus siirtyy kokonaisuudessaan, mikäli ensisijainen perijä poistuu keskuudestamme...'"
       },
       {
-        id: "kirjahylly",
-        name: "Tamminen kirjahylly",
-        description: "Hyllyt ovat täynnä Lopen historiaa käsitteleviä teoksia. Yhden kirjan välistä löytyy muistilappu: 'Muista Henrik, kiukaan salaisuus aukeaa sille, joka tuntee rannan huutavan linnun...'"
+        id: "lasi",
+        name: "Särkynyt viinilasi",
+        description: "Hienostunut kristallilasi, jonka pohjalta löytyy outoa, tahmeaa vaaleaa sakkaa. Lasi tuoksuu kitkerältä mantelilta.",
+        discovered: false,
+        dialogText: "Tutkit kristallilasin särkyneitä palasia. Haistat kitkerän mantelin tuoksun – klassinen syanidin tai muun vahvan myrkyn merkki!"
       }
     ]
   },
   {
-    id: "rantasauna",
-    name: "🪵 Hirsirantasauna",
-    description: "Perinteinen puulämmitteinen sauna aivan rantaviivassa. Ovi on lukossa. Tarvitset päähuvilasta löytyvän vanhan messinkisen avaimen päästäksesi sisään.",
+    id: "hirsirantasauna",
+    name: "Hirsirantasauna",
+    description: "Perinteinen rantasauna. Lukittu paksulla salvalla, joka vaatii messinkisen avaimen.",
+    longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
+    iconName: "Flame",
+    color: "indigo",
+    imageUrl: "https://unsplash.com",
     isLocked: true,
-    requiredItemId: "messinkiavain",
-    pois: [
+    requiredItem: "messinkiavain",
+    unlockHint: "Ovi on tiukasti lukossa. Tarvitset messinkisen avaimen avataksesi tämän seikkailureitin rantasaunaan.",
+    puzzles: ["hirsirantasauna_lattialauta"],
+    clues: [
       {
-        id: "lauteet",
-        name: "Saunan ylälauteet",
-        description: "Hämärässä saunassa tuoksuu vanha terva. Lauteiden alta löytyy kastunut paperilappu, jossa puhutaan kiukaan salaisuudesta ja Kaartjärvellä huutavasta linnusta."
+        id: "laudeliina",
+        name: "Verinen laudeliina",
+        description: "Lauteiden alle rytistetty mustunut pellavaliina, jossa on pyyhitty jotakin punaista ja tahmeaa.",
+        discovered: false,
+        dialogText: "Nostit laudeliinan valoon. Se ei ole marjamehua – joku on pyyhkinyt tähän verta ja yrittänyt piilottaa sen lauteiden väliin!"
+      },
+      {
+        id: "saunakiulu",
+        name: "Kaatunut kiulu",
+        description: "Kuparinen kiulu, jonka pohjalta löytyy hukkunut ranneketju riipuksineen. Riipukseen on kaiverrettu kirjaimet 'M.K.'.",
+        discovered: false,
+        itemReward: "ranneketju",
+        dialogText: "Löysit kiulun pohjalta hienon hopeisen ranneketjun. Se kuuluu Marialle! Toit sen heti talteen."
       }
     ]
   },
   {
     id: "grillikota",
-    name: "🔥 Grillikota",
-    description: "Pyöreä kota Kaartjärven pihapiirin laidalla. Keskellä olevassa tulipasassa savuaa vielä. Tuhkasta pilkottaa metallinen rasia, jossa on omituinen hammasratas-pulma.",
+    name: "Grillikota",
+    description: "Tunnelmallinen grillikota niemenkärjessä. Ovi raollaan.",
+    longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
+    iconName: "FlameKindling",
+    color: "red",
+    imageUrl: "https://unsplash.com",
     isLocked: false,
-    pois: [
+    puzzles: ["grillikota_arkku"],
+    clues: [
       {
-        id: "tulipesa",
-        name: "Nokeentunut tulipesa",
-        description: "Tulipesän pohjalla on kylmää tuhkaa. Jos sinulla on valoa (kuten taskulamppu), näet tuhkasta pilkottavan metallisen rasian, jossa on mekaaninen hammasrataslukko."
-      },
-      {
-        id: "kodan_seinat",
-        name: "Kodan hirsiseinät",
-        description: "Seinille on ripustettu vanhoja kalastusverkkoja ja Lopen vanhoja karttoja, jotka kuvaavat Kaartjärven pohjan muotoja."
+        id: "kirje",
+        name: "Tuhkasta pelastettu kirje",
+        description: "Kytevästä tuhkasta löytyy hiiltynyt kirjeenpätkä: 'Minä tiedän mitä teit viime kesänä Kaartjärvellä. Jos et maksa...'",
+        discovered: false,
+        dialogText: "Varovasti nostat hiiltyneen paperinpalan tuhkasta. Kiristyskirje! Kirjoittaja tuntui tietävän jonkin synkän salaisuuden viime kesältä."
       }
     ]
   },
   {
     id: "puuvarasto",
-    name: "🪓 Puuvarasto & Liiteri",
-    description: "Hämärä varasto täynnä kuivia klapeja. Työkaluseinällä on tyhjä paikka kirveelle. Seinään on kaiverrettu outoja viivoja, jotka näyttävät numerovihjeeltä.",
+    name: "Puuvarasto",
+    description: "Kylmä puuvarasto päärakennuksen takana. Täältä haetaan takkapuut.",
+    longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta ja moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
+    iconName: "Trees",
+    color: "emerald",
+    imageUrl: "https://unsplash.com",
     isLocked: false,
-    pois: [
+    puzzles: ["puuvarasto_sahalaatikko"],
+    clues: [
       {
-        id: "tyokaluseina",
-        name: "Varaston työkaluseinä",
-        description: "Työkaluseinään on piirretty kirveen ääriviivat, mutta itse kirves puuttuu. Seinälautaan on kaiverrettu luku 12 ja sen viereen risti (X)."
-      },
-      {
-        id: "klapipino",
-        name: "Suuri koivuklapipino",
-        description: "Pino on ladottu millintarkasti. Laskemalla rivit huomaat, että siinä on täsmälleen 12 riviä puita päällekkäin ja jokaisessa rivissä on 12 halkoa."
+        id: "jalanjaljet",
+        name: "Kuraiset saappaankuvat",
+        description: "Varaston lattialla on suuret kuraiset mudanjäljet, jotka vastaavat täydellisesti urheilujalkineita tai saappaita karkealla kuviolla.",
+        discovered: false,
+        dialogText: "Jäljet näyttävät tuoreilta. Joku on kulkenut tästä aivan hiljattain myrskyssä kantamatta mitään puita mukanaan."
       }
     ]
   }
