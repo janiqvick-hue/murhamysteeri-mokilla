@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "./firebase";
 import { ref, update, onValue } from "firebase/database";
-import { calculateAchievements, ACHIEVEMENTS } from "./utils/achievements";
+import { ACHIEVEMENTS } from "./achievements";
 import { ROLE_INFO } from "./utils/roles";
 import { SCENARIO_MAP } from "./utils/scenarios";
 import { 
