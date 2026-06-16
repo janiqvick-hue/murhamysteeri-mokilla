@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { db } from "./firebase";
 import { ref, update, onValue } from "firebase/database";
 import { ACHIEVEMENTS } from "./achievements";
-import { ROLE_INFO } from "./utils/roles";
+import { ROLES } from "./roles";
 import { SCENARIO_MAP } from "./utils/scenarios";
 import { 
   Users, Check, ShieldAlert, Award, Skull, Vote, Play, AlertCircle, HelpCircle, BarChart2, Star, RotateCcw, CheckCircle, EyeOff, Search, AlertTriangle
