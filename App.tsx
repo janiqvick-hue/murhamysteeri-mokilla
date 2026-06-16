@@ -3,7 +3,7 @@ import LobbyScreen from "./LobbyScreen";
 import RoleRevealScreen from "./RoleRevealScreen";
 import MapScreen from "./MapScreen";
 import VotingScreen from "./VotingScreen";
-import KaartjarviMap from "./kaartjarvi/KaartjarviMap";
+import KaartjarviMap from "./KaartjarviMap";
 
 export default function App() {
   // Pelitila laajennettu sisältämään päävalikon ("menu") ja yksinpelin ("kaartjarvi")
