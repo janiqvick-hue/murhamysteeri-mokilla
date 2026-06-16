@@ -966,4 +966,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+            </AnimatePresence>
+    </div>
+  );
+}
