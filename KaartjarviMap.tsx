@@ -70,7 +70,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     iconName: "Home",
     color: "amber",
     // KORJAUS: Toimiva kuvalinkki hirsihuvilaan
-    imageUrl: "https://unsplash.com",
+    imageUrl: "https://wikimedia.org",
     isLocked: false,
     puzzles: ["paahuvila_paivakirja"],
     clues: [
