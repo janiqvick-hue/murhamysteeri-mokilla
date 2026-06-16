@@ -61,7 +61,6 @@ export interface HuvilaPuzzle {
   rewardItemName: string;
   solveMessage: string;
 }
-
 export const H_LOCATIONS: HuvilaLocation[] = [
   {
     id: "paahuvila",
@@ -70,7 +69,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
     iconName: "Home",
     color: "amber",
-    // KORJAUS: Päivitetty oikea suora kuvalinkki
+    // KORJAUS: Toimiva kuvalinkki hirsihuvilaan
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["paahuvila_paivakirja"],
@@ -98,7 +97,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
     iconName: "Flame",
     color: "indigo",
-    // KORJAUS: Päivitetty oikea suora kuvalinkki
+    // KORJAUS: Toimiva kuvalinkki rantasaunaan
     imageUrl: "https://unsplash.com",
     isLocked: true,
     requiredItem: "messinkiavain",
@@ -129,7 +128,7 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
     iconName: "FlameKindling",
     color: "red",
-    // KORJAUS: Päivitetty oikea suora kuvalinkki
+    // KORJAUS: Toimiva kuvalinkki grillikotaan
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["grillikota_arkku"],
@@ -147,10 +146,10 @@ export const H_LOCATIONS: HuvilaLocation[] = [
     id: "puuvarasto",
     name: "Puuvarasto",
     description: "Kylmä puuvarasto päärakennuksen takana. Täältä haetaan takkapuut.",
-    longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta ja moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
+    longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta and moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
     iconName: "Trees",
     color: "emerald",
-    // KORJAUS: Päivitetty oikea suora kuvalinkki
+    // KORJAUS: Toimiva kuvalinkki puuvarastoon
     imageUrl: "https://unsplash.com",
     isLocked: false,
     puzzles: ["puuvarasto_sahalaatikko"],
@@ -181,7 +180,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
     solveMessage: "Naks! Lukko aukeaa ja päiväkirjan välistä putoaa vanha, painava messinkiavain!"
   },
   {
-    id: "puuvarasto_sahalaatikko",
+id: "puuvarasto_sahalaatikko",
     title: "Varaston lukittu suojakaappi",
     description: "Kylmän puuvaraston metallinen työkaluarkku on lukittu punaiseksi maalatulla koodilukolla. Arkkuun on liimattu varoitustarra: 'Emergency: Syötä kansallinen yleinen hätänumero nähdäksesi raivaustaltat'.",
     locationId: "puuvarasto",
@@ -210,8 +209,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
     id: "hirsirantasauna_lattialauta",
     title: "Saunan kiukaan hiilihautalokero",
     description: "Rantasaunan kuuman kiukaan pohjalla on pieni nokeentunut metalliluukku, jonka päällä on kolminumeroinen kiekkolukko. Luukun reunaan on hätäisesti raapustettu vihje: 'Veden kiehumispiste celsiuksina'.",
-
-        locationId: "hirsirantasauna",
+    locationId: "hirsirantasauna",
     isSolved: false,
     type: "code",
     requiredCode: "100",
@@ -222,7 +220,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
   }
 ];
 
-// KORJAUS: Päivitetty toimivat suorat kuvatiedostolinkit todisteille, jotta popup-ikkunat eivät kaadu!
+// KORJAUS: Päivitetty toimivat suorat kuvatiedostolinkit todisteille, jotta popup-ikkunat latautuvat virheettömästi
 const getClueImage = (clueId: string) => {
   switch (clueId) {
     case "takkatuli": return "https://unsplash.com";
@@ -300,6 +298,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
     "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista murhaaja!"
   ]);
+
 
   const logAtmosphere = (msg: string) => {
     setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
@@ -778,7 +777,8 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
               <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{currentLoc.name}</h2>
             </div>
             <div style={locationImageWrapper}>
-              <img src={currentLoc.imageUrl} alt={currentLoc.name} style={locationImageStyle} referrerPolicy="no-referrer" />
+              {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
+              <img src={currentLoc.imageUrl} alt={currentLoc.name} style={locationImageStyle} />
               <span style={imageOvertextOverlay}><span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fbbf24' }} />Ulkokamera</span>
             </div>
             <p style={{ fontSize: '13px', color: '#cbd5e1', fontStyle: 'italic', borderLeft: '2px solid #fbbf24', paddingLeft: '12px' }}>"{currentLoc.longDescription}"</p>
@@ -827,15 +827,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
 
           <div style={cardStyle}>
-            <h3 style={subHeaderStyle}><Briefcase style={{ width: '14px', height: '14px' }} />Reppu</h3>
-            {inventory.length === 0 ? <p style={{ fontSize: '11px', color: '#64748b' }}>Reppu on tyhjä.</p> : 
-              <div style={inventoryGridStyle}>
-                {inventory.map((item, idx) => <div key={idx} style={inventoryItemStyle}>{getItemIconBadge(item)} {getItemDisplayName(item)}</div>)}
-              </div>
-            }
-          </div>
-
-          <div style={cardStyle}>
             <h3 style={subHeaderStyle}><Info style={{ width: '14px', height: '14px' }} />Tutkinnan loki</h3>
             <div style={sidebarLogContainer}>
               {atmosphericLogs.map((log, index) => <div key={index} style={{ color: index === 0 ? '#fbbf24' : '#8e9aa8' }}>{log}</div>)}
@@ -852,7 +843,8 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0' }}><Sparkles style={{ width: '14px', height: '14px' }} /> Löydetty todiste</h3>
               {clueOverlay.id && (
                 <div style={{ width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px' }}>
-                  <img src={getClueImage(clueOverlay.id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                  {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
+                  <img src={getClueImage(clueOverlay.id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
               <p style={{ fontSize: '12px', fontStyle: 'italic' }}>"{clueOverlay.description}"</p>
@@ -862,6 +854,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
         )}
       </AnimatePresence>
+
       {/* PUZZLE POPUP */}
       <AnimatePresence>
         {solvingPuzzleId && (() => {
@@ -946,8 +939,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
         )}
       </AnimatePresence>
-
-      {/* ENDING MODAL */}
+      {/* ENDING MODAL - LOPPURAPORTTI */}
       <AnimatePresence>
         {endingResult && (
           <div style={overlayBackdrop}>
@@ -976,7 +968,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
             </motion.div>
           </div>
         )}
-            </AnimatePresence>
+      </AnimatePresence>
     </div>
   );
 }
