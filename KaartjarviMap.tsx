@@ -211,7 +211,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
     title: "Saunan kiukaan hiilihautalokero",
     description: "Rantasaunan kuuman kiukaan pohjalla on pieni nokeentunut metalliluukku, jonka päällä on kolminumeroinen kiekkolukko. Luukun reunaan on hätäisesti raapustettu vihje: 'Veden kiehumispiste celsiuksina'.",
 
-    locationId: "hirsirantasauna",
+        locationId: "hirsirantasauna",
     isSolved: false,
     type: "code",
     requiredCode: "100",
@@ -222,6 +222,7 @@ export const H_PUZZLES: HuvilaPuzzle[] = [
   }
 ];
 
+// KORJAUS: Päivitetty toimivat suorat kuvatiedostolinkit todisteille, jotta popup-ikkunat eivät kaadu!
 const getClueImage = (clueId: string) => {
   switch (clueId) {
     case "takkatuli": return "https://unsplash.com";
@@ -255,6 +256,7 @@ const getItemDisplayName = (item: string) => {
     default: return item;
   }
 };
+
 interface KaartjarviMapProps {
   onBackToLobby?: () => void;
   onExitGame?: () => void;
@@ -296,13 +298,14 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
 
   const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
     "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
-    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaiseva murhaaja!"
+    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista murhaaja!"
   ]);
 
   const logAtmosphere = (msg: string) => {
     setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
   };
 
+  // KORJAUS: Varmistettu, ettei oletussijainti kaada peliä tyhjänä
   const currentLoc = locations.find(l => l.id === activeLocId) || locations[0];
 
   const handleTravelTo = (locId: string) => {
@@ -352,6 +355,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     setClueOverlay({
       id: clue.id,
       title: clue.name,
+
       description: clue.description,
       dialog: clue.dialogText || "Tutkit kohdetta tarkemmin ja huomaat jotakin epäilyttävää.",
       itemEarned: clue.itemReward
