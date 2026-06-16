@@ -22,11 +22,200 @@ import {
   Compass
 } from "lucide-react";
 
-// Haetaan datatiedostot sieltä kaartjarvi-kansiosta
-import { HUVILA_LOCATIONS, HuvilaLocation, HuvilaClue } from "./kaartjarvi/huvilaLocations";
-import { HUVILA_PUZZLES, HuvilaPuzzle } from "./kaartjarvi/huvilaPuzzles";
+// --- ERISTETYT DATAMALLIT SUORAAN TIEDOSTON SISÄLLÄ KANSIOVIRHEIDEN ESTÄMISEKSI ---
+export interface HuvilaLocation {
+  id: string;
+  name: string;
+  description: string;
+  longDescription: string;
+  iconName: string;
+  color: string;
+  imageUrl: string;
+  isLocked: boolean;
+  requiredItem?: string;
+  unlockHint?: string;
+  clues: HuvilaClue[];
+  puzzles: string[];
+}
 
-// Tunnelmalliset Unsplash-lähikuvat löydetyille todisteille
+export interface HuvilaClue {
+  id: string;
+  name: string;
+  description: string;
+  discovered: boolean;
+  itemReward?: string;
+  dialogText?: string;
+}
+
+export interface HuvilaPuzzle {
+  id: string;
+  title: string;
+  description: string;
+  locationId: string;
+  isSolved: boolean;
+  type: "code" | "item";
+  requiredCode?: string;
+  requiredItem?: string;
+  hint: string;
+  rewardItem: string;
+  rewardItemName: string;
+  solveMessage: string;
+}
+export const H_LOCATIONS: HuvilaLocation[] = [
+  {
+    id: "paahuvila",
+    name: "Päähuvila",
+    description: "Kaartjärven rannalla kohoava upea päärakennus.",
+    longDescription: "Ylellinen ja suuri hirsihuvila, jonka ikkunoista avautuu pimeä Kaartjärvi. Sisällä takka ritisee hiljaa, ja korkea katto luo kaikuvan tunnelman. Pöydällä lojuu vanhoja papereita ja laseja.",
+    iconName: "Home",
+    color: "amber",
+    imageUrl: "https://unsplash.com",
+    isLocked: false,
+    puzzles: ["paahuvila_paivakirja"],
+    clues: [
+      {
+        id: "takkatuli",
+        name: "Hiiltyneet paperit takassa",
+        description: "Takan hehkusta löytyy puolittain palanut sopimuspaperi, jossa mainitaan Kaartjärven tonttijako ja salaperäinen miljoonaomaisuus.",
+        discovered: false,
+        dialogText: "Löysit takan raosta tummuneen paperinkulman! Siinä lukee: '...lopullinen tonttiosuus siirtyy kokonaisuudessaan, mikäli ensisijainen perijä poistuu keskuudestamme...'"
+      },
+      {
+        id: "lasi",
+        name: "Särkynyt viinilasi",
+        description: "Hienostunut kristallilasi, jonka pohjalta löytyy outoa, tahmeaa vaaleaa sakkaa. Lasi tuoksuu kitkerältä mantelilta.",
+        discovered: false,
+        dialogText: "Tutkit kristallilasin särkyneitä palasia. Haistat kitkerän mantelin tuoksun – klassinen syanidin tai muun vahvan myrkyn merkki!"
+      }
+    ]
+  },
+  {
+    id: "hirsirantasauna",
+    name: "Hirsirantasauna",
+    description: "Perinteinen rantasauna. Lukittu paksulla salvalla, joka vaatii messinkisen avaimen.",
+    longDescription: "Kauniisti harmaantunut kelohirsisauna aivan järven tuntumassa. Puinen ovi on kiinni, ja sen jykevä messinkilukko kiiltää kuunvalossa. Sisällä tuoksuu kylmä savu ja vanha kuusiterva.",
+    iconName: "Flame",
+    color: "indigo",
+    imageUrl: "https://unsplash.com",
+    isLocked: true,
+    requiredItem: "messinkiavain",
+    unlockHint: "Ovi on tiukasti lukossa. Tarvitset messinkisen avaimen avataksesi tämän seikkailureitin rantasaunaan.",
+    puzzles: ["hirsirantasauna_lattialauta"],
+    clues: [
+      {
+        id: "laudeliina",
+        name: "Verinen laudeliina",
+        description: "Lauteiden alle rytistetty mustunut pellavaliina, jossa on pyyhitty jotakin punaista ja tahmeaa.",
+        discovered: false,
+        dialogText: "Nostit laudeliinan valoon. Se ei ole marjamehua – joku on pyyhkinyt tähän verta ja yrittänyt piilottaa sen lauteiden väliin!"
+      },
+      {
+        id: "saunakiulu",
+        name: "Kaatunut kiulu",
+        description: "Kuparinen kiulu, jonka pohjalta löytyy hukkunut ranneketju riipuksineen. Riipukseen on kaiverrettu kirjaimet 'M.K.'.",
+        discovered: false,
+        itemReward: "ranneketju",
+        dialogText: "Löysit kiulun pohjalta hienon hopeisen ranneketjun. Se kuuluu Marialle! Toit sen heti talteen."
+      }
+    ]
+  },
+  {
+    id: "grillikota",
+    name: "Grillikota",
+    description: "Tunnelmallinen grillikota niemenkärjessä. Ovi raollaan.",
+    longDescription: "Pyöreä grillikota aivan Kaartjärven syvässä niemenkärjessä. Sisällä on hämärää ja kylmää, mutta tuhkan keskellä kipunoi vielä pieni kytevä hiillos. Seinällä riippuu vanhoja kalaverkkoja.",
+    iconName: "FlameKindling",
+    color: "red",
+    imageUrl: "https://unsplash.com",
+    isLocked: false,
+    puzzles: ["grillikota_arkku"],
+    clues: [
+      {
+        id: "kirje",
+        name: "Tuhkasta pelastettu kirje",
+        description: "Kytevästä tuhkasta löytyy hiiltynyt kirjeenpätkä: 'Minä tiedän mitä teit viime kesänä Kaartjärvellä. Jos et maksa...'",
+        discovered: false,
+        dialogText: "Varovasti nostat hiiltyneen paperinpalan tuhkasta. Kiristyskirje! Kirjoittaja tuntui tietävän jonkin synkän salaisuuden viime kesältä."
+      }
+    ]
+  },
+  {
+    id: "puuvarasto",
+    name: "Puuvarasto",
+    description: "Kylmä puuvarasto päärakennuksen takana. Täältä haetaan takkapuut.",
+    longDescription: "Kylmä ja vetoisa puuvarasto, joka tuoksuu tuoreelta koivuklapilta ja moottorisahan bensiiniltä. Pinasade ropisee peltikattoon säännöllisesti.",
+    iconName: "Trees",
+    color: "emerald",
+    imageUrl: "https://unsplash.com",
+    isLocked: false,
+    puzzles: ["puuvarasto_sahalaatikko"],
+    clues: [
+      {
+        id: "jalanjaljet",
+        name: "Kuraiset saappaankuvat",
+        description: "Varaston lattialla on suuret kuraiset mudanjäljet, jotka vastaavat täydellisesti urheilujalkineita tai saappaita karkealla kuviolla.",
+        discovered: false,
+        dialogText: "Jäljet näyttävät tuoreilta. Joku on kulkenut tästä aivan hiljattain myrskyssä kantamatta mitään puita mukanaan."
+      }
+    ]
+  }
+];
+
+export const H_PUZZLES: HuvilaPuzzle[] = [
+  {
+    id: "paahuvila_paivakirja",
+    title: "Mikaelin nahkainen työpöydän päiväkirja",
+    description: "Päähuvilan työpöydällä lojuu Mikaelin lukittu päiväkirja. Kannen messinkisessä numerolukossa on neljä numeroa. Päiväkirjan pinnassa lukee kaiverrus: 'Perustamisvuoteni ja kuukauteni'. Vanhoista papereista selviää, että huvilan peruskivi muurattiin kesäkuussa (kuukausi 06) vuonna 1972.",
+    locationId: "paahuvila",
+    isSolved: false,
+    type: "code",
+    requiredCode: "0672",
+    hint: "Kaiverrus viittaa 'perustamisvuoteen ja kuukauteen'. Kokeile yhdistää kuukausi 06 ja kaksinumeroinen vuosi 72.",
+    rewardItem: "messinkiavain",
+    rewardItemName: "Messinkiavain",
+    solveMessage: "Naks! Lukko aukeaa ja päiväkirjan välistä putoaa vanha, painava messinkiavain!"
+  },
+  {
+    id: "puuvarasto_sahalaatikko",
+    title: "Varaston lukittu suojakaappi",
+    description: "Kylmän puuvaraston metallinen työkaluarkku on lukittu punaiseksi maalatulla koodilukolla. Arkkuun on liimattu varoitustarra: 'Emergency: Syötä kansallinen yleinen hätänumero nähdäksesi raivaustaltat'.",
+    locationId: "puuvarasto",
+    isSolved: false,
+    type: "code",
+    requiredCode: "112",
+    hint: "Kysymyksessä etsitään yleistä virallista hätänumeroa, jota käytetään hätätilanteissa kaikkialla Suomessa.",
+    rewardItem: "sorkkarauta",
+    rewardItemName: "Raskas terässorkkarauta",
+    solveMessage: "Klops! Arkun lukko avautuu kolahtaen. Sisältä löytyy painava terässorkkarauta!"
+  },
+  {
+    id: "grillikota_arkku",
+    title: "Grillikodan vanha rauta-arkku",
+    description: "Kodan penkin alle on puoliksi haudattu raskas raudoitettu puuarkku. Se on lukittu paksulla, ruosteisella riippulukolla, joka vaatisi voimakasta mekaanista vääntövoimaa vipuvarrella.",
+    locationId: "grillikota",
+    isSolved: false,
+    type: "item",
+    requiredItem: "sorkkarauta",
+    hint: "Tämän ruosteisen riippulukon murtamiseen tarvitset kunnon vipuvarsityökalun puuvarastosta (esim. sorkkarauta).",
+    rewardItem: "perintosormus",
+    rewardItemName: "Uhrin kultainen sinettisormus",
+    solveMessage: "RÄKS! Käytit sorkkarautaa repiäksesi ruosteisen riippulukon auki voimalla."
+  },
+  {
+    id: "hirsirantasauna_lattialauta",
+    title: "Saunan kiukaan hiilihautalokero",
+    description: "Rantasaunan kuuman kiukaan pohjalla on pieni nokeentunut metalliluukku, jonka päällä on kolminumeroinen kiekkolukko. Luukun reunaan on hätäisesti raapustettu vihje: 'Veden kiehumispiste celsiuksina'.",
+    locationId: "hirsirantasauna",
+    isSolved: false,
+    type: "code",
+    requiredCode: "100",
+    hint: "Mieti, missä celsiusasteessa puhdas vesi alkaa kiehua höyryksi.",
+    rewardItem: "myrkkyrekisteri",
+    rewardItemName: "Tyhjä Kaliumsyanidi-pullo",
+    solveMessage: "NAPS! Luukku liukuu sivuun. Nokisesta kolosta paljastuu tyhjä apteekkipullo!"
+  }
+];
+
 const getClueImage = (clueId: string) => {
   switch (clueId) {
     case "takkatuli": return "https://unsplash.com";
@@ -60,7 +249,6 @@ const getItemDisplayName = (item: string) => {
     default: return item;
   }
 };
-
 interface KaartjarviMapProps {
   onBackToLobby?: () => void;
   onExitGame?: () => void;
@@ -73,8 +261,8 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     else if (onBackToLobby) onBackToLobby();
   };
 
-  const [locations, setLocations] = useState<HuvilaLocation[]>(HUVILA_LOCATIONS);
-  const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(HUVILA_PUZZLES);
+  const [locations, setLocations] = useState<HuvilaLocation[]>(H_LOCATIONS);
+  const [puzzles, setPuzzles] = useState<HuvilaPuzzle[]>(H_PUZZLES);
   const [inventory, setInventory] = useState<string[]>([]);
   const [activeLocId, setActiveLocId] = useState<string>("paahuvila");
   
@@ -101,13 +289,125 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
   } | null>(null);
 
   const [atmosphericLogs, setAtmosphericLogs] = useState<string[]>([
-    "Kaartjärven rannalla tuulee kovaa. Sade piissaa huvilan mustia ikkunoita.",
-    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaista, kuka myrkytti Mikaelin."
+    "Kaartjärven rannalla tuulee kovaa. Sade piiskaa huvilan mustia ikkunoita.",
+    "Olet yksin kokeneena etsivänä. Sinun täytyy ratkaiseva murhaaja!"
   ]);
 
   const logAtmosphere = (msg: string) => {
     setAtmosphericLogs(prev => [msg, ...prev.slice(0, 5)]);
   };
+
+  const currentLoc = locations.find(l => l.id === activeLocId) || locations[0];
+
+  const handleTravelTo = (locId: string) => {
+    const loc = locations.find(l => l.id === locId);
+    if (!loc) return;
+
+    if (loc.isLocked) {
+      if (loc.requiredItem && inventory.includes(loc.requiredItem)) {
+        setLocations(prev => prev.map(l => l.id === locId ? { ...l, isLocked: false } : l));
+        setActiveLocId(locId);
+        logAtmosphere(`🔓 Avasit kohteen ${loc.name} repustasi löytyvällä esineellä: ${loc.requiredItem}!`);
+        setClueOverlay({
+          title: `Kohde ${loc.name} avattu!`,
+          description: `Käytit esineen: ${loc.requiredItem}.`,
+          dialog: `Lukkopesä naksahtaa vaivattomasti auki kuunvalossa. Astut sisään varovasti...`
+        });
+      } else {
+        logAtmosphere(`🔒 ${loc.name} on lukittu. ${loc.unlockHint || "Tarvitset oikean esineen avataksesi oven."}`);
+        setClueOverlay({
+          title: "Kohde lukittu!",
+          description: loc.unlockHint || "Ovi vaatii sopivan avaimen tai tarvikkeen.",
+          dialog: "Yrität painaa oven kahvaa, mutta se ei hievahdakaan. Sinun täytyy etsiä jostain muualta sopivia esineitä päästäksesi sisään."
+        });
+      }
+    } else {
+      setActiveLocId(locId);
+      logAtmosphere(`👣 Siirryit kohteeseen: ${loc.name}.`);
+    }
+  };
+
+  const handleInspectClue = (clue: HuvilaClue) => {
+    setLocations(prev => prev.map(loc => {
+      if (loc.id === activeLocId) {
+        return {
+          ...loc,
+          clues: loc.clues.map(c => c.id === clue.id ? { ...c, discovered: true } : c)
+        };
+      }
+      return loc;
+    }));
+
+    if (clue.itemReward && !inventory.includes(clue.itemReward)) {
+      setInventory(prev => [...prev, clue.itemReward!]);
+      logAtmosphere(`🎒 Lisätty reppuun: ${getItemDisplayName(clue.itemReward)}`);
+    }
+
+    setClueOverlay({
+      id: clue.id,
+      title: clue.name,
+      description: clue.description,
+      dialog: clue.dialogText || "Tutkit kohdetta tarkemmin ja huomaat jotakin epäilyttävää.",
+      itemEarned: clue.itemReward
+    });
+
+    logAtmosphere(`🔍 Tutkit todistetta: ${clue.name}.`);
+  };
+
+  const handleOpenPuzzle = (puzzleId: string) => {
+    const p = puzzles.find(x => x.id === puzzleId);
+    if (!p) return;
+    setSolvingPuzzleId(puzzleId);
+    setCodeInputValue("");
+    setPuzzleError("");
+  };
+
+  const handleClosePuzzle = () => {
+    setSolvingPuzzleId(null);
+  };
+
+  const handleUseItemForPuzzle = (puzzle: HuvilaPuzzle, item: string) => {
+    if (puzzle.requiredItem === item) {
+      setPuzzles(prev => prev.map(p => p.id === puzzle.id ? { ...p, isSolved: true } : p));
+      if (puzzle.rewardItem && !inventory.includes(puzzle.rewardItem)) {
+        setInventory(prev => [...prev, puzzle.rewardItem]);
+      }
+      setSolvingPuzzleId(null);
+      setClueOverlay({
+        title: `Pähkinä ratkaistu: ${puzzle.title}`,
+        description: puzzle.solveMessage,
+        dialog: `Sait haltuusi esineen: ${puzzle.rewardItemName}! Tämä auttaa sinua pääsemään pidemmälle rikospaikalla.`
+      });
+      logAtmosphere(`🏆 Ratkaisit pulman "${puzzle.title}" käyttämällä esineen ${getItemDisplayName(item)}!`);
+    } else {
+      setPuzzleError("Kyseinen esine ei sovi tähän lukkoon tai ei tehoa siihen.");
+    }
+  };
+
+  const handleSubmitCodePuzzle = (puzzle: HuvilaPuzzle) => {
+    if (codeInputValue.trim() === puzzle.requiredCode) {
+      setPuzzles(prev => prev.map(p => p.id === puzzle.id ? { ...p, isSolved: true } : p));
+      if (puzzle.rewardItem && !inventory.includes(puzzle.rewardItem)) {
+        setInventory(prev => [...prev, puzzle.rewardItem]);
+      }
+      setSolvingPuzzleId(null);
+      setClueOverlay({
+        title: `Pikakoodi oikein!`,
+        description: puzzle.solveMessage,
+        dialog: `Upeaa päättelykykyä! Sait haltuusi esineen: ${puzzle.rewardItemName}. Rikostutkintasi etenee huimasti.`
+      });
+      logAtmosphere(`🏆 Ratkaisit pulman "${puzzle.title}" koodilla ${codeInputValue}!`);
+    } else {
+      setPuzzleError("Väärä numerokoodi! Kokeile uudestaan tai tarkista vihjeet.");
+    }
+  };
+
+  const totalCluesCount = locations.reduce((sum, loc) => sum + loc.clues.length, 0);
+  const foundCluesCount = locations.reduce((sum, loc) => 
+    sum + loc.clues.filter(c => c.discovered).length, 0
+  );
+  const solvedPuzzlesCount = puzzles.filter(p => p.isSolved).length;
+
   const handleAccuse = (accusedId: string) => {
     setSelectedAccused(accusedId);
     let success = false;
@@ -119,29 +419,25 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     if (accusedId === "maria") {
       success = true;
       title = "Paljastus rantasaunalla: Maria murtuu kyyneleihin!";
-      explanation = `Tarkat etsiväsi loivat kiistattoman todistusketjun! Etsivä ${playerName || "Salapoliisi"}, olet täydellinen mestari. Viskilasin karvasmantelin haju paljasti syanidimyrkytyksen. Rantasaunan kuparikiulusta löytyi hopeaketju, jossa oli nimikirjaimet 'M.K.' (Maria Koskela). Kun löysit herra Mikaelin salaisen perintösormuksen grillikodassa sijainneesta rauta-arkusta sorkkarautaasi käyttäen, kävi ilmi Marian motiivi: hän halusi Kaartjärven tilukset itselleen estääkseen Mikaelia myymästä niitä ulkomaisille gryndereille. Maria tunnustaa murtuen paineen alla ja suurselvitys rannalla päättyy poliisin saapuessa!`;
+      explanation = `Tarkat etsiväsi loivat kiistattoman todistusketjun! Etsivä ${playerName || "Salapoliisi"}, olet täydellinen mestari. Viskilasin karvasmantelin haju paljasti syanidimyrkytyksen. Rantasaunan kuparikiulusta löytyi hopeaketju, jossa oli nimikirjaimet 'M.K.' (Maria Koskela). Marian motiivi: hän halusi Kaartjärven tilukset itselleen estääkseen Mikaelia myymästä niitä ulkomaisille gryndereille. Maria tunnustaa murtuen paineen alla ja suurselvitys rannalla päättyy poliisin saapuessa!`;
       
-      if (score >= 90) {
-        detectiveRank = "Mestarietsivä (100% Ratkaissut)";
-      } else if (score >= 60) {
-        detectiveRank = "Kokenut tutkija";
-      } else {
-        detectiveRank = "Sinnikäs poliisipäällikkö";
-      }
+      if (score >= 90) detectiveRank = "Mestarietsivä (100% Ratkaissut)";
+      else if (score >= 60) detectiveRank = "Kokenut tutkija";
+      else detectiveRank = "Sinnikäs poliisipäällikkö";
     } else if (accusedId === "ville") {
       title = "Huti! Villellä on täydellinen pankkialibi";
-      explanation = "Syyte epäonnistui! Ville oli syyllistynyt talousrikoksiin, ja tähän sorkkarauta ja tuhkakirje viittasivatkin, mutta hänellä oli aukoton puhelin-alibi Helsinkiin koko murhayölle. Maria Koskela pääsee pakenemaan paikalta aamun ensisäteillä mukanansa Kaartjärven perintörahat.";
+      explanation = "Syyte epäonnistui! Ville oli syyllistynyt talousrikoksiin, tähän sorkkarauta viittasikin, mutta hänellä oli alibi Helsinkiin koko murhayölle. Oikea syyllinen pääsee pakenemaan perintörahat mukanaan.";
     } else {
       title = "Huti! Heikki vain tarkkaili tilannetta";
-      explanation = "Syyte epäonnistui! Naapuri Heikki oli hiippaillut rannassa ja jättänyt suuret kurajäljet puuvarastoon, mutta hän oli vain kiinnostunut ostamaan Lopen kylätontit rehellisesti. Hänellä ei ollut mitään tekemistä Mikaelin myrkyltä tuoksuvan viskilasin kanssa.";
+      explanation = "Syyte epäonnistui! Naapuri Heikki oli hiippaillut rannassa ja jättänyt mutajäljet puuvarastoon, mutta hän oli vain kiinnostunut ostamaan Lopen kylätontit rehellisesti.";
     }
 
     setEndingResult({ success, title, explanation, detectiveRank, score });
   };
 
   const handleRestartAdventure = () => {
-    setLocations(HUVILA_LOCATIONS.map(l => ({ ...l, isLocked: l.id === "hirsirantasauna", clues: l.clues.map(c => ({ ...c, discovered: false })) })));
-    setPuzzles(HUVILA_PUZZLES.map(p => ({ ...p, isSolved: false })));
+    setLocations(H_LOCATIONS.map(l => ({ ...l, isLocked: l.id === "hirsirantasauna", clues: l.clues.map(c => ({ ...c, discovered: false })) })));
+    setPuzzles(H_PUZZLES.map(p => ({ ...p, isSolved: false })));
     setInventory([]);
     setActiveLocId("paahuvila");
     setClueOverlay(null);
@@ -161,7 +457,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       default: return <Compass style={{ width: '20px', height: '20px', color: '#60a5fa' }} />;
     }
   };
-
   // --- Puhtaat Inline-kauneustyylit integraatiolle ilman Tailwindia ---
   const containerStyle: React.CSSProperties = {
     maxWidth: '1000px',
@@ -221,6 +516,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     alignItems: 'center',
     gap: '8px'
   };
+
   const exitButtonStyle: React.CSSProperties = {
     padding: '10px 16px',
     backgroundColor: '#1e293b',
@@ -241,7 +537,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth > 768 ? '1.25fr 1fr' : '1fr',
     gap: '20px',
   };
-
   const cardStyle: React.CSSProperties = {
     backgroundColor: '#0f172a',
     border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -410,7 +705,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     overflow: 'hidden',
     margin: '10px 0'
   };
-
   const statsBadgeStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -422,10 +716,12 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
     fontWeight: 'bold',
     color: '#cbd5e1'
   };
+
   if (!currentLoc || typeof currentLoc.clues === 'undefined') return null;
 
   return (
     <div style={containerStyle}>
+      {/* YLÄPALKKI */}
       <div style={headerStyle}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
@@ -444,6 +740,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         </button>
       </div>
 
+      {/* EDISTYMINEN */}
       <div style={{ ...cardStyle, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ flex: '1 1 250px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'bold', color: '#cbd5e1' }}>
@@ -461,7 +758,9 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         </div>
       </div>
 
+      {/* RAKENNEGRIDI */}
       <div style={responsiveGrid}>
+        {/* VASEN LOHKO - KOHDETUTKINTA */}
         <div>
           <div style={cardStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -500,7 +799,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
             )}
           </div>
         </div>
-
+        {/* OIKEA LOHKO - TONTTIKARTTA, REPPU & LOKI */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={cardStyle}>
             <h3 style={subHeaderStyle}><Compass style={{ width: '14px', height: '14px' }} />Tonttikartta</h3>
@@ -534,7 +833,8 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
         </div>
       </div>
-      {/* CLUE POPUP */}
+
+      {/* CLUE POPUP - LÖYDETTY TODISTE */}
       <AnimatePresence>
         {clueOverlay && (
           <div style={overlayBackdrop}>
@@ -552,7 +852,6 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           </div>
         )}
       </AnimatePresence>
-
       {/* PUZZLE POPUP */}
       <AnimatePresence>
         {solvingPuzzleId && (() => {
@@ -563,25 +862,45 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <h3 style={{ fontSize: '13px', fontWeight: 'bold' }}>Arvoitus: {puz.title}</h3>
-                  <button onClick={handleClosePuzzle} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}>X</button>
+                  <button onClick={handleClosePuzzle} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>X</button>
                 </div>
-                <p style={{ fontSize: '12px' }}>{puz.description}</p>
-                <p style={{ fontSize: '11px', color: '#fbbf24' }}>Vihje: {puz.hint}</p>
+                <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4' }}>{puz.description}</p>
+                <p style={{ fontSize: '11px', color: '#fbbf24', fontStyle: 'italic' }}>Vihje: {puz.hint}</p>
+                
                 {puz.type === "code" ? (
-                  <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
-                    <input type="text" value={codeInputValue} onChange={(e) => setCodeInputValue(e.target.value)} placeholder="Koodi" style={{ flex: 1, padding: '6px', background: '#020617', border: '1px solid #334155', color: '#fff', borderRadius: '6px', textAlign: 'center' }} />
-                    <button onClick={() => handleSubmitCodePuzzle(puz)} style={{ padding: '6px 12px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Syötä</button>
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
+                    <input 
+                      type="text" 
+                      value={codeInputValue} 
+                      onChange={(e) => setCodeInputValue(e.target.value)} 
+                      placeholder="Syötä koodi..." 
+                      style={{ flex: 1, padding: '8px', background: '#020617', border: '1px solid #334155', color: '#fff', borderRadius: '6px', textAlign: 'center', fontSize: '13px' }} 
+                    />
+                    <button onClick={() => handleSubmitCodePuzzle(puz)} style={{ padding: '8px 16px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px' }}>Syötä</button>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
-                    {inventory.map((item, idx) => (
-                      <button key={idx} onClick={() => handleUseItemForPuzzle(puz, item)} style={{ padding: '8px', background: '#020617', border: '1px solid #334155', color: '#fff', borderRadius: '6px', cursor: 'pointer', textAlign: 'left' }}>
-                        {getItemIconBadge(item)} Käytä: {getItemDisplayName(item)}
-                      </button>
-                    ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '12px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Valitse työkalu repustasi:</label>
+                    {inventory.length === 0 ? (
+                      <div style={{ padding: '12px', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '11px', color: '#64748b' }}>Repussasi ei ole sopivia erikoistyökaluja. Etsi muilta alueilta!</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '160px', overflowY: 'auto' }}>
+                        {inventory.map((item, idx) => (
+                          <button key={idx} onClick={() => handleUseItemForPuzzle(puz, item)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', backgroundColor: '#020617', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#ffffff', fontWeight: 'bold', textAlign: 'left', cursor: 'pointer' }}>
+                            <span style={{ fontSize: '14px' }}>{getItemIconBadge(item)}</span>
+                            <span style={{ fontSize: '12px' }}>Käytä: {getItemDisplayName(item)}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
-                {puzzleError && <p style={{ color: '#f87171', fontSize: '11px', marginTop: '6px' }}>{puzzleError}</p>}
+                {puzzleError && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '12px', padding: '8px 10px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', color: '#f87171', fontSize: '11px' }}>
+                    <AlertCircle style={{ width: '13px', height: '13px', shrink: 0 }} />
+                    <span>{puzzleError}</span>
+                  </div>
+                )}
               </motion.div>
             </div>
           );
@@ -593,22 +912,23 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         {isAccusationMode && !endingResult && (
           <div style={overlayBackdrop}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold' }}>Valitse syyllinen!</h3>
-                <button onClick={() => setIsAccusationMode(false)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>X</button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>Käräjäoikeus: Valitse syyllinen!</h3>
+                <button onClick={() => setIsAccusationMode(false)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>X</button>
               </div>
+              <p style={{ fontSize: '12px', color: '#a1a1aa', lineHeight: '1.5', marginBottom: '16px' }}>Oletko varma löydöistäsi? Valitse alta ketä vastaan asetat murhasyytteen.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[
-                  { id: "maria", name: "Maria Koskela", desc: "Mikaelin serkku. Rantasaunan hopeaketju." },
-                  { id: "ville", name: "Ville Lindström", desc: "Veljenpoika. Grillikodan kiristyskirje." },
-                  { id: "heikki", name: "Heikki Nieminen", desc: "Sijoittajanaapuri. Puuvaraston jalanjäljet." }
+                  { id: "maria", name: "Maria Koskela (Mikaelin serkku)", desc: "Liittyy rantasaunan kupariseen kiuluun hukkuneeseen hopeaketjuun (M.K)." },
+                  { id: "ville", name: "Ville Lindström (Veljen poika)", desc: "Oli mukana perintökriisissä. Grillikodan kiristyskirjeen epäilty." },
+                  { id: "heikki", name: "Heikki Nieminen (Sijoittajanaapuri)", desc: "Liikkui sateessa ja jätti kuraiset mutajäljet puuvarastoon." }
                 ].map(sus => (
-                  <div key={sus.id} style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{sus.name}</div>
-                      <div style={{ fontSize: '10px', color: '#64748b' }}>{sus.desc}</div>
+                  <div key={sus.id} style={{ padding: '12px', background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#ffffff' }}>{sus.name}</div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>{sus.desc}</div>
                     </div>
-                    <button onClick={() => handleAccuse(sus.id)} style={{ padding: '4px 10px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}>Syyte</button>
+                    <button onClick={() => handleAccuse(sus.id)} style={{ padding: '6px 12px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Haasta</button>
                   </div>
                 ))}
               </div>
@@ -621,21 +941,29 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
       <AnimatePresence>
         {endingResult && (
           <div style={overlayBackdrop}>
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} style={{ ...popupBoxStyle, border: endingResult.success ? '2px solid #10b981' : '2px solid #ef4444' }}>
-              <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-                <span style={{ fontSize: '32px' }}>{endingResult.success ? "🏆" : "🚨"}</span>
-                <h2 style={{ fontSize: '16px', fontWeight: 'bold', margin: '6px 0' }}>{endingResult.title}</h2>
-                <div style={{ fontSize: '11px', color: '#fbbf24' }}>{endingResult.detectiveRank} (Pisteet: {endingResult.score}%)</div>
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} style={{ ...popupBoxStyle, maxWidth: '540px', border: endingResult.success ? '2px solid #10b981' : '2px solid #ef4444' }}>
+              <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                <span style={{ fontSize: '36px', display: 'block', marginBottom: '6px' }}>{endingResult.success ? "🏆" : "🚨"}</span>
+                <span style={{ padding: '4px 12px', backgroundColor: endingResult.success ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)', border: endingResult.success ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)', color: endingResult.success ? '#10b981' : '#f87171', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase' }}>{endingResult.success ? "RATKAISTU" : "TUTKINTA RYVETTYI"}</span>
+                <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#ffffff', margin: '12px 0 4px 0' }}>{endingResult.title}</h2>
+                <div style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 'bold', textTransform: 'uppercase' }}>Tutkijan tasomääritelmä: {endingResult.detectiveRank}</div>
               </div>
-              <p style={{ fontSize: '12px', lineHeight: '1.5', backgroundColor: '#020617', padding: '10px', borderRadius: '8px' }}>{endingResult.explanation}</p>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
-                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
+              <p style={{ fontSize: '12px', lineHeight: '1.6', backgroundColor: '#020617', padding: '12px', borderRadius: '8px', color: '#cbd5e1', margin: '0 0 16px 0' }}>{endingResult.explanation}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '16px' }}>
+                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Syytetuloksesi</div>
+                  <div style={{ fontSize: '18px', fontWeight: 'extrabold', color: '#fbbf24', marginTop: '2px' }}>{endingResult.score}%</div>
+                </div>
+                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Todistetila</div>
+                  <div style={{ fontSize: '18px', fontWeight: 'extrabold', color: '#ffffff', marginTop: '2px' }}>{foundCluesCount} / {totalCluesCount}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
                 <button onClick={handleExit} style={{ flex: 1, padding: '10px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Päävalikkoon</button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
