@@ -1,3 +1,4 @@
+import { GAME_GRADIENTS, GAME_SYMBOLS, LOCATION_IMAGES, CLUE_IMAGES } from "./gameImages";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -776,9 +777,17 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
               {getIcon(currentLoc.iconName)}
               <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>{currentLoc.name}</h2>
             </div>
-            <div style={locationImageWrapper}>
-              {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
-              <img src={currentLoc.imageUrl} alt={currentLoc.name} style={locationImageStyle} />
+         <div style={{ ...locationImageWrapper, background: GAME_GRADIENTS[currentLoc.id as keyof typeof GAME_GRADIENTS] || '#1e293b', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', position: 'relative', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              {/* KORJAUS: Kuva hakee osoitteen pikalatauksesta. Jos lataus epäonnistuu, onError piilottaa kuvan ja näyttää dynaamisen taustavärin */}
+              <img 
+                src={LOCATION_IMAGES[currentLoc.id as keyof typeof LOCATION_IMAGES] || currentLoc.imageUrl} 
+                alt={currentLoc.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <div style={{ position: 'absolute', fontSize: '64px', pointerEvents: 'none', zIndex: 0, opacity: 0.85 }}>
+                {GAME_SYMBOLS[currentLoc.id as keyof typeof GAME_SYMBOLS] || "🔍"}
+              </div>
               <span style={imageOvertextOverlay}><span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#fbbf24' }} />Ulkokamera</span>
             </div>
             <p style={{ fontSize: '13px', color: '#cbd5e1', fontStyle: 'italic', borderLeft: '2px solid #fbbf24', paddingLeft: '12px' }}>"{currentLoc.longDescription}"</p>
@@ -841,12 +850,18 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
           <div style={overlayBackdrop}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={popupBoxStyle}>
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 10px 0' }}><Sparkles style={{ width: '14px', height: '14px' }} /> Löydetty todiste</h3>
-              {clueOverlay.id && (
-                <div style={{ width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px' }}>
-                  {/* KORJAUS: Poistettu referrerPolicy-esto jotta kuva latautuu selaimessa */}
-                  <img src={getClueImage(clueOverlay.id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px', background: GAME_GRADIENTS.popupDefault, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.08)', position: 'relative' }}>
+                {/* KORJAUS: Todistekuva dynaamisella varmistuksella. Jos linkki estetään, symbols herää heti eloon alta */}
+                <img 
+                  src={CLUE_IMAGES[clueOverlay.id as keyof typeof CLUE_IMAGES] || (clueOverlay.id ? getClueImage(clueOverlay.id) : '')} 
+                  alt="" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', zIndex: 1 }} 
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div style={{ position: 'absolute', fontSize: '48px', zIndex: 0 }}>
+                  {GAME_SYMBOLS[clueOverlay.id as keyof typeof GAME_SYMBOLS] || "🔍"}
                 </div>
-              )}
+              </div>
               <p style={{ fontSize: '12px', fontStyle: 'italic' }}>"{clueOverlay.description}"</p>
               <p style={{ fontSize: '13px' }}>{clueOverlay.dialog}</p>
               <button onClick={() => setClueOverlay(null)} style={{ width: '100%', padding: '8px', backgroundColor: '#6366f1', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Jatka tutkimusta</button>
@@ -940,6 +955,7 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
         )}
       </AnimatePresence>
       {/* ENDING MODAL - LOPPURAPORTTI */}
+           {/* ENDING MODAL - LOPPURAPORTTI */}
       <AnimatePresence>
         {endingResult && (
           <div style={overlayBackdrop}>
@@ -952,17 +968,17 @@ export default function KaartjarviMap({ onBackToLobby, onExitGame, playerName }:
               </div>
               <p style={{ fontSize: '12px', lineHeight: '1.6', backgroundColor: '#020617', padding: '12px', borderRadius: '8px', color: '#cbd5e1', margin: '0 0 16px 0' }}>{endingResult.explanation}</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '16px' }}>
-                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                   <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Syytetuloksesi</div>
                   <div style={{ fontSize: '18px', fontWeight: 'extrabold', color: '#fbbf24', marginTop: '2px' }}>{endingResult.score}%</div>
                 </div>
-                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ padding: '10px', backgroundColor: '#161e2e', borderRadius: '8px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                   <div style={{ fontSize: '9px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Todistetila</div>
                   <div style={{ fontSize: '18px', fontWeight: 'extrabold', color: '#ffffff', marginTop: '2px' }}>{foundCluesCount} / {totalCluesCount}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
+                <button onClick={handleRestartAdventure} style={{ flex: 1, padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Yritä uudelleen</button>
                 <button onClick={handleExit} style={{ flex: 1, padding: '10px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Päävalikkoon</button>
               </div>
             </motion.div>
