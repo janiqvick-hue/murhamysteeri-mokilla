@@ -17,8 +17,7 @@
       --card-bg: rgba(15, 23, 42, 0.85);
       --border-color: rgba(244, 63, 94, 0.2);
     }
-
-    * {
+* {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -57,12 +56,21 @@
       overflow-y: auto;
     }
 
-    /* 3D Renderöintialue */
+    /* 3D Renderöintialue - Pakotettu herättämään WebGL-grafiikat eloon */
     #canvas-container {
       flex-grow: 1;
       height: 100%;
       position: relative;
-      background-color: #000;
+      background-color: #020408;
+    }
+
+    /* KORJAUS: Pakotetaan A-Framen 3D-ikkuna ja sen canvas venymään koko alueelle ilman mustia reunoja */
+    a-scene, .a-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
     }
 
     .title-area {
@@ -386,15 +394,21 @@
       </div>
     </aside>
 
-    <main id="canvas-container">
-      <a-scene embedded vr-mode-ui="enabled: true">
+    <main id="canvas-container" style="flex-grow: 1; height: 100%; position: relative;">
+      <!-- KORJAUS: Lisätty dynaaminen kokovalvonta -->
+      <a-scene embedded vr-mode-ui="enabled: true" style="position: absolute; width: 100%; height: 100%;">
+        
         <a-sky color="#03050c"></a-sky>
         <a-plane position="0 0 0" rotation="-90 0 0" width="12" height="12" color="#181210"></a-plane>
         <a-plane position="0 4 0" rotation="90 0 0" width="12" height="12" color="#05060a"></a-plane>
 
+        <!-- KORJAUS: Lisätty tehokkaat 3D-yleisvalot, jotta huone ei renderöidy mustana -->
+        
+        
+
         <!-- SEINÄT JA KOODIVIHJE -->
         <a-box position="0 2 -6" width="12" height="4" depth="0.2" color="#261b18">
-          <a-text value="MIKAELIN KUOLINPESA 1954" color="#000000" position="0 0.8 0.12" width="4.5" align="center" font="monoid"></a-text>
+          <a-text value="MIKAELIN KUOLINPESA 1954" color="#fbbf24" position="0 0.8 0.12" width="4.5" align="center" font="monoid"></a-text>
         </a-box>
         <a-box position="0 2 6" width="12" height="4" depth="0.2" color="#261b18"></a-box>
         <a-box position="6 2 0" rotation="0 -90 0" width="12" height="4" depth="0.2" color="#1c1311"></a-box>
@@ -405,7 +419,7 @@
           <a-box position="0 -0.2 0.42" width="1.6" height="1.2" depth="0.2" color="#111827"></a-box>
           <a-box position="0 -0.5 0.5" width="1.2" height="0.25" depth="0.3" color="#f97316" material="emissive: #fb7185; emissiveIntensity: 2"></a-box>
         </a-box>
-        <a-light type="point" color="#fbbf24" intensity="2" distance="6" position="-4.8 1 -2"></a-light>
+        <a-light type="point" color="#fbbf24" intensity="2" distance="8" position="-4.8 1 -2"></a-light>
 
         <!-- TYÖPÖYTÄ JA ARKKU -->
         <a-box id="mikael-table" position="0 0.4 -2.5" width="2" height="0.8" depth="1.4" color="#3a2312">
@@ -414,7 +428,8 @@
           </a-plane>
         </a-box>
 
-        <a-box id="mikael-chest" position="0 0.95 -2.2" width="0.85" height="0.45" depth="0.5" color="#5a1a1a">
+        <!-- KORJAUS: Lisätty clickable-luokka dynaamista tunnistusta varten -->
+        <a-box id="mikael-chest" class="clickable" position="0 0.95 -2.2" width="0.85" height="0.45" depth="0.5" color="#5a1a1a">
           <a-box id="chest-padlock" position="0 0 0.26" width="0.12" height="0.14" depth="0.04" color="#d97706"></a-box>
           <a-text value="KLIKKAA AVAIMELLA" position="0 0.26 0" align="center" width="2" color="#ffffff"></a-text>
           <a-plane id="chest-interior-hint" position="0 0.21 0.1" rotation="-45 0 0" width="0.8" height="0.4" color="#14532d" visible="false">
@@ -424,7 +439,8 @@
 
         <!-- POISTUMISOVI -->
         <a-box position="0 1.5 5.8" width="2.4" height="3" depth="0.3" color="#1e1b4b"></a-box>
-        <a-box id="escape-door" position="0 1.5 5.65" width="2.2" height="2.9" depth="0.1" color="#1e1b4b">
+        <!-- KORJAUS: Lisätty clickable-luokka ovelle -->
+        <a-box id="escape-door" class="clickable" position="0 1.5 5.65" width="2.2" height="2.9" depth="0.1" color="#1e1b4b">
           <a-text id="door-text" value="LUKITTU: SYOTA KOODI" position="0 0.5 0.06" align="center" width="2.4" color="#ff4d4d"></a-text>
         </a-box>
         <a-sphere position="0.8 1.4 5.55" radius="0.08" color="#d97706"></a-sphere>
@@ -440,42 +456,45 @@
           </a-box>
         </a-box>
 
-        <!-- 3D-PAINIKKEET SEINÄLLÄ -->
-        <a-cylinder id="btn-3d-1" position="1.8 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-2" position="1.92 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-3" position="2.04 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-4" position="1.8 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-5" position="1.92 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-6" position="2.04 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-7" position="1.8 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-8" position="1.92 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-9" position="2.04 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-C" position="1.8 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#ef4444"></a-cylinder>
-        <a-cylinder id="btn-3d-0" position="1.92 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-E" position="2.04 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#10b981"></a-cylinder>
+        <!-- 3D-PAINIKKEET SEINÄLLÄ (Kaikissa korjattu clickable-luokka) -->
+        <a-cylinder id="btn-3d-1" class="clickable" position="1.8 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-2" class="clickable" position="1.92 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-3" class="clickable" position="2.04 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-4" class="clickable" position="1.8 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-5" class="clickable" position="1.92 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-6" class="clickable" position="2.04 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-7" class="clickable" position="1.8 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-8" class="clickable" position="1.92 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-9" class="clickable" position="2.04 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-C" class="clickable" position="1.8 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#ef4444"></a-cylinder>
+        <a-cylinder id="btn-3d-0" class="clickable" position="1.92 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
+        <a-cylinder id="btn-3d-E" class="clickable" position="2.04 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#10b981"></a-cylinder>
 
-        <!-- KULTAINEN AVAIN -->
+        <!-- KORJAUS: Palautettu avaimen clickable-päärunko ympärille -->
         
           <a-cylinder color="#fbbf24" radius="0.025" height="0.3"></a-cylinder>
           <a-sphere position="0 0.16 0" radius="0.06" color="#fbbf24"></a-sphere>
           <a-sphere position="0 0 0" radius="0.25" color="#fbbf24" material="opacity: 0.15; transparent: true; shader: flat"></a-sphere>
         
 
-        <!-- VR KAMERA JA TÄHTÄIN -->
+        <!-- VR KAMERA JA TÄHTÄIN (Osoittaa oikeisiin clickable-luokkiin) -->
         <a-camera id="my-camera" position="0 1.6 2" wasd-controls="acceleration: 40">
-          <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat; opacity: 0.8" raycaster="objects: #mikael-key, #mikael-chest, #escape-door, [id^='btn-3d-']"></a-cursor>
+          <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat; opacity: 0.8" raycaster="objects: .clickable"></a-cursor>
         </a-camera>
 
+        <!-- KORJAUS: Palautettu lasersäde-ohjaimet Quest laseille -->
+        
         
         
       </a-scene>
 
       <div id="hud-banner">
         <div class="hud-indicator"></div>
-        <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta tai tutki pöydän päällä olevaa rauta-arkkuja!</div>
+        <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta tai tutki pöydän päällä olevaa rauta-arkkua!</div>
       </div>
     </main>
   </div>
+
 
   <!-- OVERLAYRUUDUT -->
   <div id="intro-overlay" class="screen-overlay">
