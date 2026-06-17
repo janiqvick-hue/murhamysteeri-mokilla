@@ -132,3 +132,102 @@
       <button class="btn-action" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);" onclick="window.location.href = '/'">PALAA PÄÄVALIKKOON</button>
     </div>
   </div>
+    <!-- JAVASCRIPT-PELIMOOTTORI -->
+  <script>
+    let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
+
+    function playSfx(freq, duration, type = 'sine') {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination); osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(0.04, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.start(); osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
+
+    function startGame() {
+      document.getElementById('intro-overlay').style.display = 'none';
+      playSfx(523, 0.3, 'sine');
+    }
+
+    function grabKey() {
+      if (state.hasKey) return;
+      state.hasKey = true; playSfx(440, 0.2, 'triangle');
+      const keyEntity = document.getElementById('mikael-key');
+      if (keyEntity) keyEntity.setAttribute('visible', 'false');
+      updateHudMessage("🎒 Sait kultaisen avaimen reppuun! Vie se työpöydällä olevan punaisen rauta-arkun luo ja klikkaa arkun lukkoa.");
+    }
+
+    function triggerOpenChest() {
+      if (state.isChestOpen) return;
+      if (state.hasKey) {
+        state.isChestOpen = true; playSfx(587, 0.4, 'sine');
+        const hintPaper = document.getElementById('chest-interior-hint');
+        if (hintPaper) hintPaper.setAttribute('visible', 'true');
+        const chestObj = document.getElementById('mikael-chest');
+        if (chestObj) chestObj.setAttribute('color', '#14532d');
+        updateHudMessage("🔓 Arkku aukesi! Sisällä lukee: 'KASSAKAAPIN KOODI ON 1954'. Mene kassakaapille ja näppäile koodi seinän 3D-painikkeista.");
+      } else {
+        playSfx(150, 0.2, 'sawtooth');
+        updateHudMessage("🔒 Rauta-arkku on lukossa! Tarvitset avaimen. Etsi lattialta keltainen hohtava pallo ja klikkaa sitä.");
+      }
+    }
+
+    function pressKey(val) {
+      if (state.isSafeSolved) return;
+      playSfx(600, 0.08, 'sine');
+      const safeText3d = document.getElementById('safe-screen');
+      
+      if (val === 'C') {
+        state.enteredCode = ""; if (safeText3d) safeText3d.setAttribute('value', 'CODE?');
+      } else if (val === 'E') {
+        if (state.enteredCode === "1954") {
+          state.isSafeSolved = true; playSfx(880, 0.5, 'sine');
+          if (safeText3d) { safeText3d.setAttribute('value', 'OPEN'); safeText3d.setAttribute('color', '#10b981'); }
+          const safeDoor = document.getElementById('mikael-safe-door');
+          if (safeDoor) { safeDoor.setAttribute('rotation', '0 90 0'); safeDoor.setAttribute('position', '0.5 0 0.2'); }
+          const escapeDoor = document.getElementById('escape-door');
+          const doorText = document.getElementById('door-text');
+          if (escapeDoor) escapeDoor.setAttribute('color', '#10b981');
+          if (doorText) { doorText.setAttribute('value', 'AVATTU - KLIKKAA PAETAKSESI'); doorText.setAttribute('color', '#ffffff'); }
+          updateHudMessage("🏆 Kassakaappi auki! Sähkömagneettinen ovi eteläseinällä on nyt vapautettu. Klikkaa ovea paetaksesi!");
+        } else {
+          playSfx(120, 0.3, 'sawtooth'); state.enteredCode = "";
+          if (safeText3d) safeText3d.setAttribute('value', 'ERROR');
+        }
+      } else {
+        if (state.enteredCode.length < 4) {
+          state.enteredCode += val; if (safeText3d) safeText3d.setAttribute('value', state.enteredCode);
+        }
+      }
+    }
+
+    function triggerEscape() {
+      if (state.isSafeSolved) {
+        playSfx(1046, 0.6, 'sine'); document.getElementById('win-overlay').style.display = 'flex';
+      } else {
+        playSfx(150, 0.2, 'sawtooth'); updateHudMessage("⚠️ Sähköovi vaatii magneettivirran sammuttamisen! Ratkaise ensin kassakaapin koodi.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const key3d = document.getElementById('mikael-key'); if (key3d) key3d.addEventListener('click', grabKey);
+      const chest3d = document.getElementById('mikael-chest'); if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
+      const door3d = document.getElementById('escape-door'); if (door3d) door3d.addEventListener('click', triggerEscape);
+
+      for (let i = 0; i <= 9; i++) {
+        const btn = document.getElementById(`btn-3d-${i}`);
+        if (btn) btn.addEventListener('click', () => pressKey(i.toString()));
+      }
+      const btnC = document.getElementById('btn-3d-C'); if (btnC) btnC.addEventListener('click', () => pressKey('C'));
+      const btnE = document.getElementById('btn-3d-E'); if (btnE) btnE.addEventListener('click', () => pressKey('E'));
+    });
+  </script>
+</body>
+</html>
+
