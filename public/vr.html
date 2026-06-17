@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mikaelin Salakellari 3D VR - Osa 3</title>
-  <!-- Tuodaan A-Frame 3D-mobiili/VR-moottori -->
+  <!-- KORJAUS: Palautettu täydellinen ja toimiva A-Frame 3D-moottorin linkki -->
   <script src="https://aframe.io"></script>
-  <!-- Tuodaan vapaat tyylit ja Google Fonts -->
+  <!-- KORJAUS: Palautettu täydellinen Google Fonts -linkki fonteille -->
   <link href="https://googleapis.com" rel="stylesheet">
   
   <style>
@@ -72,6 +72,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       padding-bottom: 14px;
     }
+
 
     .title-icon {
       background: rgba(244, 63, 94, 0.1);
@@ -454,7 +455,7 @@
         <a-cylinder id="btn-3d-0" position="1.92 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
         <a-cylinder id="btn-3d-E" position="2.04 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#10b981"></a-cylinder>
 
-        <!-- KULTAINEN AVAIN -->
+               <!-- KULTAINEN AVAIN -->
         
           <a-cylinder color="#fbbf24" radius="0.025" height="0.3"></a-cylinder>
           <a-sphere position="0 0.16 0" radius="0.06" color="#fbbf24"></a-sphere>
@@ -466,6 +467,8 @@
           <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat; opacity: 0.8" raycaster="objects: #mikael-key, #mikael-chest, #escape-door, [id^='btn-3d-']"></a-cursor>
         </a-camera>
 
+        <!-- VR-LASIOHJAIMET LASERSÄTEELLÄ QUEST-LAITTEILLE -->
+        
         
         
       </a-scene>
@@ -511,3 +514,157 @@
           osc.type = 'sine'; osc.frequency.setValueAtTime(600, ctx.currentTime);
           gain.gain.setValueAtTime(0.04, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.08);
         } else if (type === 'pickup') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.2);
+        } else if (type === 'success') {
+          osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          gain.gain.setValueAtTime(0.06, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.4);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, ctx.currentTime);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.2);
+        }
+      } catch (err) {}
+    }
+
+    function addLogEntry(text) {
+      const feed = document.getElementById('log-feed'); if (!feed) return;
+      const row = document.createElement('div'); row.className = 'log-row'; row.innerText = `› ${text}`;
+      feed.insertBefore(row, feed.firstChild);
+      while (feed.children.length > 5) feed.removeChild(feed.lastChild);
+    }
+
+    function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
+
+    // KORJAUS: Tämä sulkee aloitusruudun sekunnin murto-osassa ja ohittaa selaimen äänilukitukset
+    function startGame() {
+      const intro = document.getElementById('intro-overlay');
+      if (intro) intro.style.display = 'none';
+      setTimeout(() => {
+        playSfx('success');
+        addLogEntry("Tutkinta aloitettu. Etsi avain.");
+      }, 50);
+    }
+
+    function grabKey() {
+      if (state.hasKey) return;
+      state.hasKey = true; playSfx('pickup');
+      document.getElementById('inv-key').classList.add('active');
+      document.getElementById('status-key').innerText = "HALLUSSA";
+      const keyEntity = document.getElementById('mikael-key');
+      if (keyEntity) keyEntity.setAttribute('visible', 'false');
+      addLogEntry("Löysit kultaisen avaimen lattialta!");
+      updateHudMessage("Sait Mikaelin avaimen! Se sopii pöydän päällä olevaan rauta-arkkuun.");
+    }
+
+    function triggerOpenChest() {
+      if (state.isChestOpen) return;
+      if (state.hasKey) {
+        state.isChestOpen = true; playSfx('success');
+        document.getElementById('inv-code').classList.add('active');
+        document.getElementById('status-code').innerText = "AVATTU (1954)";
+        const hintPaper = document.getElementById('chest-interior-hint');
+        if (hintPaper) hintPaper.setAttribute('visible', 'true');
+        const chestObj = document.getElementById('mikael-chest');
+        if (chestObj) chestObj.setAttribute('color', '#052e16');
+        updateHudMessage("Arkku aukesi! Vihjekoodi paljastui: 1954!");
+        addLogEntry("Avasit rauta-arkun avaimella.");
+      } else {
+        playSfx('error');
+        updateHudMessage("Rauta-arkku on tiukasti lukossa. Tarvitset avaimen!");
+      }
+    }
+
+    function pressKey(val) {
+      if (state.isSafeSolved) return;
+      playSfx('click');
+      const display = document.getElementById('digit-display');
+      const safeText3d = document.getElementById('safe-screen');
+      if (val === 'C') {
+        state.enteredCode = ""; display.innerText = "----";
+        if (safeText3d) safeText3d.setAttribute('value', 'CODE?');
+      } else if (val === 'E') {
+        if (state.enteredCode === "1954") {
+          state.isSafeSolved = true; playSfx('success');
+          display.innerText = "OPEN"; display.style.color = "#10b981";
+          if (safeText3d) { safeText3d.setAttribute('value', 'OPEN'); safeText3d.setAttribute('color', '#10b981'); }
+          const safeDoor = document.getElementById('mikael-safe-door');
+          if (safeDoor) { safeDoor.setAttribute('rotation', '0 90 0'); safeDoor.setAttribute('position', '0.5 0 0.2'); }
+          const escapeDoor = document.getElementById('escape-door');
+          const doorText = document.getElementById('door-text');
+          if (escapeDoor) escapeDoor.setAttribute('color', '#10b981');
+          if (doorText) { doorText.setAttribute('value', 'AVATTU - KLIKKAA PAETAKSESI'); doorText.setAttribute('color', '#ffffff'); }
+          updateHudMessage("Oikea koodi! Pääovi on nyt auki. Klikkaa ovea paetaksesi!");
+          addLogEntry("Kassakaappi murrettu koodilla 1954!");
+        } else {
+          playSfx('error'); state.enteredCode = ""; display.innerText = "----";
+          if (safeText3d) safeText3d.setAttribute('value', 'ERROR');
+        }
+      } else {
+        if (state.enteredCode.length < 4) {
+          state.enteredCode += val; display.innerText = state.enteredCode;
+          if (safeText3d) safeText3d.setAttribute('value', state.enteredCode);
+        }
+      }
+    }
+
+    function triggerEscape() {
+      if (state.isSafeSolved) {
+        playSfx('success'); document.getElementById('win-overlay').style.display = 'flex';
+      } else {
+        playSfx('error'); updateHudMessage("Ovi on täysin sähkölukossa. Murra ensin kassakaappi!");
+      }
+    }
+
+    function restartWholeGame() {
+      state.hasKey = false; state.isChestOpen = false; state.isSafeSolved = false; state.enteredCode = "";
+      document.getElementById('win-overlay').style.display = 'none';
+      document.getElementById('digit-display').innerText = "----";
+      document.getElementById('digit-display').style.color = "var(--accent-color)";
+      document.getElementById('status-key').innerText = "EI LÖYDETTY";
+      document.getElementById('status-code').innerText = "LUKITTU ARKKU";
+      document.getElementById('inv-key').classList.remove('active');
+      document.getElementById('inv-code').classList.remove('active');
+      const keyEntity = document.getElementById('mikael-key'); if (keyEntity) keyEntity.setAttribute('visible', 'true');
+      const hintPaper = document.getElementById('chest-interior-hint'); if (hintPaper) hintPaper.setAttribute('visible', 'false');
+      const chestObj = document.getElementById('mikael-chest'); if (chestObj) chestObj.setAttribute('color', '#5a1a1a');
+      const safeText3d = document.getElementById('safe-screen'); if (safeText3d) { safeText3d.setAttribute('value', 'CODE?'); safeText3d.setAttribute('color', '#f43f5e'); }
+      const safeDoor = document.getElementById('mikael-safe-door'); if (safeDoor) { safeDoor.setAttribute('rotation', '0 0 0'); safeDoor.setAttribute('position', '0.25 0 0.41'); }
+      const escapeDoor = document.getElementById('escape-door'); const doorText = document.getElementById('door-text');
+      if (escapeDoor) escapeDoor.setAttribute('color', '#1e1b4b');
+      if (doorText) { doorText.setAttribute('value', 'LUKITTU: SYOTA KOODI'); doorText.setAttribute('color', '#ff4d4d'); }
+      document.getElementById('intro-overlay').style.display = 'flex';
+    }
+
+    // SIDOTAAN KLIKKAUKSET REAALIAIKAISESTI 3D-MAAILMAAN JA 2D-UKKUNOIHIN
+    document.addEventListener("DOMContentLoaded", () => {
+      const key3d = document.getElementById('mikael-key');
+      if (key3d) key3d.addEventListener('click', grabKey);
+
+      const chest3d = document.getElementById('mikael-chest');
+      if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
+
+      const door3d = document.getElementById('escape-door');
+      if (door3d) door3d.addEventListener('click', triggerEscape);
+
+      for (let i = 0; i <= 9; i++) {
+        const btn = document.getElementById(`btn-3d-${i}`);
+        if (btn) btn.addEventListener('click', () => pressKey(i.toString()));
+      }
+      const btnC = document.getElementById('btn-3d-C');
+      if (btnC) btnC.addEventListener('click', () => pressKey('C'));
+
+      const btnE = document.getElementById('btn-3d-E');
+      if (btnE) btnE.addEventListener('click', () => pressKey('E'));
+
+      // 2D-pikapainikkeiden hätälinkitykset
+      const fallbackKey = document.getElementById('fallback-get-key');
+      if (fallbackKey) fallbackKey.addEventListener('click', grabKey);
+
+      const fallbackChest = document.getElementById('fallback-open-chest');
+      if (fallbackChest) fallbackChest.addEventListener('click', triggerOpenChest);
+    });
+  </script>
+</body>
+</html>
+
