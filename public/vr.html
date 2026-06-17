@@ -241,7 +241,7 @@
     </div>
   </div>
 
-  <script>
+   <script>
     let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
 
     function playSfx(type) {
@@ -278,13 +278,26 @@
 
     function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
 
+    // DYNAMO KORJAUS: Pakotetaan 3D-ikkuna laskemaan kokonsa uudelleen kun peli alkaa
+    function fixAframeResize() {
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        scene.resize();
+        if (scene.canvas) {
+          scene.canvas.style.width = '100%';
+          scene.canvas.style.height = '100%';
+        }
+      }
+    }
+
     function startGame() {
-      // KORJAUS: Poistetaan intro-ruutu välittömästi, jotta A-Framen piirto herää mustan ruudun takaa eloon
       document.getElementById('intro-overlay').style.display = 'none';
+      // Ajetaan koonkorjaus heti kun overlay katoaa edestä
       setTimeout(() => {
+        fixAframeResize();
         playSfx('success');
         addLogEntry("Tutkinta aloitettu. Etsi avain.");
-      }, 50);
+      }, 100);
     }
 
     function grabKey() {
@@ -335,7 +348,7 @@
           const doorText = document.getElementById('door-text');
           if (escapeDoor) escapeDoor.setAttribute('color', '#10b981');
           if (doorText) { doorText.setAttribute('value', 'AVATTU - KLIKKAA PAETAKSESI'); doorText.setAttribute('color', '#ffffff'); }
-          updateHudMessage("Oikea koodi! Pääovi on now auki. Klikkaa ovea paetaksesi!");
+          updateHudMessage("Oikea koodi! Pääovi on nyt auki. Klikkaa ovea paetaksesi!");
           addLogEntry("Kassakaappi murtettu koodilla 1954!");
         } else {
           playSfx('error'); state.enteredCode = ""; display.innerText = "----";
@@ -374,9 +387,13 @@
       if (escapeDoor) escapeDoor.setAttribute('color', '#1e1b4b');
       if (doorText) { doorText.setAttribute('value', 'LUKITTU: SYOTA KOODI'); doorText.setAttribute('color', '#ff4d4d'); }
       document.getElementById('intro-overlay').style.display = 'flex';
+      setTimeout(fixAframeResize, 100);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      // Pakotetaan kokopäivitys heti sivun ensilatauksella
+      setTimeout(fixAframeResize, 200);
+
       const key3d = document.getElementById('mikael-key'); if (key3d) key3d.addEventListener('click', grabKey);
       const chest3d = document.getElementById('mikael-chest'); if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
       const door3d = document.getElementById('escape-door'); if (door3d) door3d.addEventListener('click', triggerEscape);
@@ -388,7 +405,6 @@
       const btnC = document.getElementById('btn-3d-C'); if (btnC) btnC.addEventListener('click', () => pressKey('C'));
       const btnE = document.getElementById('btn-3d-E'); if (btnE) btnE.addEventListener('click', () => pressKey('E'));
 
-      // 2D-ohjaimien linkitys
       document.getElementById('fallback-get-key').addEventListener('click', grabKey);
       document.getElementById('fallback-open-chest').addEventListener('click', triggerOpenChest);
     });
