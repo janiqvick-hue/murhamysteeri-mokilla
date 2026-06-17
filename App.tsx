@@ -141,7 +141,6 @@ export default function App() {
             <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#a7f3d0" }}>Ratkaise Kaartjärven huvilan murha</span>
           </button>
 
-          {/* UUSI ETURIVI JATKO-OSALLE */}
           <button 
             disabled={true}
             style={{
@@ -164,6 +163,40 @@ export default function App() {
           >
             <span>🔒 Osa 2: Kaartjärven Verivelka</span>
             <span style={{ fontSize: "11px", fontWeight: "normal", color: "#374151" }}>Tulossa pian... (Uusi rikostutkinta)</span>
+          </button>
+
+          {/* UUSI JAKO-OSIO JA RIVI VR-PELILLE */}
+          <div style={{ textAlign: "left", margin: "24px 0 8px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "6px" }}>
+            <span style={{ fontSize: "11px", fontWeight: "bold", color: "#ec4899", textTransform: "uppercase", letterSpacing: "0.05em" }}>🥽 Virtuaalitodellisuus</span>
+          </div>
+
+          <button 
+            disabled={isNameEmpty}
+            onClick={() => {
+              window.location.href = "/vr.html";
+            }}
+            style={{
+              width: "100%",
+              padding: "16px",
+              margin: "8px 0",
+              backgroundColor: isNameEmpty ? "#1e293b" : "#db2777",
+              border: "none",
+              borderRadius: "12px",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: "bold",
+              cursor: isNameEmpty ? "not-allowed" : "pointer",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              opacity: isNameEmpty ? 0.4 : 1,
+              transition: "all 0.15s ease",
+              boxShadow: isNameEmpty ? "none" : "0 4px 14px rgba(219, 39, 119, 0.4)"
+            }}
+          >
+            <span>🥽 Avaa VR-Pakohuone (3D)</span>
+            <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#fbcfe8" }}>Mikaelin salakellari tietokoneelle tai VR-laseille</span>
           </button>
 
           {/* JAKO-OSIO MONINPELILLE */}
