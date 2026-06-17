@@ -3,344 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mikaelin Salakellari 3D VR - Osa 3</title>
-  <!-- Ladattu uusin korjattu vakaa A-Frame-versio -->
+  <title>Mikaelin Salakellari 3D VR</title>
+  <!-- Ladataan kaikkein vakain A-Frame 3D-moottoriversio -->
   <script src="https://aframe.io"></script>
-  <link href="https://googleapis.com" rel="stylesheet">
-  
   <style>
-    :root {
-      --bg-color: #060913;
-      --accent-color: #f43f5e;
-      --accent-hover: #e11d48;
-      --card-bg: rgba(15, 23, 42, 0.85);
-      --border-color: rgba(244, 63, 94, 0.2);
+    body, html { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background-color: #000; font-family: sans-serif; }
+    
+    /* 3D-maailman päällä leijuva viestibanneri */
+    #hud-banner {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 600px; background: rgba(9, 13, 22, 0.95);
+      border: 1px solid rgba(244, 63, 94, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      border-radius: 12px; padding: 14px 18px; z-index: 50; display: flex; align-items: center; gap: 12px;
     }
+    .hud-indicator { width: 10px; height: 10px; background-color: #f43f5e; border-radius: 50%; box-shadow: 0 0 10px #f43f5e; }
+    .hud-text { font-size: 13px; font-weight: bold; color: #e2e8f0; line-height: 1.4; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body, html {
-      width: 100%; height: 100%; overflow: hidden;
-      font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #f1f5f9;
-    }
-
-    #game-container { display: flex; width: 100%; height: 100%; position: relative; }
-
-    #sidebar {
-      width: 360px; height: 100%; background: linear-gradient(180deg, #090d16 0%, #03050a 100%);
-      border-right: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column;
-      padding: 20px; gap: 16px; z-index: 100; box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
-      flex-shrink: 0; overflow-y: auto;
-    }
-
-    #canvas-container { flex-grow: 1; height: 100%; position: relative; background-color: #000; }
-
-    .title-area { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 14px; }
-    .title-icon { background: rgba(244, 63, 94, 0.1); border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; color: var(--accent-color); font-weight: bold; font-size: 18px; }
-    h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: #fff; }
-    .subtitle { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; }
-    .panel { background-color: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 14px; }
-    .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-
-    .inventory-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 6px; font-size: 12px; }
-    .inventory-item.active { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; }
-    .item-status { font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); }
-    .active .item-status { background: rgba(245, 158, 11, 0.2); }
-
-    .code-display { background: #020408; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 8px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: bold; color: var(--accent-color); letter-spacing: 4px; margin-bottom: 10px; }
-    .keyboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .key-btn { padding: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; color: #f1f5f9; font-family: 'JetBrains Mono', monospace; font-weight: bold; cursor: pointer; font-size: 12px; transition: all 0.15s; }
-    .key-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
-    .key-btn.clear { background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.3); color: #f43f5e; }
-    .key-btn.enter { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #10b981; }
-
-    #log-feed { flex-grow: 1; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #64748b; display: flex; flex-direction: column; gap: 6px; }
-    .log-row { padding-bottom: 4px; border-bottom: 1px dashed rgba(255, 255, 255, 0.02); }
-
-    #hud-banner { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background: rgba(9, 13, 22, 0.94); border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.8); border-radius: 12px; padding: 14px 18px; z-index: 50; display: flex; align-items: center; gap: 12px; }
-    .hud-indicator { width: 10px; height: 10px; background-color: var(--accent-color); border-radius: 50%; box-shadow: 0 0 10px var(--accent-color); }
-    .hud-text { font-size: 12px; font-weight: 500; color: #e2e8f0; line-height: 1.4; }
-
-    .screen-overlay { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.96); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 24px; }
-    .overlay-card { background: #090d16; border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 16px; max-width: 500px; width: 100%; padding: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9); }
-    .overlay-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #fff; }
-    .overlay-card p { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px; }
-    .btn-action { display: block; width: 100%; padding: 12px; background: linear-gradient(90deg, var(--accent-color) 0%, #be123c 100%); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3); }
-    .btn-action:hover { background: linear-gradient(90deg, var(--accent-hover) 0%, #9f1239 100%); }
-    .btn-fallback { width: 100%; padding: 8px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #cbd5e1; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 6px; }
-    .btn-fallback:hover { background: rgba(255, 255, 255, 0.08); }
+    /* Aloitus- ja loppuruudut */
+    .screen-overlay { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.97); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 24px; }
+    .overlay-card { background: #090d16; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 16px; max-width: 500px; width: 100%; padding: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9); }
+    .overlay-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 12px; color: #fff; }
+    .overlay-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 24px; }
+    .btn-action { display: block; width: 100%; padding: 14px; background: linear-gradient(90deg, #f43f5e 0%, #be123c 100%); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4); }
   </style>
 </head>
 <body>
 
-  <div id="game-container">
-    <aside id="sidebar">
-      <div class="title-area">
-        <div class="title-icon">🧭</div>
-        <div>
-          <h1>Mikaelin Salakellari</h1>
-          <div class="subtitle">Osa 3: Standalone VR-tila</div>
-        </div>
-      </div>
+  <!-- KOKORUUDUN 3D-MAAILMA -->
+  <a-scene vr-mode-ui="enabled: true">
+    <a-sky color="#03050c"></a-sky>
+    <a-plane position="0 0 0" rotation="-90 0 0" width="14" height="14" color="#1c1412"></a-plane>
+    <a-plane position="0 4 0" rotation="90 0 0" width="14" height="14" color="#080a0f"></a-plane>
 
-      <div class="panel">
-        <div class="panel-title">🎒 Reppu & Todisteet</div>
-        <div id="inv-key" class="inventory-item">
-          <span>🔑 Vanha kultainen avain</span>
-          <span class="item-status" id="status-key">EI LÖYDETTY</span>
-        </div>
-        <div id="inv-code" class="inventory-item">
-          <span>📜 Kassakaapin koodi</span>
-          <span class="item-status" id="status-code">LUKITTU ARKKU</span>
-        </div>
-      </div>
+    <!-- SEINÄT JA NUMEROKOODI-VIHJE -->
+    <a-box position="0 2 -7" width="14" height="4" depth="0.2" color="#2c1e1a">
+      <a-text value="MIKAELIN SYNTYMAVUOSI: 1954" color="#fbbf24" position="0 1 0.12" width="5" align="center"></a-text>
+    </a-box>
+    <a-box position="0 2 7" width="14" height="4" depth="0.2" color="#2c1e1a"></a-box>
+    <a-box position="7 2 0" rotation="0 -90 0" width="14" height="4" depth="0.2" color="#1f1513"></a-box>
+    <a-box position="-7 2 0" rotation="0 90 0" width="14" height="4" depth="0.2" color="#1f1513"></a-box>
 
-      <div class="panel">
-        <div class="panel-title">🛠️ Helppokäyttöohjaimet</div>
-        <p style="font-size: 10px; color: #64748b; margin-bottom: 8px; line-height: 1.4;">
-          Käytä näitä mikäli 3D-klikkaukset eivät aktivoidu:
-        </p>
-        <button id="fallback-get-key" class="btn-fallback">Poimi avain lattialta</button>
-        <button id="fallback-open-chest" class="btn-fallback">Avaa rauta-arkku</button>
-      </div>
+    <!-- LOIMUAVA TAKKA JA PISTEVALO -->
+    <a-box position="-6.8 1.1 -2" rotation="0 90 0" width="3" height="2.2" depth="0.6" color="#475569">
+      <a-box position="0 -0.2 0.32" width="1.6" height="1.2" depth="0.1" color="#111827"></a-box>
+      <a-box position="0 -0.5 0.36" width="1.2" height="0.25" depth="0.2" color="#f97316" material="emissive: #f43f5e; emissiveIntensity: 2"></a-box>
+    </a-box>
+    <a-light type="point" color="#fbbf24" intensity="2" distance="7" position="-5.5 1.2 -2"></a-light>
+    
 
-      <div class="panel">
-        <div class="panel-title">🔢 Digitaalinen sähkölukitus</div>
-        <div class="code-display" id="digit-display">----</div>
-        <div class="keyboard-grid">
-          <button class="key-btn" onclick="pressKey('1')">1</button>
-          <button class="key-btn" onclick="pressKey('2')">2</button>
-          <button class="key-btn" onclick="pressKey('3')">3</button>
-          <button class="key-btn" onclick="pressKey('4')">4</button>
-          <button class="key-btn" onclick="pressKey('5')">5</button>
-          <button class="key-btn" onclick="pressKey('6')">6</button>
-          <button class="key-btn" onclick="pressKey('7')">7</button>
-          <button class="key-btn" onclick="pressKey('8')">8</button>
-          <button class="key-btn" onclick="pressKey('9')">9</button>
-          <button class="key-btn clear" onclick="pressKey('C')">C</button>
-          <button class="key-btn" onclick="pressKey('0')">0</button>
-          <button class="key-btn enter" onclick="pressKey('E')">ENT</button>
-        </div>
-      </div>
+    <!-- MIKAELIN TYÖPÖYTÄ JA LUKITTU ARKKU -->
+    <a-box id="mikael-table" position="0 0.4 -3" width="2.2" height="0.8" depth="1.4" color="#3a2312"></a-box>
+    
+    <a-box id="mikael-chest" class="clickable" position="0 0.95 -2.8" width="0.8" height="0.4" depth="0.5" color="#5a1a1a">
+      <a-box id="chest-padlock" position="0 -0.05 0.26" width="0.1" height="0.12" depth="0.04" color="#d97706"></a-box>
+      <a-text value="OSOITA AVAIMELLA" position="0 0.25 0" align="center" width="2" color="#ffffff"></a-text>
+      <a-plane id="chest-interior-hint" position="0 0.18 0.1" rotation="-30 0 0" width="0.7" height="0.3" color="#14532d" visible="false">
+        <a-text value="KASSAKAAPIN KOODI: 1954" color="#fbbf24" position="0 0 0.01" width="1.8" align="center"></a-text>
+      </a-plane>
+    </a-box>
+    <!-- POISTUMISOVI ETELÄSEINÄLLÄ -->
+    <a-box id="escape-door" class="clickable" position="0 1.5 6.8" width="2.2" height="3" depth="0.1" color="#1e1b4b">
+      <a-text id="door-text" value="OVI ON SAAHKOLUKOSSA" position="0 0.5 0.06" align="center" width="2.5" color="#ff4d4d"></a-text>
+    </a-box>
+    <a-sphere position="0.8 1.4 6.7" radius="0.07" color="#d97706"></a-sphere>
 
-      <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column;">
-        <div class="panel-title">📝 Tutkintamerkinnät</div>
-        <div id="log-feed">
-          <div class="log-row">› Varjot tanssivat huoneen kulmissa takkatulen leimutessa.</div>
-          <div class="log-row">› Ilmassa tuoksuu vanha paperi ja happokemikaali.</div>
-        </div>
-      </div>
-    </aside>
+    <!-- SÄHKÖINEN KASSAKAAPPI SEINÄLLÄ -->
+    <a-box id="mikael-safe-body" position="3 1.5 -6.8" width="1.4" height="1.4" depth="0.4" color="#475569">
+      <a-box position="-0.25 0.35 0.21" width="0.5" height="0.25" depth="0.01" color="#020617">
+        <a-text id="safe-screen" value="CODE?" position="0 0 0.01" color="#f43f5e" width="2.5" align="center"></a-text>
+      </a-box>
+      <a-box id="mikael-safe-door" position="0.25 0 0.22" width="0.55" height="0.85" depth="0.02" color="#0f172a">
+        <a-cylinder position="0 0 0.03" rotation="90 0 0" radius="0.12" height="0.04" color="#d97706"></a-cylinder>
+      </a-box>
+    </a-box>
 
-    <main id="canvas-container" style="flex-grow: 1; height: 100%; position: relative;">
-      <a-scene embedded="true" vr-mode-ui="enabled: true" style="position: absolute; width: 100%; height: 100%;">
-        <a-sky color="#03050c"></a-sky>
-        <a-plane position="0 0 0" rotation="-90 0 0" width="12" height="12" color="#181210"></a-plane>
-        <a-plane position="0 4 0" rotation="90 0 0" width="12" height="12" color="#05060a"></a-plane>
+    <!-- 3D-NUMERONÄPPÄIMET SUORAAN ILMASSA KASSAKAAPIN VIERESSÄ -->
+    <a-box id="btn-3d-1" class="clickable" position="1.9 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="1" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-2" class="clickable" position="2.05 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="2" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-3" class="clickable" position="2.2 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="3" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-4" class="clickable" position="1.9 1.45 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="4" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-5" class="clickable" position="2.05 1.45 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="5" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-6" class="clickable" position="2.2 1.45 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="6" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-7" class="clickable" position="1.9 1.3 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="7" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-8" class="clickable" position="2.05 1.3 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="8" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-9" class="clickable" position="2.2 1.3 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="9" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-C" class="clickable" position="1.9 1.15 -6.5" width="0.1" height="0.1" depth="0.1" color="#ef4444"><a-text value="C" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-0" class="clickable" position="2.05 1.15 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="0" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-E" class="clickable" position="2.2 1.15 -6.5" width="0.1" height="0.1" depth="0.1" color="#10b981"><a-text value="OK" align="center" position="0 0 0.06" scale="0.25 0.25 0.25"></a-text></a-box>
 
-        <!-- SEINÄT JA KOODIVIHJE -->
-        <a-box position="0 2 -6" width="12" height="4" depth="0.2" color="#261b18">
-          <a-text value="MIKAELIN KUOLINPESA 1954" color="#000000" position="0 0.8 0.12" width="4.5" align="center" font="monoid"></a-text>
-        </a-box>
-        <a-box position="0 2 6" width="12" height="4" depth="0.2" color="#261b18"></a-box>
-        <a-box position="6 2 0" rotation="0 -90 0" width="12" height="4" depth="0.2" color="#1c1311"></a-box>
-        <a-box position="-6 2 0" rotation="0 90 0" width="12" height="4" depth="0.2" color="#1c1311"></a-box>
+    <!-- KULTAINEN AVAIN LATTIALLA -->
+    
+      <a-cylinder color="#fbbf24" radius="0.02" height="0.25"></a-cylinder>
+      <a-sphere position="0 0.14 0" radius="0.05" color="#fbbf24"></a-sphere>
+      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.2; transparent: true; shader: flat"></a-sphere>
+    
 
-        <!-- PALAVA TAKKA -->
-        <a-box position="-5.8 1.1 -2" rotation="0 90 0" width="3" height="2.2" depth="0.8" color="#475569">
-          <a-box position="0 -0.2 0.42" width="1.6" height="1.2" depth="0.2" color="#111827"></a-box>
-          <a-box position="0 -0.5 0.5" width="1.2" height="0.25" depth="0.3" color="#f97316" material="emissive: #fb7185; emissiveIntensity: 2"></a-box>
-        </a-box>
-        <a-light type="point" color="#fbbf24" intensity="2" distance="6" position="-4.8 1 -2"></a-light>
-
-        <!-- TYÖPÖYTÄ JA ARKKU -->
-        <a-box id="mikael-table" position="0 0.4 -2.5" width="2" height="0.8" depth="1.4" color="#3a2312">
-          <a-plane position="0 0.41 0" rotation="-90 0 0" width="1.6" height="1" color="#f1f5f9">
-            <a-text value="KAARTJARVEN SALAT" color="#000000" position="0 0.1 0.01" width="1.8" align="center"></a-text>
-          </a-plane>
-        </a-box>
-
-        <a-box id="mikael-chest" class="clickable" position="0 0.95 -2.2" width="0.85" height="0.45" depth="0.5" color="#5a1a1a">
-          <a-box id="chest-padlock" position="0 0 0.26" width="0.12" height="0.14" depth="0.04" color="#d97706"></a-box>
-          <a-text value="KLIKKAA AVAIMELLA" position="0 0.26 0" align="center" width="2" color="#ffffff"></a-text>
-          <a-plane id="chest-interior-hint" position="0 0.21 0.1" rotation="-45 0 0" width="0.8" height="0.4" color="#14532d" visible="false">
-            <a-text value="KOODI ON 1954" color="#fbbf24" position="0 0 0.01" width="1.8" align="center"></a-text>
-          </a-plane>
-        </a-box>
-
-        <!-- POISTUMISOVI -->
-        <a-box position="0 1.5 5.8" width="2.4" height="3" depth="0.3" color="#1e1b4b"></a-box>
-        <a-box id="escape-door" class="clickable" position="0 1.5 5.65" width="2.2" height="2.9" depth="0.1" color="#1e1b4b">
-          <a-text id="door-text" value="LUKITTU: SYOTA KOODI" position="0 0.5 0.06" align="center" width="2.4" color="#ff4d4d"></a-text>
-        </a-box>
-        <a-sphere position="0.8 1.4 5.55" radius="0.08" color="#d97706"></a-sphere>
-
-        <!-- KASSAKAAPPI -->
-        <a-box id="mikael-safe-body" position="2.2 1.4 -5.5" width="1.4" height="1.4" depth="0.7" color="#475569">
-          <a-box position="0 0 0.36" width="1.25" height="1.25" depth="0.05" color="#1e293b"></a-box>
-          <a-box position="-0.25 0.35 0.39" width="0.45" height="0.22" depth="0.01" color="#020617">
-            <a-text id="safe-screen" value="CODE?" position="0 0 0.01" color="#f43f5e" width="2.5" align="center"></a-text>
-          </a-box>
-          <a-box id="mikael-safe-door" position="0.25 0 0.41" width="0.55" height="0.85" depth="0.04" color="#0f172a">
-            <a-cylinder position="0 0 0.05" rotation="90 0 0" radius="0.14" height="0.06" color="#d97706"></a-cylinder>
-          </a-box>
-        </a-box>
-
-        <!-- 3D-PAINIKKEET SEINÄLLÄ -->
-        <a-cylinder id="btn-3d-1" class="clickable" position="1.8 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-2" class="clickable" position="1.92 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-3" class="clickable" position="2.04 1.4 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-4" class="clickable" position="1.8 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-5" class="clickable" position="1.92 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-6" class="clickable" position="2.04 1.3 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-7" class="clickable" position="1.8 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-8" class="clickable" position="1.92 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-9" class="clickable" position="2.04 1.2 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-C" class="clickable" position="1.8 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#ef4444"></a-cylinder>
-        <a-cylinder id="btn-3d-0" class="clickable" position="1.92 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#334155"></a-cylinder>
-        <a-cylinder id="btn-3d-E" class="clickable" position="2.04 1.1 -5.1" rotation="90 0 0" radius="0.04" height="0.04" color="#10b981"></a-cylinder>
-
-        <!-- KULTAINEN AVAIN -->
-        
-          <a-cylinder color="#fbbf24" radius="0.025" height="0.3"></a-cylinder>
-          <a-sphere position="0 0.16 0" radius="0.06" color="#fbbf24"></a-sphere>
-          <a-sphere position="0 0 0" radius="0.25" color="#fbbf24" material="opacity: 0.15; transparent: true; shader: flat"></a-sphere>
-        
-
-        <!-- VR KAMERA JA TÄHTÄIN: Pakotettu tunnistamaan objekti .clickable -->
-        <a-camera id="my-camera" position="0 1.6 2" wasd-controls="acceleration: 40">
-          <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat; opacity: 0.8" raycaster="objects: .clickable"></a-cursor>
-        </a-camera>
-
-        
-        
-      </a-scene>
-
-      <div id="hud-banner">
-        <div class="hud-indicator"></div>
-        <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta tai tutki pöydän päällä olevaa rauta-arkkua!</div>
-      </div>
-    </main>
+    <!-- KAMERA, PUNAINEN TÄHTÄIN JA VR-LASIEN LASERSÄTEET -->
+    <a-camera position="0 1.6 2" wasd-controls="acceleration: 40">
+      <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat" raycaster="objects: .clickable"></a-cursor>
+    </a-camera>
+    
+    
+  </a-scene>
+  <!-- REAALIAIKAINEN INFOBANNERI OVERLAYNA ALALAIDASSA -->
+  <div id="hud-banner">
+    <div class="hud-indicator"></div>
+    <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta (keltainen hehku) tai tutki pöydän päällä olevaa rauta-arkkua punaisella tähtäimellä!</div>
   </div>
-  <!-- OVERLAYRUUDUT -->
+
+  <!-- INTRORUUTU -->
   <div id="intro-overlay" class="screen-overlay">
     <div class="overlay-card">
-      <div style="font-size: 40px; margin-bottom: 12px;">🗝️</div>
+      <div style="font-size: 40px; margin-bottom: 12px;">🥽🗝️</div>
       <h2>Osa 3: Mikaelin Salakellari 3D VR</h2>
-      <p>Olet lukittuna salakellariin. Etsi avain, avaa rauta-arkku ja selvitä sähkömagneettisen lukon salasana paetaksesi!</p>
+      <p>Olet ansaittuna Päähuvilan salaisessa kellarissa. Liikuta hiirtä katsoaksesi ympärillesi (VR:ssä käännä päätä). Osoita ja klikkaa punaista tähtäintä esineisiin poimiaksesi ne.</p>
       <button class="btn-action" onclick="startGame()">KÄYNNISTÄ 3D-PAKOPELI</button>
     </div>
   </div>
 
+  <!-- VOITTORUUTU -->
   <div id="win-overlay" class="screen-overlay" style="display: none;">
     <div class="overlay-card" style="border-color: #10b981;">
-      <div style="font-size: 40px; margin-bottom: 12px;">🏆</div>
-      <h2 style="color: #10b981;">Arvoitus Ratkaistu!</h2>
-      <p>Mursit sähkölukon koodilla 1954 ja löysit perintöpaperit! Sähköovi on nyt avattu ja olet vapaa.</p>
-      <button class="btn-action" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);" onclick="restartWholeGame()">PELAA UUDELLEEN</button>
+      <div style="font-size: 40px; margin-bottom: 12px;">🏆🔓</div>
+      <h2 style="color: #10b981;">Kellari Ratkaistu!</h2>
+      <p>Mursit sähkölukon koodilla 1954 ja löysit Mikaelin salaiset asiakirjat! Ovi aukesi ja olet vapaa jatkamaan tutkintaa.</p>
+      <button class="btn-action" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);" onclick="window.location.href = '/'">PALAA PÄÄVALIKKOON</button>
     </div>
   </div>
 
-   <script>
+  <!-- JAVASCRIPT-PELIMOOTTORI -->
+  <script>
     let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
 
-    function playSfx(type) {
+    function playSfx(freq, duration, type = 'sine') {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        if (type === 'click') {
-          osc.type = 'sine'; osc.frequency.setValueAtTime(600, ctx.currentTime);
-          gain.gain.setValueAtTime(0.04, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.08);
-        } else if (type === 'pickup') {
-          osc.type = 'triangle'; osc.frequency.setValueAtTime(440, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
-          gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.2);
-        } else if (type === 'success') {
-          osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-          gain.gain.setValueAtTime(0.06, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.4);
-        } else if (type === 'error') {
-          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, ctx.currentTime);
-          gain.gain.setValueAtTime(0.08, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.2);
-        }
-      } catch (err) {}
-    }
-
-    function addLogEntry(text) {
-      const feed = document.getElementById('log-feed'); if (!feed) return;
-      const row = document.createElement('div'); row.className = 'log-row'; row.innerText = `› ${text}`;
-      feed.insertBefore(row, feed.firstChild);
-      while (feed.children.length > 5) feed.removeChild(feed.lastChild);
+        const ctx = new AudioCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination); osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(0.04, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.start(); osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
     }
 
     function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
 
-    // DYNAMO KORJAUS: Pakotetaan 3D-ikkuna laskemaan kokonsa uudelleen kun peli alkaa
-    function fixAframeResize() {
-      const scene = document.querySelector('a-scene');
-      if (scene) {
-        scene.resize();
-        if (scene.canvas) {
-          scene.canvas.style.width = '100%';
-          scene.canvas.style.height = '100%';
-        }
-      }
-    }
-
+    // KORJAUS: Tämä poistaa overlayn kokonaan, jolloin A-Frame pakotetaan heräämään mustan ruudun takaa eloon
     function startGame() {
       document.getElementById('intro-overlay').style.display = 'none';
-      // Ajetaan koonkorjaus heti kun overlay katoaa edestä
-      setTimeout(() => {
-        fixAframeResize();
-        playSfx('success');
-        addLogEntry("Tutkinta aloitettu. Etsi avain.");
-      }, 100);
+      playSfx(523, 0.3, 'sine');
     }
 
     function grabKey() {
       if (state.hasKey) return;
-      state.hasKey = true; playSfx('pickup');
-      document.getElementById('inv-key').classList.add('active');
-      document.getElementById('status-key').innerText = "HALLUSSA";
+      state.hasKey = true; playSfx(440, 0.2, 'triangle');
       const keyEntity = document.getElementById('mikael-key');
       if (keyEntity) keyEntity.setAttribute('visible', 'false');
-      addLogEntry("Löysit kultaisen avaimen lattialta!");
-      updateHudMessage("Sait Mikaelin avaimen! Se sopii pöydän päällä olevaan rauta-arkkuun.");
+      updateHudMessage("🎒 Sait kultaisen avaimen reppuun! Vie se työpöydällä olevan punaisen rauta-arkun luo ja klikkaa arkun lukkoa.");
     }
 
     function triggerOpenChest() {
       if (state.isChestOpen) return;
       if (state.hasKey) {
-        state.isChestOpen = true; playSfx('success');
-        document.getElementById('inv-code').classList.add('active');
-        document.getElementById('status-code').innerText = "AVATTU (1954)";
+        state.isChestOpen = true; playSfx(587, 0.4, 'sine');
         const hintPaper = document.getElementById('chest-interior-hint');
         if (hintPaper) hintPaper.setAttribute('visible', 'true');
         const chestObj = document.getElementById('mikael-chest');
-        if (chestObj) chestObj.setAttribute('color', '#052e16');
-        updateHudMessage("Arkku aukesi! Vihjekoodi paljastui: 1954!");
-        addLogEntry("Avasit rauta-arkun avaimella.");
+        if (chestObj) chestObj.setAttribute('color', '#14532d');
+        updateHudMessage("🔓 Arkku aukesi! Sisällä lukee: 'KASSAKAAPIN KOODI ON 1954'. Mene kassakaapille ja näppäile koodi seinän 3D-painikkeista.");
       } else {
-        playSfx('error');
-        updateHudMessage("Rauta-arkku on tiukasti lukossa. Tarvitset avaimen!");
+        playSfx(150, 0.2, 'sawtooth');
+        updateHudMessage("🔒 Rauta-arkku on lukossa! Tarvitset avaimen. Etsi lattialta keltainen hohtava pallo ja klikkaa sitä.");
       }
     }
 
     function pressKey(val) {
       if (state.isSafeSolved) return;
-      playSfx('click');
-      const display = document.getElementById('digit-display');
+      playSfx(600, 0.08, 'sine');
       const safeText3d = document.getElementById('safe-screen');
+      
       if (val === 'C') {
-        state.enteredCode = ""; display.innerText = "----";
-        if (safeText3d) safeText3d.setAttribute('value', 'CODE?');
+        state.enteredCode = ""; if (safeText3d) safeText3d.setAttribute('value', 'CODE?');
       } else if (val === 'E') {
         if (state.enteredCode === "1954") {
-          state.isSafeSolved = true; playSfx('success');
-          display.innerText = "OPEN"; display.style.color = "#10b981";
+          state.isSafeSolved = true; playSfx(880, 0.5, 'sine');
           if (safeText3d) { safeText3d.setAttribute('value', 'OPEN'); safeText3d.setAttribute('color', '#10b981'); }
           const safeDoor = document.getElementById('mikael-safe-door');
           if (safeDoor) { safeDoor.setAttribute('rotation', '0 90 0'); safeDoor.setAttribute('position', '0.5 0 0.2'); }
@@ -348,36 +195,29 @@
           const doorText = document.getElementById('door-text');
           if (escapeDoor) escapeDoor.setAttribute('color', '#10b981');
           if (doorText) { doorText.setAttribute('value', 'AVATTU - KLIKKAA PAETAKSESI'); doorText.setAttribute('color', '#ffffff'); }
-          updateHudMessage("Oikea koodi! Pääovi on nyt auki. Klikkaa ovea paetaksesi!");
-          addLogEntry("Kassakaappi murtettu koodilla 1954!");
+          updateHudMessage("🏆 Kassakaappi auki! Sähkömagneettinen ovi eteläseinällä on nyt vapautettu. Klikkaa ovea paetaksesi!");
         } else {
-          playSfx('error'); state.enteredCode = ""; display.innerText = "----";
+          playSfx(120, 0.3, 'sawtooth'); state.enteredCode = "";
           if (safeText3d) safeText3d.setAttribute('value', 'ERROR');
         }
       } else {
         if (state.enteredCode.length < 4) {
-          state.enteredCode += val; display.innerText = state.enteredCode;
-          if (safeText3d) safeText3d.setAttribute('value', state.enteredCode);
+          state.enteredCode += val; if (safeText3d) safeText3d.setAttribute('value', state.enteredCode);
         }
       }
     }
 
     function triggerEscape() {
       if (state.isSafeSolved) {
-        playSfx('success'); document.getElementById('win-overlay').style.display = 'flex';
+        playSfx(1046, 0.6, 'sine'); document.getElementById('win-overlay').style.display = 'flex';
       } else {
-        playSfx('error'); updateHudMessage("Ovi on täysin sähkölukossa. Murra ensin kassakaappi!");
+        playSfx(150, 0.2, 'sawtooth'); updateHudMessage("⚠️ Sähköovi vaatii magneettivirran sammuttamisen! Ratkaise ensin kassakaapin koodi.");
       }
     }
 
     function restartWholeGame() {
       state.hasKey = false; state.isChestOpen = false; state.isSafeSolved = false; state.enteredCode = "";
       document.getElementById('win-overlay').style.display = 'none';
-      document.getElementById('digit-display').innerText = "----";
-      document.getElementById('status-key').innerText = "EI LÖYDETTY";
-      document.getElementById('status-code').innerText = "LUKITTU ARKKU";
-      document.getElementById('inv-key').classList.remove('active');
-      document.getElementById('inv-code').classList.remove('active');
       const keyEntity = document.getElementById('mikael-key'); if (keyEntity) keyEntity.setAttribute('visible', 'true');
       const hintPaper = document.getElementById('chest-interior-hint'); if (hintPaper) hintPaper.setAttribute('visible', 'false');
       const chestObj = document.getElementById('mikael-chest'); if (chestObj) chestObj.setAttribute('color', '#5a1a1a');
@@ -387,13 +227,9 @@
       if (escapeDoor) escapeDoor.setAttribute('color', '#1e1b4b');
       if (doorText) { doorText.setAttribute('value', 'LUKITTU: SYOTA KOODI'); doorText.setAttribute('color', '#ff4d4d'); }
       document.getElementById('intro-overlay').style.display = 'flex';
-      setTimeout(fixAframeResize, 100);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Pakotetaan kokopäivitys heti sivun ensilatauksella
-      setTimeout(fixAframeResize, 200);
-
       const key3d = document.getElementById('mikael-key'); if (key3d) key3d.addEventListener('click', grabKey);
       const chest3d = document.getElementById('mikael-chest'); if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
       const door3d = document.getElementById('escape-door'); if (door3d) door3d.addEventListener('click', triggerEscape);
@@ -404,9 +240,6 @@
       }
       const btnC = document.getElementById('btn-3d-C'); if (btnC) btnC.addEventListener('click', () => pressKey('C'));
       const btnE = document.getElementById('btn-3d-E'); if (btnE) btnE.addEventListener('click', () => pressKey('E'));
-
-      document.getElementById('fallback-get-key').addEventListener('click', grabKey);
-      document.getElementById('fallback-open-chest').addEventListener('click', triggerOpenChest);
     });
   </script>
 </body>
