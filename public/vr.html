@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mikaelin Salakellari 3D VR</title>
-  <!-- Kaikkein vakain A-Frame-versio, joka toimii suoraan kokoruudussa -->
+  <!-- KORJAUS: Ladataan uusin A-Frame 1.7.0, joka korjaa selainten mustat ruudut -->
   <script src="https://aframe.io"></script>
   <style>
     body, html { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background-color: #000; font-family: sans-serif; }
@@ -12,7 +12,7 @@
     /* 3D-maailman päällä leijuva viestibanneri */
     #hud-banner {
       position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
-      width: 90%; max-width: 600px; background: rgba(9, 13, 22, 0.96);
+      width: 90%; max-width: 600px; background: rgba(9, 13, 22, 0.95);
       border: 1px solid rgba(244, 63, 94, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
       border-radius: 12px; padding: 14px 18px; z-index: 50; display: flex; align-items: center; gap: 12px;
     }
@@ -20,7 +20,7 @@
     .hud-text { font-size: 13px; font-weight: bold; color: #e2e8f0; line-height: 1.4; }
 
     /* Alku- ja loppuruudut overlayna */
-    .screen-overlay { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.98); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 24px; }
+    .screen-overlay { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.97); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 24px; }
     .overlay-card { background: #090d16; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 16px; max-width: 500px; width: 100%; padding: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9); }
     .overlay-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 12px; color: #fff; }
     .overlay-card p { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 24px; }
@@ -29,13 +29,13 @@
 </head>
 <body>
 
-  <!-- KOKORUUDUN 3D-MAAILMA (Embedded poistettu kokonaan jotta musta ruutu korjaantuu) -->
+  <!-- KOKORUUDUN 3D-MAAILMA (Embedded poistettu selainbugin korjaamiseksi) -->
   <a-scene vr-mode-ui="enabled: true">
     <a-sky color="#03050c"></a-sky>
     <a-plane position="0 0 0" rotation="-90 0 0" width="14" height="14" color="#1c1412"></a-plane>
     <a-plane position="0 4 0" rotation="90 0 0" width="14" height="14" color="#080a0f"></a-plane>
 
-    <!-- VOIMAKKAAT YLEISVALOT: Varmistavat, ettei huone näy pimeänä -->
+    <!-- VOIMAKKAAT PERUSVALOT: Pakotetaan grafiikat loistamaan kirkkaasti selaimessa -->
     
     
 
@@ -47,12 +47,13 @@
     <a-box position="7 2 0" rotation="0 -90 0" width="14" height="4" depth="0.2" color="#1f1513"></a-box>
     <a-box position="-7 2 0" rotation="0 90 0" width="14" height="4" depth="0.2" color="#1f1513"></a-box>
 
-    <!-- LOIMUAVA TAKKA -->
+    <!-- LOIMUAVA TAKKA JA PISTEVALO -->
     <a-box position="-6.8 1.1 -2" rotation="0 90 0" width="3" height="2.2" depth="0.6" color="#475569">
       <a-box position="0 -0.2 0.32" width="1.6" height="1.2" depth="0.1" color="#111827"></a-box>
       <a-box position="0 -0.5 0.36" width="1.2" height="0.25" depth="0.2" color="#f97316" material="emissive: #f43f5e; emissiveIntensity: 2"></a-box>
     </a-box>
     <a-light type="point" color="#fbbf24" intensity="2" distance="7" position="-5.5 1.2 -2"></a-light>
+
     <!-- MIKAELIN TYÖPÖYTÄ JA LUKITTU ARKKU -->
     <a-box id="mikael-table" position="0 0.4 -3" width="2.2" height="0.8" depth="1.4" color="#3a2312"></a-box>
     
@@ -70,7 +71,7 @@
     </a-box>
     <a-sphere position="0.8 1.4 6.7" radius="0.07" color="#d97706"></a-sphere>
 
-    <!-- SÄHKÖINEN KASSAKAAPPI SEINÄLLÄ -->
+    <!-- SÄHKÖINEN KASSAKAAPPI -->
     <a-box id="mikael-safe-body" position="3 1.5 -6.8" width="1.4" height="1.4" depth="0.4" color="#475569">
       <a-box position="-0.25 0.35 0.21" width="0.5" height="0.25" depth="0.01" color="#020617">
         <a-text id="safe-screen" value="CODE?" position="0 0 0.01" color="#f43f5e" width="2.5" align="center"></a-text>
@@ -79,7 +80,8 @@
         <a-cylinder position="0 0 0.03" rotation="90 0 0" radius="0.12" height="0.04" color="#d97706"></a-cylinder>
       </a-box>
     </a-box>
-    <!-- 3D-NUMERONÄPPÄIMET SUORAAN ILMASSA KASSAKAAPIN VIERESSÄ -->
+
+    <!-- 3D-PAINIKKEET ILMASSA KASSAKAAPIN VIERESSÄ -->
     <a-box id="btn-3d-1" class="clickable" position="1.9 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="1" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
     <a-box id="btn-3d-2" class="clickable" position="2.05 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="2" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
     <a-box id="btn-3d-3" class="clickable" position="2.2 1.6 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="3" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
@@ -93,32 +95,26 @@
     <a-box id="btn-3d-0" class="clickable" position="2.05 1.15 -6.5" width="0.1" height="0.1" depth="0.1" color="#334155"><a-text value="0" align="center" position="0 0 0.06" scale="0.3 0.3 0.3"></a-text></a-box>
     <a-box id="btn-3d-E" class="clickable" position="2.2 1.15 -6.5" width="0.1" height="0.1" depth="0.1" color="#10b981"><a-text value="OK" align="center" position="0 0 0.06" scale="0.25 0.25 0.25"></a-text></a-box>
 
-    <!-- KULTAINEN AVAIN LATTIALLA -->
+    <!-- KULTAINEN AVAIN -->
     
       <a-cylinder color="#fbbf24" radius="0.02" height="0.25"></a-cylinder>
       <a-sphere position="0 0.14 0" radius="0.05" color="#fbbf24"></a-sphere>
-      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.2; transparent: true; shader: flat"></a-sphere>
+      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.2; transparent: true; shader: flat">
     
 
-    <!-- KAMERA, PUNAINEN TÄHTÄIN JA VR-LASIEN LASERSÄTEET -->
+    <!-- KAMERA JA VR-LASIEN LASERSÄTEET -->
     <a-camera position="0 1.6 2" wasd-controls="acceleration: 40">
       <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat" raycaster="objects: .clickable"></a-cursor>
     </a-camera>
     
     
   </a-scene>
-  <!-- REAALIAIKAINEN INFOBANNERI OVERLAYNA ALALAIDASSA -->
-  <div id="hud-banner">
-    <div class="hud-indicator"></div>
-    <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta (keltainen hehku) tai tutki pöydän päällä olevaa rauta-arkkua punaisella tähtäimellä!</div>
-  </div>
-
-  <!-- INTRORUUTU -->
+  <!-- INTRORUUTU JA ALOITUS -->
   <div id="intro-overlay" class="screen-overlay">
     <div class="overlay-card">
-      <div style="font-size: 40px; margin-bottom: 12px;">🥽🗝️</div>
+      <div style="font-size: 40px; margin-bottom: 12px;">🥽</div>
       <h2>Osa 3: Mikaelin Salakellari 3D VR</h2>
-      <p>Olet ansaittuna Päähuvilan salaisessa kellarissa. Liikuta hiirtä katsoaksesi ympärillesi (VR:ssä käännä päätä). Osoita ja klikkaa punaista tähtäintä esineisiin poimiaksesi ne.</p>
+      <p>Olet ansaittuna Päähuvilan salaisessa kellarissa. Liikuta hiirtä katsoaksesi ympärillesi (VR-laseilla käännä päätä). Osoita punaista tähtäintä esineisiin ja klikkaa hiirellä tai VR-liipaisimella poimiaksesi ne.</p>
       <button class="btn-action" onclick="startGame()">KÄYNNISTÄ 3D-PAKOPELI</button>
     </div>
   </div>
@@ -126,13 +122,14 @@
   <!-- VOITTORUUTU -->
   <div id="win-overlay" class="screen-overlay" style="display: none;">
     <div class="overlay-card" style="border-color: #10b981;">
-      <div style="font-size: 40px; margin-bottom: 12px;">🏆🔓</div>
+      <div style="font-size: 40px; margin-bottom: 12px;">🏆</div>
       <h2 style="color: #10b981;">Kellari Ratkaistu!</h2>
       <p>Mursit sähkölukon koodilla 1954 ja löysit Mikaelin salaiset asiakirjat! Ovi aukesi ja olet vapaa jatkamaan tutkintaa.</p>
       <button class="btn-action" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);" onclick="window.location.href = '/'">PALAA PÄÄVALIKKOON</button>
     </div>
   </div>
-    <!-- JAVASCRIPT-PELIMOOTTORI -->
+
+  <!-- JAVASCRIPT-PELIMOOTTORI -->
   <script>
     let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
 
@@ -160,7 +157,7 @@
       state.hasKey = true; playSfx(440, 0.2, 'triangle');
       const keyEntity = document.getElementById('mikael-key');
       if (keyEntity) keyEntity.setAttribute('visible', 'false');
-      updateHudMessage("🎒 Sait kultaisen avaimen reppuun! Vie se työpöydällä olevan punaisen rauta-arkun luo ja klikkaa arkun lukkoa.");
+      updateHudMessage("🎒 Sait kultaisen avaimen! Ota se mukaan ja klikkaa työpöydän päällä olevaa punaista rauta-arkun lukkoa.");
     }
 
     function triggerOpenChest() {
@@ -230,4 +227,3 @@
   </script>
 </body>
 </html>
-
