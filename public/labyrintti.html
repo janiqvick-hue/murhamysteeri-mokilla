@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mikaelin Perintö: Lopen Salaisuudet - Pure VR Edition</title>
+  <!-- Ladataan kaikkein uusin ja vakain A-Frame 3D-VR-moottori sekä teleport-ohjain -->
+  <script src="https://aframe.io"></script>
+  <script src="https://jsdelivr.net"></script>
+  <style>
+    body, html { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background-color: #000; font-family: sans-serif; }
+    
+    /* VR-lasien ulkopuolella (esim. PC:llä testatessa) näkyvä lasimainen HUD-banneri viesteille */
+    #hud-banner {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      width: 85%; max-width: 650px; background: rgba(9, 15, 32, 0.94);
+      border: 1px solid rgba(99, 102, 241, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      border-radius: 14px; padding: 16px 22px; z-index: 50; display: flex; align-items: center; gap: 12px;
+      pointer-events: none; backdrop-filter: blur(12px);
+    }
+    .hud-indicator { width: 10px; height: 10px; background-color: #6366f1; border-radius: 50%; box-shadow: 0 0 12px #6366f1; }
+    .hud-text { font-size: 13.5px; font-weight: bold; color: #f1f5f9; line-height: 1.4; }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; overflow: hidden;">
+
+  <!-- PUHDAS VR-SCENE ILMAN REUNARAJOITTEITA -->
+  <a-scene vr-mode-ui="enabled: true" renderer="colorManagement: true; antialias: true;">
+    
+    <a-assets>
+      <!-- AIDOISTA VALOKUVISTA HAETUT TARKAT NETTITEKSTUURIT LOPEN MAAMERKEILLE -->
+      <!-- Sektori 1: Kaunis suomalainen kesä- ja järvimaisema Lopen kylänraitille -->
+      <img id="loppi-landscape" src="https://unsplash.com">
+      <!-- Sektori 2: Lopen kirjaston vanha hämärä puu/arkistoseinä -->
+      <img id="arkistoseina" src="https://unsplash.com">
+      <!-- Sektori 3: Lopen uuden kirkon aito ja majesteettinen punatiiliseinä -->
+      <img id="kirkkotiili" src="https://unsplash.com">
+      
+      <!-- Yleiset materiaalit: Lankkulattiat, urkupuu ja veturin tumma teräs -->
+      <img id="lankkulattia" src="https://unsplash.com">
+      <img id="veturimetalli" src="https://unsplash.com">
+      <img id="urkupuu" src="https://unsplash.com">
+
+      <!-- SPATIAL AUDIO TILA-ÄÄNET DIRECTLY IN 3D COORDINATES -->
+      <audio id="sfx-bells" src="https://mixkit.co"></audio>
+      <audio id="sfx-steam" src="https://mixkit.co" loop="true"></audio>
+      <audio id="sfx-click" src="https://mixkit.co"></audio>
+      <audio id="sfx-organ" src="https://mixkit.co"></audio>
+    </a-assets>
+
+    <!-- REALISTINEN YMPÄRISTÖVALO -->
+    
+    
+    <!-- SEKTORI 1: LOPEN KYLÄNRAITTI & PIKKUPÄSSI-VETURI -->
+    
+      <!-- Aito suomalainen kesämaisema 360-taustana ympärillä -->
+      <a-sky src="#loppi-landscape" rotation="0 -90 0"></a-sky>
+      <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#lankkulattia" repeat="5 5"></a-plane>
+
+      <!-- HISTORIALLINEN 3D PIKKUPÄSSI-HÖYRYVETURI (Rakennettu geometrioista metallitekstuurilla) -->
+      
+        <!-- Veturin päärunko (sylinteri) -->
+        <a-cylinder src="#veturimetalli" position="0 0.8 0" rotation="0 0 90" radius="0.6" height="2.8" repeat="2 1"></a-cylinder>
+        <!-- Ohjaamo (laatikko takana) -->
+        <a-box src="#veturimetalli" position="-1.2 1.3 0" width="1.2" height="1.6" depth="1.4"></a-box>
+        <!-- Piippu (edessä) -->
+        <a-cylinder src="#veturimetalli" position="0.9 1.6 0" radius="0.15" height="0.8"></a-cylinder>
+        <!-- Keltaiset dynaamiset korostusraidat (Kuten aito Pässiradan veturi) -->
+        <a-box color="#fbbf24" position="-1.2 2.1 0" width="1.22" height="0.05" depth="1.42"></a-box>
+        <a-box color="#fbbf24" position="0 0.8 0.61" width="2.4" height="0.1" depth="0.02"></a-box>
+        
+        <!-- VETURIN SUURET 3D-KOODIPAINIKKEET (Mekaaninen lukitus) -->
+        
+          <a-box id="btn-passi-1" class="clickable" position="-0.15 0.2 0" width="0.08" height="0.08" depth="0.04" color="#334155" sound="src: #sfx-click"><a-text value="1" align="center" position="0 0 0.02" scale="0.2 0.2 0.2" font="mozillavr"></a-text></a-box>
+          <a-box id="btn-passi-9" class="clickable" position="0 0.2 0" width="0.08" height="0.08" depth="0.04" color="#334155" sound="src: #sfx-click"><a-text value="9" align="center" position="0 0 0.02" scale="0.2 0.2 0.2" font="mozillavr"></a-text></a-box>
+          <a-box id="btn-passi-0" class="clickable" position="0.15 0.2 0" width="0.08" height="0.08" depth="0.04" color="#334155" sound="src: #sfx-click"><a-text value="0" align="center" position="0 0 0.02" scale="0.2 0.2 0.2" font="mozillavr"></a-text></a-box>
+          <a-box id="btn-passi-7" class="clickable" position="-0.15 0.08 0" width="0.08" height="0.08" depth="0.04" color="#334155" sound="src: #sfx-click"><a-text value="7" align="center" position="0 0 0.02" scale="0.2 0.2 0.2" font="mozillavr"></a-text></a-box>
+          <a-box id="btn-passi-C" class="clickable" position="0 0.08 0" width="0.08" height="0.08" depth="0.04" color="#ef4444" sound="src: #sfx-click"><a-text value="C" align="center" position="0 0 0.02" scale="0.2 0.2 0.2" font="mozillavr"></a-text></a-box>
+          <a-box id="btn-passi-E" class="clickable" position="0.15 0.08 0" width="0.08" height="0.08" depth="0.04" color="#10b981" sound="src: #sfx-click"><a-text value="OK" align="center" position="0 0 0.02" scale="0.15 0.15 0.15" font="mozillavr"></a-text></a-box>
+          
+          <!-- Veturin koodinäyttö -->
+          <a-box position="0 0.32 0" width="0.38" height="0.1" depth="0.02" color="#020617">
+            <a-text id="loco-screen" value="PÄSSI?" color="#ef4444" align="center" position="0 0 0.01" width="1.5" font="monoid"></a-text>
+          </a-box>
+        
+
+        <!-- LOPEN PERUNALAATIKKO (Sisältää vihjeen) -->
+        <a-box id="potato-crate" class="clickable" position="1.2 0.1 0.8" width="0.5" height="0.4" depth="0.5" src="#vanhapuu">
+          <a-text value="LOPEN PERUNAA" position="0 0.22 0.26" align="center" width="1.2" color="#fff" font="mozillavr"></a-text>
+          <a-text value="KATSO LAASTIA - 1907" position="0 -0.05 0.26" align="center" width="0.8" color="#fbbf24" font="mozillavr"></a-text>
+        </a-box>
+
+        <!-- VETURIN SALALUUKKU JOKA AUKEAA (Urkuavain sisällä) -->
+        <a-box id="loco-secret-hatch" position="-1.2 0.5 0.71" width="0.4" height="0.4" depth="0.02" color="#1e293b">
+          <a-text value="SALALOKERO" align="center" position="0 0.24 0" width="1" color="#fff" font="mozillavr"></a-text>
+          <a-key id="lopen-organ-key" class="clickable" position="0 0 0.1" rotation="0 0 90" visible="false">
+            <a-cylinder color="#fbbf24" radius="0.015" height="0.2"></a-cylinder>
+            <a-sphere position="0 0.1 0" radius="0.04" color="#fbbf24"></a-sphere>
+          </a-key>
+        </a-box>
+      
+
+      <!-- PORTTI SEKTORIIN 2 -->
+      <a-box id="gate-to-library" class="clickable" position="0 1.5 -8" width="2.2" height="3" depth="0.1" src="#veturimetalli" color="#1e1b4b">
+        <a-text id="gate-text" value="REITTI KIRJASTOON LUKITTU" position="0 0.5 0.06" align="center" width="2.2" color="#f43f5e" font="mozillavr"></a-text>
+      </a-box>
+    
+
+    <!-- SEKTORI 2: LOPEN KUNNANKIRJASTON ARKISTO -->
+    
+      <a-sky color="#05050a"></a-sky>
+      <a-plane position="0 0 0" rotation="-90 0 0" width="14" height="14" src="#lankkulattia" repeat="3 3"></a-plane>
+      <!-- Vanhat korkeat arkistoseinät kirjastokuvalla -->
+      <a-box position="0 2 -6" width="14" height="4" depth="0.2" src="#arkistoseina" repeat="2 1"></a-box>
+      <a-box position="6 2 0" rotation="0 -90 0" width="14" height="4" depth="0.2" src="#arkistoseina" repeat="2 1"></a-box>
+      <a-box position="-6 2 0" rotation="0 90 0" width="14" height="4" depth="0.2" src="#arkistoseina" repeat="2 1"></a-box>
+
+      <!-- SEIKKAILUN OPASKORTTI SEINÄLLÄ -->
+      <a-plane position="0 2 -5.8" width="2.5" height="1.4" color="#0f172a" border="1px solid #6366f1">
+        <a-text value="ARKISTOMUISTIO 1951" color="#fbbf24" position="0 0.5 0.01" width="3.5" align="center" font="mozillavr"></a-text>
+        <a-text value="Mikael kätki Maria Koskelan lahjuspapereiden\nloppupäätökset uuden tiilikirkon urkujen taakse.\n\nSÄVELET URKUMURTOON:\nKunnioita vuosia 1951-1954: D - A - F - G" color="#fff" position="0 -0.1 0.01" width="2.2" align="center" font="mozillavr"></a-text>
+      </a-plane>
+
+      <!-- TELEPORTTI SEKTORIIN 3 (KIRKKOON) -->
+      <a-box id="portal-to-church" class="clickable" position="0 1.2 5.8" width="1.6" height="2.4" depth="0.1" color="#4f46e5" material="opacity: 0.8; transparent: true">
+        <a-text value="ASTU LOPEN KIRKKOON" position="0 0 0.06" align="center" width="2" color="#fff" font="mozillavr"></a-text>
+      </a-box>
+    
+    <!-- SEKTORI 3: LOPEN HISTORIALLINEN TIILIKIRKKO (FINAALI) -->
+    
+      <a-sky color="#020205"></a-sky>
+      <a-plane position="0 0 0" rotation="-90 0 0" width="16" height="16" src="#lankkulattia" repeat="4 4"></a-plane>
+      
+      <!-- Majesteettiset kirkon punatiiliseinät valokuvamateriaalilla -->
+      <a-box position="0 3 -8" width="16" height="6" depth="0.2" src="#kirkkotiili" repeat="3 1.5"></a-box>
+      <a-box position="8 3 0" rotation="0 -90 0" width="16" height="6" depth="0.2" src="#kirkkotiili" repeat="3 1.5"></a-box>
+      <a-box position="-8 3 0" rotation="0 90 0" width="16" height="6" depth="0.2" src="#kirkkotiili" repeat="3 1.5"></a-box>
+
+      <!-- 3D-KIRKKOURUT (Rakennettu tammipuu- ja pillitekstuureilla) -->
+      
+        <a-box src="#urkupuu" position="0 1.8 0" width="3.5" height="3.6" depth="1.2"></a-box>
+        <!-- Hopeiset urkupillit (sylintereitä rivissä) -->
+        <a-cylinder color="#cbd5e1" position="-1 2.4 0.61" radius="0.05" height="1.6"></a-cylinder>
+        <a-cylinder color="#94a3b8" position="-0.5 2.6 0.61" radius="0.05" height="2"></a-cylinder>
+        <a-cylinder color="#e2e8f0" position="0 2.8 0.61" radius="0.06" height="2.4"></a-cylinder>
+        <a-cylinder color="#94a3b8" position="0.5 2.6 0.61" radius="0.05" height="2"></a-cylinder>
+        <a-cylinder color="#cbd5e1" position="1 2.4 0.61" radius="0.05" height="1.6"></a-cylinder>
+
+        <!-- KOSKETETTAVAT SUURET 3D-URKUKOSKETTIMET (Pähkinän ratkaisu) -->
+        
+          <a-box id="key-D" class="clickable" position="-0.4 0 0" width="0.18" height="0.08" depth="0.3" color="#ffffff"><a-text value="D" align="center" position="0 0.05 0.05" rotation="-90 0 0" width="1.5" color="#000" font="mozillavr"></a-text></a-box>
+          <a-box id="key-A" class="clickable" position="-0.15 0 0" width="0.18" height="0.08" depth="0.3" color="#ffffff"><a-text value="A" align="center" position="0 0.05 0.05" rotation="-90 0 0" width="1.5" color="#000" font="mozillavr"></a-text></a-box>
+          <a-box id="key-F" class="clickable" position="0.10 0 0" width="0.18" height="0.08" depth="0.3" color="#ffffff"><a-text value="F" align="center" position="0 0.05 0.05" rotation="-90 0 0" width="1.5" color="#000" font="mozillavr"></a-text></a-box>
+          <a-box id="key-G" class="clickable" position="0.35 0 0" width="0.18" height="0.08" depth="0.3" color="#ffffff"><a-text value="G" align="center" position="0 0.05 0.05" rotation="-90 0 0" width="1.5" color="#000" font="mozillavr"></a-text></a-box>
+        
+      
+
+      <!-- TESTAMENTTILOKERO JOKA HALKEAA AUKI (Finaalikohde) -->
+      <a-box id="church-secret-vault" position="2.8 1.4 -7.8" width="0.8" height="0.8" depth="0.2" src="#metallipinta" color="#1e1b4b">
+        <a-text value="SAKASTIN LOKERO" align="center" position="0 0.5 0.12" width="1.5" color="#fbbf24" font="mozillavr"></a-text>
+        <!-- Maria Koskelan lahjustodisteet ja testamentti paperirullana -->
+        <a-cylinder id="lopen-evidence" class="clickable" position="0 -0.1 0.15" radius="0.04" height="0.25" color="#fafaf9" rotation="0 0 45" visible="false">
+          <a-text value="ASIAKIRJAT" align="center" position="0 0.16 0" width="1" color="#10b981" font="mozillavr"></a-text>
+        </a-cylinder>
+      </a-box>
+
+      <!-- PAON VIIMEINEN LOPPUOVI VOITTOON -->
+      <a-box id="lopen-exit-door" class="clickable" position="-5 1.8 -7.8" width="2" height="3.4" depth="0.1" src="#vanhapuu" color="#111827">
+        <a-text id="exit-door-text" value="SULJETTU" position="0 0.5 0.06" align="center" width="2.2" color="#ef4444" font="mozillavr"></a-text>
+      </a-box>
+    
+
+    <!-- NYKYAIKAINEN SUORA VR-LIIKKUMINEN (TELEPORTTAUS & REALISTISET KÄDET) -->
+    
+      <a-camera look-controls="enabled: true" wasd-controls="enabled: false"></a-camera>
+      <!-- Vasemman käden tatti heittää liikkumiskaaren maahan -->
+      
+      <!-- Oikea käsi toimii fyysisenä osoittimena ja painaa liipaisimesta (Trigger) -->
+      
+    
+  </a-scene>
+
+  <!-- LELUUTUVA HUD OVERLAY JOKA NÄKYY LASIEN ULKOPUOLELLA TAI LATAUTUESSA -->
+  <div id="hud-banner" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 650px; background: rgba(11,17,32,0.94); border: 1px solid #6366f1; border-radius: 12px; padding: 16px 22px; z-index: 50; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(12px);">
+    <div class="hud-indicator" style="width: 10px; height: 10px; background-color: #6366f1; border-radius: 50%; box-shadow: 0 0 12px #6366f1;"></div>
+    <div class="hud-text" id="hud-message" style="font-size: 13.5px; font-weight: bold; color: #f1f5f9;">🥽 Laita VR-lasit päähän ja klikkaa oikeasta alakulmasta 'ENTER VR' aloittaaksesi Lopen salaisuuksien tutkinnan!</div>
+  </div>
+
+  <!-- KOKORUUDUN LOPEN VOITTORAPORTTI OVERLAY -->
+  <div id="win-overlay" style="position: fixed; inset: 0; background: rgba(2,6,23,0.98); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 24px;">
+    <div style="background: #090e1a; border: 1px solid #10b981; border-radius: 20px; max-width: 520px; width: 100%; padding: 36px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.95);">
+      <div style="font-size: 44px; margin-bottom: 12px;">🏆⛪</div>
+      <h2 style="color: #ffffff; font-size: 26px; font-weight: 800; margin-bottom: 12px; font-family: sans-serif;">Loppi On Ratkaistu!</h2>
+      <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">Soitit uruilla majesteettisen loppusoinnun D-A-F-G, sakastin salalokero avautui rymähtäen ja sait haltuusi Maria Koskelan salatut lahjustodisteet! Lopen kunnan ja suvun kunnia on palautettu.</p>
+      <button style="width: 100%; padding: 14px; background: linear-gradient(90deg, #10b981 0%, #059669 100%); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 14px;" onclick="window.location.href = '/'">PALAA SULKEMAAN PÄÄVALIKKOON</button>
+    </div>
+  </div>
+  <!-- JAVASCRIPT-PELIMOOTTORI LOPEN SALAISUUKSIEN RATKAISEMISEKSI -->
+  <script>
+    let state = {
+      currentSector: 1,
+      enteredLocoCode: "",
+      hasOrganKey: false,
+      playedNotes: [],
+      correctNotes: ["D", "A", "F", "G"],
+      isVaultOpen: false,
+      hasEvidence: false
+    };
+
+    function updateHudMessage(text) {
+      document.getElementById('hud-message').innerText = text;
+    }
+
+    function playSpatialSound(entityId) {
+      const entity = document.getElementById(entityId);
+      if (entity && entity.components.sound) {
+        entity.components.sound.playSound();
+      }
+    }
+
+    // --- SEKTORI 1: PIKKUPÄSSI-VETURIN KOODIMOOTTORI ---
+    function pressLocoKey(val) {
+      if (state.hasOrganKey) return;
+      playSpatialSound('church-organ'); // Käytetään urkuäänen runkoa naksaustajuudelle
+      const screen = document.getElementById('loco-screen');
+
+      if (val === 'C') {
+        state.enteredLocoCode = "";
+        if (screen) screen.setAttribute('value', 'PÄSSI?');
+      } else if (val === 'E') {
+        if (state.enteredLocoCode === "1907") {
+          state.hasOrganKey = true;
+          if (screen) {
+            screen.setAttribute('value', 'OPEN');
+            screen.setAttribute('color', '#10b981');
+          }
+          // Avataan salaluukku ja soitetaan suhina/onnnistumisääni
+          playSpatialSound('escape-door');
+          document.getElementById('lopen-organ-key').setAttribute('visible', 'true');
+          document.getElementById('loco-secret-hatch').setAttribute('position', '-1.2 0.5 0.95');
+          updateHudMessage("🔓 Pikkupässin murtokoodi 1907 hyväksytty! Salaluukku aukesi. Klikkaa sen sisällä olevaa kultaista Urkuavainta poimiaksesi sen.");
+        } else {
+          playSpatialSound('mikael-safe-body'); // Virhe-buzz
+          state.enteredLocoCode = "";
+          if (screen) screen.setAttribute('value', 'ERROR');
+        }
+      } else {
+        if (state.enteredLocoCode.length < 4) {
+          state.enteredLocoCode += val;
+          if (screen) screen.setAttribute('value', state.enteredLocoCode);
+        }
+      }
+    }
+
+    function grabOrganKey() {
+      if (!state.hasOrganKey || document.getElementById('lopen-organ-key').getAttribute('visible') === 'false') return;
+      playSpatialSound('mikael-key'); // Kilahdus
+      document.getElementById('lopen-organ-key').setAttribute('visible', 'false');
+      document.getElementById('gate-text').setAttribute('value', 'REITTI AVATTU - KLIKKAA PORTTIA');
+      document.getElementById('gate-text').setAttribute('color', '#10b981');
+      document.getElementById('gate-to-library').setAttribute('color', '#10b981');
+      updateHudMessage("🎒 Sait Lopen vanhan urkuavaimen reppuusi! Reitti kunnankirjaston arkistoon on nyt vapautettu. Klikkaa isoa metalliporttia edessäsi.");
+    }
+
+    function triggerGateTransition() {
+      if (state.hasOrganKey) {
+        // Vaihdetaan dynaamisesti Sektori 1 piiloon ja Sektori 2 näkyviin
+        document.getElementById('sector1').setAttribute('visible', 'false');
+        document.getElementById('sector2').setAttribute('visible', 'true');
+        state.currentSector = 2;
+        // Siirretään pelaajarig uuteen sijaintiin
+        document.getElementById('rig').setAttribute('position', '0 0 -17');
+        playSpatialSound('mikael-key'); // Alun kellot
+        updateHudMessage("📚 Saavuit Lopen Kunnankirjaston vanhaan arkistohuoneeseen. Tutki seinällä olevaa opastaulua löytääksesi finaalin urkuvihjeen, ja astu sen jälkeen sinisestä portaalista kirkkoon!");
+      } else {
+        playSpatialSound('mikael-safe-body');
+        updateHudMessage("🔒 Portti on tiukasti sähkölukossa! Pura ensin Pikkupässi-höyryveturin mekaaninen koodilukko perunalaatikon vihjeen avulla.");
+      }
+    }
+
+    function triggerChurchPortal() {
+      // Siirrytään Sektoriin 3 (Lopen kirkko)
+      document.getElementById('sector2').setAttribute('visible', 'false');
+      document.getElementById('sector3').setAttribute('visible', 'true');
+      state.currentSector = 3;
+      document.getElementById('rig').setAttribute('position', '0 0 -36');
+      playSpatialSound('escape-door');
+      updateHudMessage("⛪ Olet Lopen majesteettisen punatiilikirkon sisällä! Mene urkujen luo ja paina suuria 3D-koskettimia (D-A-F-G) oikeassa järjestyksessä avataksesi sakastin salalokeron.");
+    }
+
+    // --- SEKTORI 3: KIRKKOURKUJEN NUOTTIPÄHKINÄ ---
+    function pressOrganKey(note) {
+      if (state.isVaultOpen) return;
+      playSpatialSound('church-organ'); // Urkusointi kaikumaan kirkossa
+      
+      // Animoidaan koskettimen painallus dynaamisesti alaspäin
+      const keyObj = document.getElementById(`key-${note}`);
+      if (keyObj) {
+        keyObj.setAttribute('position', `${keyObj.getAttribute('position').x} -0.04 ${keyObj.getAttribute('position').z}`);
+        setTimeout(() => {
+          keyObj.setAttribute('position', `${keyObj.getAttribute('position').x} 0 ${keyObj.getAttribute('position').z}`);
+        }, 250);
+      }
+
+      state.playedNotes.push(note);
+      
+      // Tarkistetaan syötetyt nuotit livenä
+      let currentCheck = state.correctNotes.slice(0, state.playedNotes.length);
+      let isCorrectSoFar = state.playedNotes.every((val, i) => val === currentCheck[i]);
+
+      if (!isCorrectSoFar) {
+        playSpatialSound('mikael-safe-body'); // Virhesurina
+        state.playedNotes = [];
+        updateHudMessage("⚠️ Väärä sävelsarja kaikahti kuorissa! Urkujen mekanismi nollautui. Aloita alusta: D - A - F - G.");
+        return;
+      }
+
+      if (state.playedNotes.length === 4) {
+        state.isVaultOpen = true;
+        playSpatialSound('escape-door'); // Voittoisa avausääni
+        document.getElementById('lopen-evidence').setAttribute('visible', 'true');
+        document.getElementById('church-secret-vault').setAttribute('color', '#10b981');
+        updateHudMessage("🔓 Urut soivat täydellisessä harmonisessa soinnussa! Sakastin salalokero oikealla takaseinällä halkeasi auki. Käy poimimassa sieltä Maria Koskelan lahjustodisteet!");
+      }
+    }
+
+    function grabEvidence() {
+      if (!state.isVaultOpen || state.hasEvidence) return;
+      state.hasEvidence = true;
+      playSpatialSound('mikael-key'); // Kilahdus
+      document.getElementById('lopen-evidence').setAttribute('visible', 'false');
+      document.getElementById('lopen-exit-door').setAttribute('color', '#10b981');
+      document.getElementById('exit-door-text').setAttribute('value', 'AVATTU - PAENE TÄSTÄ');
+      document.getElementById('exit-door-text').setAttribute('color', '#ffffff');
+      updateHudMessage("🏆 Asiakirjat kerätty! Lahjustodisteet vuosilta 1951-1954 ovat nyt turvallisesti hallussasi. Klikkaa huoneen vasemmassa laidassa olevaa isoa puuovea paetaksesi labyrintistä!");
+    }
+
+    function triggerFinalEscape() {
+      if (state.hasEvidence) {
+        playSpatialSound('escape-door');
+        document.getElementById('win-overlay').style.display = 'flex';
+      } else {
+        playSpatialSound('mikael-safe-body');
+        updateHudMessage("⚠️ Tämän oven sähkösalvat avautuvat vasta, kun olet soittanut urkuarvoituksen ja kerännyt salalokeron asiakirjat haltuusi!");
+      }
+    }
+
+    // --- TAPAHTUMAKUUNTELIJAT ---
+    document.addEventListener("DOMContentLoaded", () => {
+      // Herätetään äänimoottori dynaamisesti VR-lasien klikkauksella
+      document.addEventListener('click', () => {
+        const scene = document.querySelector('a-scene');
+        if (scene && scene.audioListener && scene.audioListener.context.state === 'suspended') {
+          scene.audioListener.context.resume();
+        }
+      });
+
+      // Sektori 1 kuuntelijat
+      const key3d = document.getElementById('lopen-organ-key'); if (key3d) key3d.addEventListener('click', grabOrganKey);
+      const gate3d = document.getElementById('gate-to-library'); if (gate3d) gate3d.addEventListener('click', triggerGateTransition);
+      
+      const buttons = ['1', '9', '0', '7', 'C', 'E'];
+      buttons.forEach(b => {
+        const btn = document.getElementById(`btn-passi-${b}`);
+        if (btn) btn.addEventListener('click', () => pressLocoKey(b));
+      });
+
+      // Sektori 2 kuuntelijat
+      const portal3d = document.getElementById('portal-to-church'); if (portal3d) portal3d.addEventListener('click', triggerChurchPortal);
+
+      // Sektori 3 kuuntelijat
+      const notes = ['D', 'A', 'F', 'G'];
+      notes.forEach(n => {
+        const k = document.getElementById(`key-${n}`);
+        if (k) k.addEventListener('click', () => pressOrganKey(n));
+      });
+      
+      const ev3d = document.getElementById('lopen-evidence'); if (ev3d) ev3d.addEventListener('click', grabEvidence);
+      const exit3d = document.getElementById('lopen-exit-door'); if (exit3d) exit3d.addEventListener('click', triggerFinalEscape);
+    });
+  </script>
+</body>
+</html>
