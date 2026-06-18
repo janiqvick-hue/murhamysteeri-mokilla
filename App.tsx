@@ -21,11 +21,10 @@ export default function App() {
 
   useEffect(() => {
     const logs = [
-      "SYSTEM INIT: Mikaelin Salakellari [Next-Gen VR v1.6.0]...",
-      "LOADING: A-Frame Engine & WebXR rendering subroutines...",
-      "STATUS: Ready to bound on port 3000.",
-      "O2 RECOVERY: Running on backup underground vents...",
-      "SECURITY PROTOCOL: Active (C-1954-N)"
+      "SYSTEM INIT: Lopen Salaisuudet Launcher active...",
+      "LOADING: Asset management framework...",
+      "STATUS: Ready to pipe location vectors.",
+      "LOCATION DATA: Loppi Kirkonkylä, Finland"
     ];
     setTerminalLogs(logs);
 
@@ -64,9 +63,9 @@ export default function App() {
 
   const menuTitleStyle: React.CSSProperties = { fontSize: "32px", fontWeight: 900, color: "#ffffff", margin: "0 0 8px 0" };
 
-  const menuButtonStyle = (disabled: boolean, variant: "multi" | "solo" | "vr"): React.CSSProperties => ({
+  const menuButtonStyle = (disabled: boolean, variant: "multi" | "solo" | "vr" | "laby"): React.CSSProperties => ({
     width: "100%", padding: "16px", margin: "8px 0",
-    backgroundColor: disabled ? "#1e293b" : (variant === "multi" ? "#4f46e5" : (variant === "vr" ? "#db2777" : "#10b981")),
+    backgroundColor: disabled ? "#1e293b" : (variant === "multi" ? "#4f46e5" : (variant === "vr" ? "#db2777" : (variant === "laby" ? "#6366f1" : "#10b981"))),
     border: "none", borderRadius: "12px", color: "#ffffff", fontSize: "14px", fontWeight: "bold",
     cursor: disabled ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
     opacity: disabled ? 0.4 : 1
@@ -110,6 +109,16 @@ export default function App() {
         >
           <span>Osa 1: Huvilan Varjot</span>
           <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#a7f3d0" }}>Ratkaise Kaartjärven huvilan murha</span>
+        </button>
+
+        {/* UUSI LOPEN SEIKKAILU -PAINIKE */}
+        <button 
+          disabled={isNameEmpty}
+          onClick={() => { window.location.href = "/labyrintti.html"; }}
+          style={menuButtonStyle(isNameEmpty, "laby")}
+        >
+          <span>🎮 Osa 4: Lopen Salaisuudet</span>
+          <span style={{ fontSize: "11px", fontWeight: "normal", color: isNameEmpty ? "#64748b" : "#c7d2fe" }}>Uusi eloisa maisemaseikkailu Lopen kirkonkylässä</span>
         </button>
 
         {/* JAKO-OSIO NEXT-GEN VR-PELILLE */}
