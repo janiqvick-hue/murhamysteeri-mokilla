@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mikaelin Salakellari 3D VR</title>
-  <!-- KORJAUS: Ladataan uusin A-Frame 1.7.0, joka korjaa selainten mustat ruudut -->
+  <!-- KORJAUS: Palautettu täydellinen ja virallinen A-Frame 1.7.0 -moottorin latausosoite -->
   <script src="https://aframe.io"></script>
   <style>
     body, html { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background-color: #000; font-family: sans-serif; }
@@ -29,15 +29,13 @@
 </head>
 <body>
 
-  <!-- KOKORUUDUN 3D-MAAILMA (Embedded poistettu selainbugin korjaamiseksi) -->
+  <!-- KOKORUUDUN 3D-MAAILMA -->
   <a-scene vr-mode-ui="enabled: true">
     <a-sky color="#03050c"></a-sky>
     <a-plane position="0 0 0" rotation="-90 0 0" width="14" height="14" color="#1c1412"></a-plane>
     <a-plane position="0 4 0" rotation="90 0 0" width="14" height="14" color="#080a0f"></a-plane>
 
-    <!-- VOIMAKKAAT PERUSVALOT: Pakotetaan grafiikat loistamaan kirkkaasti selaimessa -->
-    
-    
+    <!-- VOIMAKKAAT PERUSVALOT -->
 
     <!-- SEINÄT JA NUMEROKOODI-VIHJE -->
     <a-box position="0 2 -7" width="14" height="4" depth="0.2" color="#2c1e1a">
@@ -97,18 +95,30 @@
 
     <!-- KULTAINEN AVAIN -->
     
+        <!-- KULTAINEN AVAIN (KORJAUS: Lisätty dynaaminen päärunko ja korjattu sulkutagit) -->
+    
       <a-cylinder color="#fbbf24" radius="0.02" height="0.25"></a-cylinder>
       <a-sphere position="0 0.14 0" radius="0.05" color="#fbbf24"></a-sphere>
-      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.2; transparent: true; shader: flat">
+      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.2; transparent: true; shader: flat"></a-sphere>
     
 
-    <!-- KAMERA JA VR-LASIEN LASERSÄTEET -->
+    <!-- KAMERA JA PUNAINEN TÄHTÄINRENGAS -->
     <a-camera position="0 1.6 2" wasd-controls="acceleration: 40">
       <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat" raycaster="objects: .clickable"></a-cursor>
     </a-camera>
     
+    <!-- KORJAUS: Palautettu lasersäde-ohjaimet Quest-laseille grafiikkamoottorin aktivoimiseksi -->
+    
+    
     
   </a-scene>
+
+  <!-- REAALIAIKAINEN INFOBANNERI OVERLAYNA ALALAIDASSA -->
+  <div id="hud-banner">
+    <div class="hud-indicator"></div>
+    <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta (keltainen hehku) tai tutki pöydän päällä olevaa rauta-arkkua punaisella tähtäimellä!</div>
+  </div>
+
   <!-- INTRORUUTU JA ALOITUS -->
   <div id="intro-overlay" class="screen-overlay">
     <div class="overlay-card">
@@ -144,6 +154,7 @@
         osc.start(); osc.stop(ctx.currentTime + duration);
       } catch (e) {}
     }
+
 
     function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
 
