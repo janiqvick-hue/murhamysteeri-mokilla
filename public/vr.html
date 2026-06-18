@@ -359,15 +359,16 @@
     <button class="exit-btn" onclick="exitToLobby()">KESKEYTÄ / SULJE</button>
   </div>
 
-  <!-- ALKUNÄKYMÄ (INTRO) -->
-  <div id="intro-overlay" class="overlay-screen">
+    <!-- INTRORUUTU JA ALOITUS -->
+  <div id="intro-overlay" class="screen-overlay">
     <div class="card">
-      <div class="emoji-icon">🏚️</div>
-      <h2>Mikaelin Salakellari: Labyrintti</h2>
-      <p>
-        Hylkäsimme bittiavaruuden mustia reikiä luovat 3D-lasitukset ja toimme salapoliisityön takaisin 
-        käsinkosketeltavaan, peliluotettavaan 2D-grafiikkaan! Mikaelin salaperäinen kellari on jaettu kolmeen peräkkäiseen osioon.
-      </p>
+      <div class="emoji-icon">🥽</div>
+      <h2>Osa 3: Mikaelin Salakellari 3D VR</h2>
+      <p>Olet ansaittuna Päähuvilan salaisessa kellarissa. Liikuta hiirtä katsoaksesi ympärillesi (VR-laseilla käännä päätä). Osoita punaista tähtäintä esineisiin ja klikkaa hiirellä tai VR-liipaisimella poimiaksesi ne.</p>
+      <!-- KORJAUS: Vaihdettu onclick kutsumaan oikeaa startGame()-funktiota -->
+      <button class="btn-action" onclick="startGame()">KÄYNNISTÄ 3D-PAKOPELI</button>
+    </div>
+  </div>
 
       <div class="instructions-info">
         <strong style="color: #ffffff; display: block; margin-bottom: 6px;">Etene murtamalla mekanismit:</strong>
