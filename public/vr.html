@@ -1,2209 +1,257 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mikaelin Salakellari: Labyrintti</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mikaelin Salakellari 3D Next-Gen VR</title>
+  <!-- Ladataan uusin vakaa A-Frame 3D-moottori -->
+  <script src="https://aframe.io"></script>
   
-  <!-- Fontit -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-
   <style>
-    :root {
-      --bg-color: #05050a;
-      --panel-bg: rgba(9, 9, 18, 0.95);
-      --border-color: rgba(255, 255, 255, 0.1);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-rose: #f43f5e;
-      --accent-gold: #fbbf24;
-      --accent-emerald: #10b981;
-      --accent-blue: #3b82f6;
+    body, html { width: 100%; height: 100%; overflow: hidden; margin: 0; padding: 0; background-color: #010206; font-family: sans-serif; }
+    
+    /* Moderni, läpinäkyvä HUD-banneri viesteille 3D-maailman päällä */
+    #hud-banner {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      width: 85%; max-width: 650px; background: rgba(9, 15, 32, 0.92);
+      border: 1px solid rgba(244, 63, 94, 0.35); box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+      border-radius: 14px; padding: 16px 22px; z-index: 50; display: flex; align-items: center; gap: 12px;
+      pointer-events: none; backdrop-filter: blur(10px);
     }
+    .hud-indicator { width: 10px; height: 10px; background-color: #f43f5e; border-radius: 50%; box-shadow: 0 0 12px #f43f5e; }
+    .hud-text { font-size: 13.5px; font-weight: bold; color: #f1f5f9; line-height: 1.4; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Pelisivu asettelu */
-    #game-container {
-      position: relative;
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      background: #020205;
-      cursor: none; /* Piilotetaan oletuskursori mukautetun tieltä */
-    }
-
-    /* Moderni HUD Ohjauspaneeli alareunassa */
-    #hud-panel {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 860px;
-      background: var(--panel-bg);
-      border: 1.5px solid var(--border-color);
-      border-radius: 16px;
-      padding: 16px 24px;
-      z-index: 100;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(16px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      user-select: none;
-    }
-
-    .hud-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
-    }
-
-    .room-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      background: rgba(244, 63, 94, 0.15);
-      color: var(--accent-rose);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-      padding: 4px 10px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .inventory-bar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .inventory-item {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      opacity: 0.5;
-      transition: all 0.3s ease;
-    }
-
-    .inventory-item.acquired {
-      opacity: 1;
-      color: var(--accent-gold);
-      border-color: rgba(251, 191, 36, 0.4);
-      background: rgba(251, 191, 36, 0.08);
-      box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);
-    }
-
-    #message-box {
-      font-size: 13.5px;
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.02);
-      border-left: 3px solid var(--accent-rose);
-      padding: 10px 14px;
-      border-radius: 6px;
-      min-height: 44px;
-      line-height: 1.5;
-    }
-
-    /* Kaksivaiheinen lokituskonsoli */
-    #log-feed {
-      max-height: 50px;
-      overflow-y: hidden;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .feed-line {
-      opacity: 0.8;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-
-    /* Helppokäyttöisyyden 2D painikkeet (Fallback) */
-    .interact-helpers {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .helper-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-main);
-      padding: 6px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.2s ease;
-    }
-
-    .helper-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Yläpaneeli nopeaan sulkuun */
-    #top-panel {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      right: 15px;
-      display: flex;
-      justify-content: space-between;
-      z-index: 101;
-      pointer-events: none;
-    }
-
-    .top-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: bold;
-      color: var(--accent-gold);
-      background: rgba(9, 9, 18, 0.85);
-      border: 1px solid var(--border-color);
-      padding: 6px 14px;
-      border-radius: 8px;
-      pointer-events: auto;
-      backdrop-filter: blur(8px);
-    }
-
-    .exit-btn {
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.30);
-      color: var(--accent-rose);
-      font-size: 11px;
-      font-weight: bold;
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: all 0.2s ease;
-    }
-
-    .exit-btn:hover {
-      background: rgba(244, 63, 94, 0.3);
-      transform: translateY(-1);
-    }
-
-    /* Kokoruudun näkymät (Intro & Win) */
-    .overlay-screen {
-      position: absolute;
-      inset: 0;
-      background: rgba(2, 2, 6, 0.97);
-      z-index: 200;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .card {
-      background: #080812;
-      border: 1.5px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 36px;
-      max-width: 580px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
-      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .emoji-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.3));
-    }
-
-    .card h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #ffffff;
-      letter-spacing: -0.5px;
-    }
-
-    .card p {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .instructions-info {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 16px;
-      text-align: left;
-      font-size: 12px;
-      color: #cbd5e1;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    .highlight-amber {
-      color: var(--accent-gold);
-      font-weight: 600;
-    }
-
-    .action-button {
-      background: linear-gradient(135deg, var(--accent-rose) 0%, #be123c 100%);
-      border: none;
-      color: #ffffff;
-      padding: 12px 28px;
-      font-size: 13.5px;
-      font-weight: bold;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(244, 63, 94, 0.3);
-      transition: all 0.2s ease;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .action-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(244, 63, 94, 0.55);
-    }
-
-    /* Koodipopup Cluelle */
-    #clue-popup {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #110e0b;
-      border: 2px solid #5a3e1a;
-      border-radius: 12px;
-      padding: 24px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-      display: none;
-      z-index: 150;
-      text-align: center;
-    }
-
-    #clue-popup h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      color: #d97706;
-      margin-bottom: 8px;
-    }
-
-    #clue-popup p {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      color: #f59e0b;
-      background: rgba(251, 191, 36, 0.05);
-      border: 1px dashed rgba(251, 191, 36, 0.3);
-      padding: 12px;
-      border-radius: 6px;
-      margin: 16px 0;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
-    }
+    /* Kirjautumis- ja voittoruudut */
+    .screen-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 24px; }
+    .overlay-card { background: #0b0f19; border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 20px; max-width: 540px; width: 100%; padding: 32px; text-align: center; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9); }
+    .overlay-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 12px; color: #fff; letter-spacing: -0.5px; }
+    .overlay-card p { font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 24px; }
+    .btn-action { display: block; width: 100%; padding: 14px; background: linear-gradient(90deg, #f43f5e 0%, #be123c 100%); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4); }
   </style>
 </head>
 <body>
 
-  <!-- YLÄPANEELI -->
-  <div id="top-panel">
-    <div class="top-badge" id="hud-title-badge">🗝️ MIKAELIN KELLARI - 2D LABYRINTTI</div>
-    <button class="exit-btn" onclick="exitToLobby()">KESKEYTÄ / SULJE</button>
-  </div>
-
-  <!-- ALKUNÄKYMÄ (INTRO) -->
-  <div id="intro-overlay" class="overlay-screen">
-    <div class="card">
-      <div class="emoji-icon">🏚️</div>
-      <h2>Mikaelin Salakellari: Labyrintti</h2>
-      <p>
-        Hylkäsimme bittiavaruuden mustia reikiä luovat 3D-lasitukset ja toimme salapoliisityön takaisin 
-        käsinkosketeltavaan, peliluotettavaan 2D-grafiikkaan! Mikaelin salaperäinen kellari on jaettu kolmeen peräkkäiseen osioon.
-      </p>
-
-      <div class="instructions-info">
-        <strong style="color: #ffffff; display: block; margin-bottom: 6px;">Etene murtamalla mekanismit:</strong>
-        • <span class="highlight-amber">Huone 1 (Arkisto):</span> Etsi kultainen avain, avaa puinen arkku ja ratkaise koodi oven aukaisemiseksi.<br />
-        • <span class="highlight-amber">Huone 2 (Laboratorio):</span> Klikkaa dynaamista purppuraa reagenssipulloa sulattaaksesi kemiallisen turvaoven.<br />
-        • <span class="highlight-amber">Huone 3 (Holvi):</span> Pyöräytä syvennyksen pääkassakaapin ratas vapauttaaksesi salatut perintötodisteet!
-      </div>
-
-      <button class="action-button" onclick="startTheGame()">ALOITA PAKO</button>
-    </div>
-  </div>
-
-  <!-- LOITTOVÄLIÖ (VOITTO) -->
-  <div id="win-overlay" class="overlay-screen" style="display: none;">
-    <div class="card" style="border-color: var(--accent-emerald); box-shadow: 0 0 30px rgba(16,185,129,0.25);">
-      <div class="emoji-icon">🏆</div>
-      <h2 style="color: var(--accent-emerald);">Pako Onnistui!</h2>
-      <p>
-        Sait murrettua Mikael Koskelan salakellarin kaikki kolme vaaka-arvoitusta. Tietolupien uumenista koodilla 
-        <strong>1954</strong> paljastuneet alkuperäiset testamenttikuviot ja Maria Koskelan lahjussiirrot ovat nyt turvallisesti hallussasi!
-      </p>
-
-      <div class="instructions-info" style="background: rgba(16, 185, 129, 0.04); border-color: rgba(16, 185, 129, 0.2);">
-        • 🏦 <strong>Lajietsivä:</strong> Kaartjärven kellarin mestaripurkaja<br />
-        • 🧩 <strong>Ratkaistut pähkinät:</strong> Avaimen etsintä, kemiallinen reaktio, pyörälukko<br />
-        • 🔓 <strong>Status:</strong> Kaikki veriasiakirjat kopioitu tuomioistuimen käyttöön!
-      </div>
-
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <button class="action-button" style="background: var(--accent-emerald);" onclick="restartTheGame()">PELAA UUDELLEEN</button>
-        <button class="action-button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);" onclick="exitToLobby()">SULJE PELI</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TIETOVIRALLINEN VIHJE-POPUP -->
-  <div id="clue-popup" onclick="closeClue()">
-    <h3 id="clue-popup-title">Arkistoasiakirja</h3>
-    <p id="clue-popup-text">Koskelan sukupuun alku: "Mikael, syntynyt rauhan vuonna 1954..."</p>
-    <div style="font-size: 10px; color: var(--text-muted); cursor: pointer;">(Klikkaa sulkeaksesi lappu)</div>
-  </div>
-
-  <!-- PELINKANVAASINKORTTI -->
-  <div id="game-container">
-    <canvas id="gameCanvas"></canvas>
-
-    <!-- ALALAI-HUD -->
-    <div id="hud-panel">
-      <div class="hud-row">
-        <div class="room-badge" id="room-badge-indicator">Osa 1: Synkkä arkisto</div>
-        <div class="inventory-bar">
-          <div class="inventory-item" id="inv-key">🔑 KULTAINEN AVAIN</div>
-          <div class="inventory-item" id="inv-docs">📜 ASIAKIRJAT (1954)</div>
-        </div>
-      </div>
-
-      <!-- Viestiväylä -->
-      <div id="message-box">
-        Pelilataus käynnistynyt. Klikkaa herättääksesi salapoliisisi katseen kellarissa!
-      </div>
-
-      <!-- Erilaiset 2D apuohjaimet helppokäyttöisyyttä varten -->
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-        <div class="interact-helpers" id="helpers-container">
-          <!-- Dynaamiset napit tulevat kulloisenkin huoneen mukaan avuksi -->
-        </div>
-        
-        <div id="log-feed">
-          <div class="feed-line">Peli odottaa käynnistystä...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // --- Pelitilan alustukset ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let gameState = {
-      active: false,
-      currentRoom: 1, // 1: Arkisto, 2: Laboratorio, 3: Holvi
-      hasKey: false,
-      isChestOpen: false,
-      isDoor1Open: false,
-      isDoor2Open: false,
-      isVaultOpen: false,
-      enteredCode: "",
-      correctCode: "1954",
-      logs: [],
-      mouse: { x: 0, y: 0, hover: false, hoverItem: null }
-    };
-
-    // --- ÄÄNIGENERAATTORI (Web Audio API) ---
-    function playSfx(type) {
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return;
-        const audioCtx = new AudioContextClass();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        if (type === 'click') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.1);
-        } else if (type === 'pickup') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
-          gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.25);
-        } else if (type === 'success') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
-          osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3); // C6
-          gain.gain.setValueAtTime(0.07, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.5);
-        } else if (type === 'fizz') {
-          // Kemiallinen seoskupla
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-          osc.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.4);
-          gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.4);
-        } else if (type === 'error') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(160, audioCtx.currentTime);
-          osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.3);
-          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.3);
-        }
-      } catch (e) {
-        console.warn("Ääntä ei pystytty käynnistämään ilman käyttäjän interaktiota.");
-      }
-    }
-
-    // --- REAGOIVA LOKIJÄRJESTELMÄ ---
-    function addGameLog(text) {
-      gameState.logs.unshift(text);
-      if (gameState.logs.length > 3) gameState.logs.pop();
-      
-      const feed = document.getElementById('log-feed');
-      feed.innerHTML = "";
-      gameState.logs.forEach(log => {
-        const div = document.createElement('div');
-        div.className = "feed-line";
-        div.innerText = `› ${log}`;
-        feed.appendChild(div);
-      });
-    }
-
-    // --- VIESTIPORTIN PÄIVITYKSET ---
-    function setMessage(text, isAlert = false) {
-      const msgBox = document.getElementById('message-box');
-      msgBox.innerText = text;
-      msgBox.style.borderLeftColor = isAlert ? 'var(--accent-rose)' : 'var(--accent-gold)';
-    }
-
-    // --- ALOITA JA RESETOINTIPROSEDUURIT ---
-    function startTheGame() {
-      playSfx('success');
-      document.getElementById('intro-overlay').style.display = 'none';
-      gameState.active = true;
-      addGameLog("Labyrinttitutkiutuminen alkoi.");
-      setMessage("Kellarissa on hämärää. Mikaelin tammisella työpöydällä lojuu lukittu arkku. Etsi kultainen avain huoneen lattialta edetäksesi.");
-      buildHelpers();
-    }
-
-    function restartTheGame() {
-      document.getElementById('win-overlay').style.display = 'none';
-      gameState.currentRoom = 1;
-      gameState.hasKey = false;
-      gameState.isChestOpen = false;
-      gameState.isDoor1Open = false;
-      gameState.isDoor2Open = false;
-      gameState.isVaultOpen = false;
-      gameState.enteredCode = "";
-      gameState.logs = [];
-
-      document.getElementById('inv-key').classList.remove('acquired');
-      document.getElementById('inv-docs').classList.remove('acquired');
-
-      playSfx('success');
-      gameState.active = true;
-      addGameLog("Peli ladattiin uudelleen.");
-      setMessage("Uusi yritys aloitettu. Kerää kultainen avain lattialta.");
-      buildHelpers();
-    }
-
-    function exitToLobby() {
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: "exitGame" }, "*");
-        }
-      } catch (e) {
-        console.warn("Could not postMessage to parent:", e);
-      }
-      window.location.href = "/";
-    }
-
-    // --- HUD APUOHJAIMET (ESTEETTÖMYYS) ---
-    function buildHelpers() {
-      const container = document.getElementById('helpers-container');
-      container.innerHTML = "";
-
-      const titleNode = document.getElementById('room-badge-indicator');
-
-      if (gameState.currentRoom === 1) {
-        titleNode.innerText = "Huone 1: Synkkä arkisto";
-        titleNode.style.borderColor = "var(--accent-rose)";
-
-        // Avaimen poiminta-apu
-        if (!gameState.hasKey) {
-          const btn = document.createElement('button');
-          btn.className = "helper-btn";
-          btn.innerText = "Poimi avain (Apu)";
-          btn.onclick = () => grabKey();
-          container.appendChild(btn);
-        }
-
-        // Arkun avaus-apu
-        if (gameState.hasKey && !gameState.isChestOpen) {
-          const btn = document.createElement('button');
-          btn.className = "helper-btn";
-          btn.innerText = "Avaa kirstu avaimella";
-          btn.onclick = () => openChest();
-          container.appendChild(btn);
-        }
-
-        // Koodinsyöttö
-        if (gameState.isChestOpen && !gameState.isDoor1Open) {
-          const btn = document.createElement('button');
-          btn.className = "helper-btn";
-          btn.innerText = "Syötä koodi 1954 automaattisesti";
-          btn.onclick = () => {
-            gameState.enteredCode = "1954";
-            checkSähkölukko();
-          };
-          container.appendChild(btn);
-        }
-      } else if (gameState.currentRoom === 2) {
-        titleNode.innerText = "Huone 2: Kemian laboratorio";
-        titleNode.style.borderColor = "var(--accent-blue)";
-
-        const btn = document.createElement('button');
-        btn.className = "helper-btn";
-        btn.innerText = "Sekoita dynaaminen purppura pullo";
-        btn.onclick = () => triggerSolvent();
-        container.appendChild(btn);
-      } else {
-        titleNode.innerText = "Huone 3: Turvaholvi";
-        titleNode.style.borderColor = "var(--accent-gold)";
-
-        const btn = document.createElement('button');
-        btn.className = "helper-btn";
-        btn.innerText = "Klikkaa turvaholvin ohjausratasta";
-        btn.onclick = () => triggerVaultLock();
-        container.appendChild(btn);
-      }
-    }
-
-    // --- PELIELEMENTTIEN MÄÄRITYS COORDINAATEISSA (Skaalataan tarvittaessa) ---
-    // Määritellään virtuaalinen pelialue 1000x600, joka sovitetaan asetteluun
-    const V_WIDTH = 1000;
-    const V_HEIGHT = 600;
-
-    let particles = []; // Takan kipinät
-
-    // Huone 1 objektit (koordinaatit livenä)
-    const itemsRoom1 = {
-      fireplace: { x: 80, y: 150, w: 180, h: 320, name: "Hehkuva takka" },
-      desk: { x: 380, y: 340, w: 260, h: 160, name: "Tamminen työpöytä" },
-      chest: { x: 420, y: 280, w: 100, h: 60, name: "Rauta-arkku" },
-      paper: { x: 540, y: 350, w: 80, h: 40, name: "Muistilappu" },
-      key: { x: 740, y: 480, r: 24, name: "Kultainen avain" },
-      terminal: { x: 880, y: 180, w: 90, h: 140, name: "Koodilukko" },
-      door: { x: 880, y: 360, w: 100, h: 200, name: "Sähköovi" }
-    };
-
-    // Huone 2 objektit
-    const itemsRoom2 = {
-      labDesk: { x: 300, y: 340, w: 420, h: 160, name: "Varustelupöytä" },
-      vialRed: { x: 340, y: 280, w: 40, h: 60, name: "Nesteytyspullo (punainen)" },
-      vialGreen: { x: 420, y: 280, w: 40, h: 60, name: "Haponkestävä (vihreä)" },
-      vialPurple: { x: 500, y: 270, w: 44, h: 70, name: "Dynaaminen purppurapullos" },
-      vialYellow: { x: 590, y: 280, w: 40, h: 60, name: "Eetterikoeputki (keltainen)" },
-      blackboard: { x: 420, y: 80, w: 200, h: 110, name: "Kemian liitutaulu" },
-      gasValve: { x: 120, y: 200, r: 35, name: "Kaasuventtiili" },
-      bulkhead: { x: 880, y: 320, w: 100, h: 240, name: "Pneumatiikkaovi" }
-    };
-
-    // Huone 3 objektit
-    const itemsRoom3 = {
-      pillar: { x: 440, y: 260, w: 140, h: 300, name: "Kivinen holvipilari" },
-      vaultBox: { x: 465, y: 180, w: 90, h: 90, name: "Maria Koskelan holvikassakaappi" },
-      vaultWheel: { x: 510, y: 225, r: 25, rotation: 0, name: "Turvapyörä" },
-      goldPile: { x: 150, y: 420, w: 180, h: 80, name: "Kultaharkkopino" },
-      backToLobbyDoor: { x: 840, y: 300, w: 130, h: 240, name: "Poistumisovi aulaan" }
-    };
-
-    // --- KLIKKAUKSEN JA HOVEROINNIN KÄSITTELY ---
-    function checkMouseHover() {
-      if (!gameState.active) return;
-      
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-
-      const mx = (gameState.mouse.screenX - rect.left) * scaleX;
-      const my = (gameState.mouse.screenY - rect.top) * scaleY;
-
-      gameState.mouse.x = mx;
-      gameState.mouse.y = my;
-
-      let hovered = null;
-
-      if (gameState.currentRoom === 1) {
-        // Avain
-        if (!gameState.hasKey && dist(mx, my, itemsRoom1.key.x, itemsRoom1.key.y) < itemsRoom1.key.r) {
-          hovered = "key";
-        }
-        // Kirstu
-        else if (inRect(mx, my, itemsRoom1.chest)) {
-          hovered = "chest";
-        }
-        // Työpöytäpapereita
-        else if (inRect(mx, my, itemsRoom1.paper)) {
-          hovered = "paper";
-        }
-        // Terminal painikkeet
-        else if (inRect(mx, my, itemsRoom1.terminal)) {
-          hovered = "terminal";
-        }
-        // Sähköovi
-        else if (inRect(mx, my, itemsRoom1.door)) {
-          hovered = "door";
-        }
-        // Takan liekit
-        else if (inRect(mx, my, itemsRoom1.fireplace)) {
-          hovered = "fireplace";
-        }
-      } else if (gameState.currentRoom === 2) {
-        if (inRect(mx, my, itemsRoom2.vialPurple)) {
-          hovered = "vialPurple";
-        } else if (inRect(mx, my, itemsRoom2.vialRed)) {
-          hovered = "vialRed";
-        } else if (inRect(mx, my, itemsRoom2.vialGreen)) {
-          hovered = "vialGreen";
-        } else if (inRect(mx, my, itemsRoom2.vialYellow)) {
-          hovered = "vialYellow";
-        } else if (inRect(mx, my, itemsRoom2.blackboard)) {
-          hovered = "blackboard";
-        } else if (dist(mx, my, itemsRoom2.gasValve.x, itemsRoom2.gasValve.y) < itemsRoom2.gasValve.r) {
-          hovered = "gasValve";
-        } else if (inRect(mx, my, itemsRoom2.bulkhead)) {
-          hovered = "bulkhead";
-        }
-      } else if (gameState.currentRoom === 3) {
-        if (inRect(mx, my, itemsRoom3.vaultBox) || dist(mx, my, itemsRoom3.vaultWheel.x, itemsRoom3.vaultWheel.y) < itemsRoom3.vaultWheel.r) {
-          hovered = "vaultBox";
-        } else if (inRect(mx, my, itemsRoom3.goldPile)) {
-          hovered = "goldPile";
-        } else if (inRect(mx, my, itemsRoom3.backToLobbyDoor)) {
-          hovered = "backToLobbyDoor";
-        }
-      }
-
-      gameState.mouse.hover = (hovered !== null);
-      gameState.mouse.hoverItem = hovered;
-    }
-
-    // Apuprosessit laskuihin
-    function dist(x1, y1, x2, y2) {
-      return Math.sqrt((x2 - x1)**2 + (y2 - y1)**2);
-    }
-    function inRect(x, y, r) {
-      return x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
-    }
-
-    // --- PAINIKKEET JA LIIKKEET ---
-    function clickTheCanvas() {
-      if (!gameState.active) return;
-      checkMouseHover();
-
-      const selection = gameState.mouse.hoverItem;
-      if (!selection) return;
-
-      if (gameState.currentRoom === 1) {
-        if (selection === "key") {
-          grabKey();
-        } else if (selection === "chest") {
-          openChest();
-        } else if (selection === "paper") {
-          showPaperClue();
-        } else if (selection === "terminal") {
-          clickTerminalKeypad();
-        } else if (selection === "door") {
-          escapeRoom1Door();
-        } else if (selection === "fireplace") {
-          playSfx('click');
-          setMessage("Takan lempeä lämpö hohtaa kasvoillesi. Hiilien seasta lentää muutamia nokeavia kipinöitä ilmaan.");
-        }
-      } else if (gameState.currentRoom === 2) {
-        if (selection === "vialPurple") {
-          triggerSolvent();
-        } else if (selection === "vialRed") {
-          playSfx('error');
-          setMessage("Punainen koepullo sihahtaa rikkihappoa. Se on liian epävakaata sekoitettavaksi!", true);
-        } else if (selection === "vialGreen") {
-          playSfx('error');
-          setMessage("Vihreä reagentti sisältää mädäntyneen hajuista emästä. Ei toimi.", true);
-        } else if (selection === "vialYellow") {
-          playSfx('error');
-          setMessage("Keltaisessa pullossa on helposti pamahtavaa nitrokerrosta. Älä koske!", true);
-        } else if (selection === "blackboard") {
-          playSfx('click');
-          setMessage("Kemian kaaviotaulussa lukee: 'SEOS S-4: Yhdistä purppurainen hohtava reagenssipullo poistaaksesi sähköisen salvatuksen.'");
-        } else if (selection === "gasValve") {
-          playSfx('fizz');
-          setMessage("Pyöritit painekaasun varoventtiiliä. Mekaaninen sihisevä ääni kaikuu laboratoriosalissa.");
-        } else if (selection === "bulkhead") {
-          if (gameState.isDoor2Open) {
-            gameState.currentRoom = 3;
-            playSfx('success');
-            addGameLog("Siirryit Mikaelin salaiseen turvaholviin.");
-            setMessage("Olet saapunut poikkeuksellisen vahvaan Holvihuoneeseen. Keskuspilarissa häämöttää Maria Koskelan lahjuspapereita kätkevä pääkassakaappi teräsrattaineen.");
-            buildHelpers();
-          } else {
-            playSfx('error');
-            setMessage("Huoneen 2 paineilmaovi on tiukasti lukossa. Tarvitset kemiallisen aktivoinnin purppurapullolla.");
-          }
-        }
-      } else if (gameState.currentRoom === 3) {
-        if (selection === "vaultBox") {
-          triggerVaultLock();
-        } else if (selection === "goldPile") {
-          playSfx('click');
-          setMessage("Pino kultaharkkoja loistaa keltaista väriään. Niissä on Sveitsin keskuspankin sarjanumerot – todisteita varojen piilottelusta!");
-        } else if (selection === "backToLobbyDoor") {
-          if (gameState.isVaultOpen) {
-            playSfx('success');
-            document.getElementById('win-overlay').style.display = 'flex';
-            gameState.active = false;
-          } else {
-            playSfx('error');
-            setMessage("Tämä ovi aukeaa vasta, kun olet murtanut pilarikassakaapin ja kerännyt Maria Koskelan lahjustodisteet!");
-          }
-        }
-      }
-
-      buildHelpers();
-    }
-
-    // --- TOIMINTALOGIIKAN YKSITYISKOHDAT ---
+  <a-scene background="color: #03050c" vr-mode-ui="enabled: true">
     
-    // HUONE 1
-    function grabKey() {
-      if (gameState.hasKey) return;
-      gameState.hasKey = true;
-      playSfx('pickup');
-      document.getElementById('inv-key').classList.add('acquired');
-      addGameLog("Löysit kultaisen avaimen kellarin lattialta!");
-      setMessage("Sait kultaisen avaimen haltuusi! Kokeile avata sillä pöydällä oleva lukittu rauta-arkku klikkaamalla sitä.");
-      buildHelpers();
-    }
+    <!-- VALOKUVATEKSTUURIT: Ladataan korkealaatuiset pinnat netistä -->
+    <a-assets>
+      <!-- Aito kiviseinä kellarille -->
+      <img id="wall-texture" src="https://unsplash.com">
+      <!-- Aito vanha puulankkulattia -->
+      <img id="floor-texture" src="https://unsplash.com">
+      <!-- Rustiikkinen tammipuu pöydälle ja arkulle -->
+      <img id="wood-texture" src="https://unsplash.com">
+      <!-- Naarmuuntunut metalli kassakaapille -->
+      <img id="metal-texture" src="https://unsplash.com">
+    </a-assets>
 
-    function openChest() {
-      if (gameState.isChestOpen) return;
-      if (gameState.hasKey) {
-        gameState.isChestOpen = true;
-        playSfx('success');
-        document.getElementById('inv-docs').classList.add('acquired');
-        addGameLog("Avasit rauta-arkun!");
-        setMessage("Arkku aukesi hienosti! Sen pohjalta paljastui Mikael Koskelan perintötodiste ja vanha muistilappu. Klikkaa muistilappua lukeaksesi sen tarkasti.");
-      } else {
-        playSfx('error');
-        setMessage("Rauta-arkku on metallisessa riippulukossa. Tarvitset sopivan vanhan avaimen avataksesi sen!", true);
-      }
-      buildHelpers();
-    }
-
-    function showPaperClue() {
-      if (!gameState.isChestOpen) {
-        playSfx('error');
-        setMessage("Asiakirja on visusti lukitun arkun sisällä.", true);
-        return;
-      }
-      playSfx('click');
-      document.getElementById('clue-popup').style.display = 'block';
-    }
-
-    function closeClue() {
-      playSfx('click');
-      document.getElementById('clue-popup').style.display = 'none';
-      setMessage("Katselit lappuamme. Vuosi 1954 on varmastikin haluttu koodi sähköiseen seinäkaappiin eli kytkintaulun numeronäppäimistöön.");
-    }
-
-    function clickTerminalKeypad() {
-      if (!gameState.isChestOpen) {
-        setMessage("Sähkökaapin näppäimistö on pimeänä, se vaatii mekaanisen herätyksen kirstusta käsin.", true);
-        return;
-      }
-      
-      // Kysytään koodia tyylikkäästi pikkupromptilla
-      playSfx('click');
-      const koodi = prompt("Syötä 4-numeroinen turvakoodi pääoven avaamiseksi:");
-      if (koodi !== null) {
-        gameState.enteredCode = koodi;
-        checkSähkölukko();
-      }
-    }
-
-    function checkSähkölukko() {
-      if (gameState.enteredCode === gameState.correctCode) {
-        gameState.isDoor1Open = true;
-        playSfx('success');
-        addGameLog("Murtokoodi 1954 hyväksytty!");
-        setMessage("Oikea koodi (1954) kuittautui vihreällä valolla! Sähköisen pääoven salvat vetäytyvät sisään hienolla suhinalla. Klikkaa ovea siirtyäksesi kemian laboratorioon.");
-      } else {
-        playSfx('error');
-        addGameLog(`Virheellinen yritys: ${gameState.enteredCode}`);
-        setMessage(`Koodi ${gameState.enteredCode} on virheellinen! Tarkastele vihjettä kirstun sisällä saavuttaaksesi ratkaisun.`, true);
-        gameState.enteredCode = "";
-      }
-      buildHelpers();
-    }
-
-    function escapeRoom1Door() {
-      if (gameState.isDoor1Open) {
-        gameState.currentRoom = 2;
-        playSfx('success');
-        addGameLog("Saavuit kemialliseen laboratorioon.");
-        setMessage("Laboratorio on täynnä kemiallisia kuplia ja koeputkia pöydällä. Vihjetaulun mukaan purppurainen reagentti on ratkaisu tähän pähkinään.");
-        buildHelpers();
-      } else {
-        playSfx('error');
-        setMessage("Seinän sähköovi on lukossa. Pura sähkölukko syöttämällä koodi kytkintaululaitteeseen.");
-      }
-    }
-
-    // HUONE 2
-    function triggerSolvent() {
-      if (gameState.isDoor2Open) return;
-      gameState.isDoor2Open = true;
-      playSfx('fizz');
-      setTimeout(() => playSfx('success'), 600);
-      addGameLog("Purppurakaava sulatti pneumatiikkalukon!");
-      setMessage("Klikkasit purppuraa pulloa! Sen happoseos valuu letkuja pitkin suoraan pneumatiikkatilavuuteen sulattaen oven turvasalvat livenä! Kulku Holviin on nyt auki oikeasta ovesta!");
-      buildHelpers();
-    }
-
-    // HUONE 3
-    function triggerVaultLock() {
-      if (gameState.isVaultOpen) {
-        setMessage("Kassakaappi on jo ammollaan, todisteet ovat tallennettu!");
-        return;
-      }
-      playSfx('click');
-      addGameLog("Pyörität turvapyörää...");
-      
-      // Pyöritys-efekti pikkusekunnin
-      let angleInterval = setInterval(() => {
-        itemsRoom3.vaultWheel.rotation += 15;
-      }, 30);
-
-      setTimeout(() => {
-        clearInterval(angleInterval);
-        gameState.isVaultOpen = true;
-        playSfx('success');
-        addGameLog("Kassakaapin ovi rymähti auki!");
-        setMessage("Rataspeli ratkesi ja pääkassakaappi aukesi! Sieltä löytyi lopullinen raportti Maria Koskelan perintöpappien sähköisistä lahjussiirroista Kaartjärvellä! Klikkaa huoneen oikeasta laidasta poistuaksesi pelistä voittoon!");
-        buildHelpers();
-      }, 1200);
-    }
-
-    // --- KANVAASIN LIVEPIIRTÄMINEN JA ELEMENTIT ---
+    <!-- VALAISTUS: Todellinen ambient-yleisvalo ja tunnelmallinen hämärä -->
     
-    // Alustuselementit kipinöille
-    function initRainParticles() {
-      if (particles.length > 50) return;
-      for (let i = 0; i < 2; i++) {
-        // Takan kipinät (kohta 160, 400)
-        particles.push({
-          x: 140 + (Math.random() - 0.5) * 60,
-          y: 400,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: -Math.random() * 2 - 1,
-          size: Math.random() * 3 + 2,
-          life: 1,
-          decay: Math.random() * 0.02 + 0.01
-        });
-      }
-    }
-
-    function drawRoom1() {
-      // 1. Takan kivirunko ja loiste
-      const f = itemsRoom1.fireplace;
-      const fireGrad = ctx.createRadialGradient(f.x + f.w/2, f.y + f.h - 50, 20, f.x + f.w/2, f.y + f.h - 50, 160);
-      fireGrad.addColorStop(0, "rgba(253, 186, 116, 0.95)"); // Lämmin oranssi
-      fireGrad.addColorStop(0.3, "rgba(239, 68, 68, 0.4)");
-      fireGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
-
-      ctx.fillStyle = fireGrad;
-      ctx.fillRect(f.x - 40, f.y, f.w + 80, f.h);
-
-      // Takan kehys
-      ctx.strokeStyle = "#1e293b";
-      ctx.lineWidth = 12;
-      ctx.strokeRect(f.x, f.y, f.w, f.h);
-      ctx.fillStyle = "#0c0a09";
-      ctx.fillRect(f.x + 10, f.y + 10, f.w - 20, f.h - 10);
-
-      // Hehkuva nokihiillos takan sisällä
-      const emberGrad = ctx.createLinearGradient(f.x, f.y + f.h - 60, f.x, f.y + f.h);
-      emberGrad.addColorStop(0, "#f97316");
-      emberGrad.addColorStop(1, "#7c2d12");
-      ctx.fillStyle = emberGrad;
-      ctx.fillRect(f.x + 15, f.y + f.h - 60, f.w - 30, 50);
-
-      // Piirretään takan kipinähiukkaset
-      particles.forEach((p, idx) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= p.decay;
-        
-        ctx.fillStyle = `rgba(251, 146, 60, ${p.life})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (p.life <= 0) particles.splice(idx, 1);
-      });
-
-      // 2. Tamminen työpöytä
-      const d = itemsRoom1.desk;
-      ctx.fillStyle = "#271c19"; // Paksu tumma puu
-      ctx.fillRect(d.x, d.y, d.w, d.h);
-      
-      ctx.fillStyle = "#451a03"; // Pinnan korostusvyöhyke
-      ctx.fillRect(d.x + 10, d.y + 10, d.w - 20, d.h - 20);
-
-      // Pöydän paksuus ja jalat hilseilevästi
-      ctx.fillStyle = "#1c1917";
-      ctx.fillRect(d.x, d.y + d.h, 24, 100);
-      ctx.fillRect(d.x + d.w - 24, d.y + d.h, 24, 100);
-
-      // 3. Rauta-arkku (chest)
-      const c = itemsRoom1.chest;
-      if (gameState.isChestOpen) {
-        ctx.fillStyle = "#1e3a1e"; // Avattu kirstu vihreänä sävynä
-      } else {
-        ctx.fillStyle = "#581c1c"; // Tummanpunainen rautainen arkku
-      }
-      ctx.fillRect(c.x, c.y, c.w, c.h);
-      
-      // Arkun raitaukset
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(c.x, c.y, c.w, c.h);
-
-      // Arkun kansilinja ja kultainen lukkopesä
-      ctx.beginPath();
-      ctx.moveTo(c.x, c.y + c.h/2);
-      ctx.lineTo(c.x + c.w, c.y + c.h/2);
-      ctx.stroke();
-
-      ctx.fillStyle = "#d97706";
-      ctx.fillRect(c.x + c.w/2 - 8, c.y + c.h/2 - 12, 16, 24);
-
-      // 4. Muistilappu pöydällä
-      const pap = itemsRoom1.paper;
-      ctx.fillStyle = "#fafaf9";
-      ctx.fillRect(pap.x, pap.y, pap.w, pap.h);
-      ctx.strokeStyle = "#d97706";
-      ctx.strokeRect(pap.x, pap.y, pap.w, pap.h);
-      
-      // Piirretään vähän tekstiraitoja
-      ctx.strokeStyle = "#94a3b8";
-      ctx.lineWidth = 1;
-      for (let i = 6; i < pap.h; i += 8) {
-        ctx.beginPath();
-        ctx.moveTo(pap.x + 8, pap.y + i);
-        ctx.lineTo(pap.x + pap.w - 8, pap.y + i);
-        ctx.stroke();
-      }
-
-      // 5. Kultainen avain lattialla hohtavalla kehällä lyhtynä
-      if (!gameState.hasKey) {
-        const k = itemsRoom1.key;
-        // Hohtava kehä
-        const pulse = 12 + Math.sin(Date.now() * 0.005) * 6;
-        ctx.fillStyle = "rgba(251, 191, 36, 0.15)";
-        ctx.beginPath();
-        ctx.arc(k.x, k.y, k.r + pulse, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Piirretään varsinainen avaintyyli
-        ctx.strokeStyle = "#fbbf24";
-        ctx.fillStyle = "#fbbf24";
-        ctx.lineWidth = 3;
-        
-        // Päärengas
-        ctx.beginPath();
-        ctx.arc(k.x - 10, k.y, 10, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // Varsi
-        ctx.beginPath();
-        ctx.moveTo(k.x, k.y);
-        ctx.lineTo(k.x + 18, k.y);
-        ctx.stroke();
-
-        // Hampaat
-        ctx.fillRect(k.x + 12, k.y, 6, 8);
-        ctx.fillRect(k.x + 6, k.y, 4, 6);
-      }
-
-      // 6. Seinäterminaali (Koodilukko)
-      const t = itemsRoom1.terminal;
-      ctx.fillStyle = "#1e293b";
-      ctx.fillRect(t.x, t.y, t.w, t.h);
-      ctx.strokeStyle = "#475569";
-      ctx.strokeRect(t.x, t.y, t.w, t.h);
-
-      // Jännitenäyttö vihreänä/punaisena logon mukaan
-      if (gameState.isDoor1Open) {
-        ctx.fillStyle = "#022c22";
-        ctx.fillRect(t.x + 10, t.y + 15, t.w - 20, 26);
-        ctx.fillStyle = "#10b981";
-        ctx.font = "bold 11px 'JetBrains Mono'";
-        ctx.fillText("OPEN", t.x + 24, t.y + 32);
-      } else {
-        ctx.fillStyle = "#450a0a";
-        ctx.fillRect(t.x + 10, t.y + 15, t.w - 20, 26);
-        ctx.fillStyle = "#f43f5e";
-        ctx.font = "bold 11px 'JetBrains Mono'";
-        ctx.fillText("LOCKED", t.x + 18, t.y + 32);
-      }
-
-      // Napit näppäimistössä koristekorostaen
-      ctx.fillStyle = "#334155";
-      for (let r = 0; r < 3; r++) {
-        for (let col = 0; col < 3; col++) {
-          ctx.fillRect(t.x + 16 + col * 22, t.y + 55 + r * 18, 14, 10);
-        }
-      }
-
-      // 7. Sähköovi
-      const do1 = itemsRoom1.door;
-      if (gameState.isDoor1Open) {
-        ctx.fillStyle = "rgba(16, 185, 129, 0.1)"; // Avoin metalliovi vihreänä varjona
-        ctx.fillRect(do1.x, do1.y, do1.w, do1.h);
-        ctx.strokeStyle = "#10b981";
-        ctx.strokeRect(do1.x, do1.y, do1.w, do1.h);
-        
-        ctx.fillStyle = "#10b981";
-        ctx.font = "11px 'Space Grotesk'";
-        ctx.fillText("KULKU VAPAA", do1.x + 12, do1.y + do1.h/2);
-      } else {
-        ctx.fillStyle = "#0f172a";
-        ctx.fillRect(do1.x, do1.y, do1.w, do1.h);
-        ctx.strokeStyle = "#ef4444";
-        ctx.strokeRect(do1.x, do1.y, do1.w, do1.h);
-        // Oven raudat
-        ctx.fillStyle = "#1e293b";
-        ctx.fillRect(do1.x + 30, do1.y + 20, 40, do1.h - 40);
-
-        ctx.fillStyle = "#ef4444";
-        ctx.beginPath();
-        ctx.arc(do1.x + 50, do1.y + do1.h/2, 10, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function drawRoom2() {
-      // Huone 2: Kemian laboratorio
-      // Taustan vihreä loisteet koeputkista
-      const desk = itemsRoom2.labDesk;
-      
-      // Liitutaulu vihjeeksi
-      const board = itemsRoom2.blackboard;
-      ctx.fillStyle = "#064e3b";
-      ctx.fillRect(board.x, board.y, board.w, board.h);
-      ctx.strokeStyle = "#047857";
-      ctx.lineWidth = 6;
-      ctx.strokeRect(board.x, board.y, board.w, board.h);
-
-      ctx.fillStyle = "#a7f3d0";
-      ctx.font = "12px 'Space Grotesk'";
-      ctx.fillText("REAKTIOMALLI-SOLVENT X:", board.x + 16, board.y + 30);
-      ctx.font = "10px 'JetBrains Mono'";
-      ctx.fillStyle = "#34d399";
-      ctx.fillText("1. RED = ERITYISHAPPOVIRHE", board.x + 16, board.y + 55);
-      ctx.fillText("2. PURPLE = SEOSAVAIN (UNLOCKED)", board.x + 16, board.y + 75);
-      ctx.fillText("3. YELLOW = RÄJÄHDYTYS", board.x + 16, board.y + 92);
-
-      // Koepöytä
-      ctx.fillStyle = "#0f172a";
-      ctx.fillRect(desk.x, desk.y, desk.w, desk.h);
-      ctx.fillStyle = "#1e293b";
-      ctx.fillRect(desk.x + 10, desk.y + 10, desk.w - 20, desk.h - 20);
-
-      // Kaasuventtiili
-      const v = itemsRoom2.gasValve;
-      ctx.fillStyle = "#334155";
-      ctx.beginPath();
-      ctx.arc(v.x, v.y, v.r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#94a3b8";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(v.x - v.r/2, v.y - 4, v.r * 1, 8);
-
-      // Kemialliset testiputket/pullot koepöydällä
-      // 1. Punainen pullo
-      drawVial(itemsRoom2.vialRed, "#ef4444");
-      // 2. Vihreä pullo
-      drawVial(itemsRoom2.vialGreen, "#10b981");
-      // 3. Purppura pullo (pimeässä hohtava)
-      drawVial(itemsRoom2.vialPurple, "#c084fc", true);
-      // 4. Keltainen pullo
-      drawVial(itemsRoom2.vialYellow, "#fbbf24");
-
-      // Pneumatiikkaovi
-      const bulk = itemsRoom2.bulkhead;
-      if (gameState.isDoor2Open) {
-        ctx.fillStyle = "rgba(16, 185, 129, 0.1)";
-        ctx.fillRect(bulk.x, bulk.y, bulk.w, bulk.h);
-        ctx.strokeStyle = "#10b981";
-        ctx.strokeRect(bulk.x, bulk.y, bulk.w, bulk.h);
-        ctx.fillStyle = "#10b981";
-        ctx.font = "11px 'Space Grotesk'";
-        ctx.fillText("KULKU VAPAA", bulk.x + 12, bulk.y + bulk.h/2);
-      } else {
-        ctx.fillStyle = "#022c22";
-        ctx.fillRect(bulk.x, bulk.y, bulk.w, bulk.h);
-        ctx.strokeStyle = "#10b981";
-        ctx.strokeRect(bulk.x, bulk.y, bulk.w, bulk.h);
-
-        // Paine-indikaattori ympyrä
-        ctx.fillStyle = "#ef4444";
-        ctx.beginPath();
-        ctx.arc(bulk.x + 50, bulk.y + 80, 16, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function drawVial(vial, color, glowing = false) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.fillRect(vial.x, vial.y, vial.w, vial.h);
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(vial.x, vial.y, vial.w, vial.h);
-
-      // Nesteen täyttö
-      ctx.fillStyle = color;
-      ctx.fillRect(vial.x + 3, vial.y + vial.h - 26, vial.w - 6, 23);
-
-      // Kansi
-      ctx.fillStyle = "#64748b";
-      ctx.fillRect(vial.x + vial.w/2 - 6, vial.y - 6, 12, 6);
-
-      // Hehkuva loiste
-      if (glowing) {
-        const pulse = 4 + Math.sin(Date.now() * 0.007) * 3;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(vial.x - pulse, vial.y - pulse, vial.w + pulse * 2, vial.h + pulse * 2);
-      }
-    }
-
-    function drawRoom3() {
-      // 1. Kivinen holvipilari keskellä
-      const pil = itemsRoom3.pillar;
-      ctx.fillStyle = "#1c1917";
-      ctx.fillRect(pil.x, pil.y, pil.w, pil.h);
-      ctx.strokeStyle = "#fbbf24";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(pil.x, pil.y, pil.w, pil.h);
-
-      // 2. Turvakaappi pilarissa
-      const vb = itemsRoom3.vaultBox;
-      if (gameState.isVaultOpen) {
-        ctx.fillStyle = "#0c0a09"; // Auki olo tummuus
-      } else {
-        ctx.fillStyle = "#292524";
-      }
-      ctx.fillRect(vb.x, vb.y, vb.w, vb.h);
-      ctx.strokeStyle = "#d97706";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(vb.x, vb.y, vb.w, vb.h);
-
-      // Jos se on aukitilassa, piiretään sisällä oleva perintö-asiakirja lahjuskoneineen
-      if (gameState.isVaultOpen) {
-        ctx.fillStyle = "#fafaf9";
-        ctx.fillRect(vb.x + 20, vb.y + 15, 50, 60);
-        ctx.fillStyle = "#ef4444";
-        ctx.font = "9px 'JetBrains Mono'";
-        ctx.fillText("LAHJOITUS", vb.x + 22, vb.y + 35);
-        ctx.fillText("MARIA KOSK", vb.x + 22, vb.y + 50);
-      }
-
-      // Kassakaapin pyörä
-      const vw = itemsRoom3.vaultWheel;
-      ctx.save();
-      ctx.translate(vw.x, vw.y);
-      ctx.rotate(vw.rotation * Math.PI / 180);
-      
-      ctx.fillStyle = "#d97706";
-      ctx.beginPath();
-      ctx.arc(0, 0, vw.r, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Pyörän hampaat ristikoiden mukaan
-      ctx.strokeStyle = "#451a03";
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.moveTo(-vw.r, 0);
-      ctx.lineTo(vw.r, 0);
-      ctx.moveTo(0, -vw.r);
-      ctx.lineTo(0, vw.r);
-      ctx.stroke();
-
-      ctx.restore();
-
-      // 3. Kultaharkko pino vasemmalla
-      const gold = itemsRoom3.goldPile;
-      ctx.fillStyle = "#fbbf24";
-      // Harkot
-      for (let r = 0; r < 3; r++) {
-        for (let col = 0; col < 3 - r; col++) {
-          ctx.fillRect(gold.x + col * 44 + r * 22, gold.y - r * 22, 40, 18);
-          ctx.strokeStyle = "#d97706";
-          ctx.strokeRect(gold.x + col * 44 + r * 22, gold.y - r * 22, 40, 18);
-        }
-      }
-
-      // 4. Poistumisovi aulaan oikealla
-      const outd = itemsRoom3.backToLobbyDoor;
-      if (gameState.isVaultOpen) {
-        ctx.fillStyle = "#0c0a09";
-        ctx.fillRect(outd.x, outd.y, outd.w, outd.h);
-        ctx.strokeStyle = "#10b981";
-        ctx.strokeRect(outd.x, outd.y, outd.w, outd.h);
-        
-        ctx.fillStyle = "#10b981";
-        ctx.font = "bold 13px 'Space Grotesk'";
-        ctx.fillText("KLIKKAA TÄSTÄ TO", outd.x + 12, outd.y + 100);
-        ctx.fillText("PAETAKSESI!", outd.x + 24, outd.y + 124);
-      } else {
-        ctx.fillStyle = "#1e1b4b";
-        ctx.fillRect(outd.x, outd.y, outd.w, outd.h);
-        ctx.strokeStyle = "#4338ca";
-        ctx.strokeRect(outd.x, outd.y, outd.w, outd.h);
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "11px 'Space Grotesk'";
-        ctx.fillText("TURVAOVIPELI", outd.x + 20, outd.y + 100);
-      }
-    }
-
-    // --- PÄÄPIIRTO SILMUKKA (ANIMATION LOOP) ---
-    function updateAndRender() {
-      // Varmistetaan resizesta huolimatta dynaaminen sovitus katseluun
-      ctx.fillStyle = "#030207";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.save();
-      // Lasketaan skaalauskerroin reagoivaksi
-      const scale = Math.min(canvas.width / V_WIDTH, canvas.height / V_HEIGHT);
-      const dx = (canvas.width - V_WIDTH * scale) / 2;
-      const dy = (canvas.height - V_HEIGHT * scale) / 2;
-      ctx.translate(dx, dy);
-      ctx.scale(scale, scale);
-
-      // Piirretään huoneen seiniä pimeänä huoneena
-      ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
-      ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
-
-      // Yleiset reunukset
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(0, 0, V_WIDTH, V_HEIGHT);
-
-      // Takan dynaaminen kipinälataus huoneessa 1
-      if (gameState.currentRoom === 1) {
-        initRainParticles();
-      }
-
-      // Piirretään aktiivinen huone
-      if (gameState.currentRoom === 1) {
-        drawRoom1();
-      } else if (gameState.currentRoom === 2) {
-        drawRoom2();
-      } else if (gameState.currentRoom === 3) {
-        drawRoom3();
-      }
-
-      // Piirretään mukautettu tähtäinkursori hiiren kohdalle
-      if (gameState.active) {
-        const mx = (gameState.mouse.x - dx) / scale;
-        const my = (gameState.mouse.y - dy) / scale;
-
-        // Kursoriympyrä
-        ctx.strokeStyle = gameState.mouse.hover ? "var(--accent-gold)" : "var(--accent-rose)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(mx, my, gameState.mouse.hover ? 14 : 10, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = gameState.mouse.hover ? "var(--accent-gold)" : "var(--accent-rose)";
-        ctx.beginPath();
-        ctx.arc(mx, my, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Pieni hover-teksti opastamaan
-        if (gameState.mouse.hover && gameState.mouse.hoverItem) {
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 11px 'Space Grotesk'";
-          
-          let name = "";
-          if (gameState.currentRoom === 1) name = itemsRoom1[gameState.mouse.hoverItem]?.name || "";
-          else if (gameState.currentRoom === 2) name = itemsRoom2[gameState.mouse.hoverItem]?.name || "";
-          else if (gameState.currentRoom === 3) name = itemsRoom3[gameState.mouse.hoverItem]?.name || "";
-
-          ctx.fillText(name.toUpperCase(), mx + 16, my + 4);
-        }
-      }
-
-      ctx.restore();
-
-      requestAnimationFrame(updateAndRender);
-    }
-
-    // --- KANVAASIN RESIZE JA REKISTERÖINTI ---
-    function setupCanvas() {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-    }
-
-    window.addEventListener('resize', setupCanvas);
-
-    // Hiiren kuuntelijat
-    window.addEventListener('mousemove', (e) => {
-      gameState.mouse.screenX = e.clientX;
-      gameState.mouse.screenY = e.clientY;
-      checkMouseHover();
-    });
-
-    canvas.addEventListener('mousedown', () => {
-      clickTheCanvas();
-    });
-
-    // Ensilataukset
-    setupCanvas();
-    requestAnimationFrame(updateAndRender);
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="fi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Osa 4: Kaartjärven salalabyrintti 3D VR</title>
-  
-  <!-- A-Frame WebXR 3D-moottori -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
-  <!-- Google-fontit ja ulkoasutyylit -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      --bg-color: #030712;
-      --panel-bg: rgba(11, 17, 32, 0.9);
-      --accent-green: #10b981;
-      --accent-rose: #f43f5e;
-      --accent-amber: #f59e0b;
-      --accent-indigo: #6366f1;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    /* Pelin HUD overlay ja kaksiulotteinen ohjauskonsoli */
-    #hud-panel {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 800px;
-      background: var(--panel-bg);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 16px 24px;
-      z-index: 1000;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .hud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
-    }
-
-    .hud-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hud-room-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: bold;
-      background: var(--accent-indigo);
-      padding: 4px 10px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .hud-message-box {
-      font-size: 13px;
-      color: var(--text-main);
-      line-height: 1.6;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 10px 14px;
-      border-radius: 8px;
-      border-left: 3px solid var(--accent-amber);
-    }
-
-    /* 2D ohjausnapit helpottamaan saavutettavuutta ja PC-käyttöä */
-    .hud-controls {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 12px;
-      color: #fff;
-      cursor: pointer;
-       transition: all 0.2s ease;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .btn-exit {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .btn-exit:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .btn-action {
-      background: linear-gradient(135deg, var(--accent-indigo) 0%, #4338ca 100%);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    .btn-action:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
-    }
-
-    /* Aloitus ja Loppuruudut */
-    .screen-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.96);
-      z-index: 2000;
-      display: flex;
-      justify-content: center;
-      alignItems: center;
-      padding: 24px;
-      display: flex;
-      align-items: center;
-    }
-
-    .overlay-card {
-      background: #090e1a;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 32px;
-      max-width: 580px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 52px rgba(0, 0, 0, 0.8);
-      margin: auto;
-    }
-
-    .overlay-card h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #ffffff;
-    }
-
-    .overlay-card p {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .tutorial-box {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 16px;
-      text-align: left;
-      font-size: 11.5px;
-      color: #cbd5e1;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    .tutorial-highlight {
-      color: var(--accent-amber);
-      font-weight: 600;
-    }
-
-    .btn-start {
-      background: linear-gradient(90deg, var(--accent-rose) 0%, #be123c 100%);
-      padding: 12px 28px;
-      font-size: 13px;
-      font-weight: bold;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
-    }
-
-    .btn-start:hover {
-      transform: translateY(-1px);
-    }
-
-    /* Yläpalkki nopeaa poistumista varten */
-    #top-bar {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-      z-index: 1001;
-    }
-
-    .top-meta {
-      background: rgba(11, 17, 32, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent-amber);
-      pointer-events: auto;
-      backdrop-filter: blur(8px);
-    }
-
-    .btn-top-exit {
-      background: rgba(244, 63, 94, 0.2);
-      border: 1px solid rgba(244, 63, 94, 0.4);
-      color: var(--accent-rose);
-      font-weight: bold;
-      pointer-events: auto;
-    }
     
-    .btn-top-exit:hover {
-      background: rgba(244, 63, 94, 0.35);
-    }
-  </style>
-</head>
-<body>
+    <!-- SEINÄT JA LATTIA AIDOILLA VALOKUVATEKSTUUREILLA -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="14" height="14" src="#floor-texture" repeat="4 4"></a-plane>
+    <a-plane position="0 4 0" rotation="90 0 0" width="14" height="14" color="#0a0f1d"></a-plane>
 
-  <!-- YLÄPALKKI -->
-  <div id="top-bar">
-    <div class="top-meta">🗝️ OSA 4: SALALABYRINTTI</div>
-    <button class="btn btn-top-exit" onclick="exitToLobby()">POISTU LAAJENNUKSESTA</button>
-  </div>
-
-  <!-- ALKUPELI OVERLAY -->
-  <div id="intro-overlay" class="screen-overlay">
-    <div class="overlay-card">
-      <div style="font-size: 44px; margin-bottom: 12px; filter: drop-shadow(0 0 8px var(--accent-indigo));">🚪</div>
-      <h2>Osa 4: Kaartjärven Salalabyrintti</h2>
-      <p>
-        Olet laskeutunut syvemmälle Mikaelin huvilan alle salaperäiseen 3D-kellarilabyrinttiin, 
-        joka koostuu kolmesta tiukasti suljetusta kammiosta. Jokaisen huoneen ratkaisu vaatii terävää 
-        havaintokykyä ja 3D-maailman kohteiden salaisuuksien murtamista.
-      </p>
-
-      <div class="tutorial-box">
-        <strong style="color: #ffffff; display: block; margin-bottom: 6px;">Etene huoneesta toiseen:</strong>
-        • <span class="tutorial-highlight">HUONE 1 (Synkkä arkisto):</span> Löydä piilotettu vihje ja syötä oikea 4-numeroinen koodi keltaisena loistavaan 3D-painiketauluun.<br />
-        • <span class="tutorial-highlight">HUONE 2 (Laboratorio):</span> Sekoita oikeat kemikaalit klikkaamalla dynaamista pulloa avaamaan toisen oven.<br />
-        • <span class="tutorial-highlight">HUONE 3 (Mikaelin holvi):</span> Etsi viimeinen salainen kassakaappi viedäksesi tutkimuksen loppuun.
-      </div>
-
-      <button class="btn btn-start" onclick="startMazeGame()">KÄYNNISTÄ RETKI</button>
-    </div>
-  </div>
-
-  <!-- LOPPUPELI OVERLAY (VOITTO) -->
-  <div id="win-overlay" class="screen-overlay" style="display: none;">
-    <div class="overlay-card" style="border-color: var(--accent-green); box-shadow: 0 0 40px rgba(16, 185, 129, 0.25);">
-      <div style="font-size: 44px; margin-bottom: 12px;">🏆</div>
-      <h2 style="color: var(--accent-green);">Labyrintti Murrettu!</h2>
-      <p>
-        Onnistuit pääsemään läpi kaikista kellarilabyrintin kolmesta huoneesta ja ratkaisit 
-        Mikael Koskelan perintöhuvilan syvimmät unohdetut salat. Turvaholvin uumenista kerätyt raskaat 
-        lahjusvaihtokirjat todistavat Maria Koskelan siirtäneen varoja holvissa luvatta perintökirjauksen ohi.
-      </p>
-
-      <div class="tutorial-box" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
-        • 📚 <strong>Arkiston murtoluku:</strong> 2026 (Nykyinen vuosiluku)<br />
-        • 🧪 <strong>Laboratorioseos:</strong> Purppura reaktiopullo<br />
-        • 👑 <strong>Labyrinttiarvosana:</strong> Mestarietsivä & Pakohuoneasiantuntija!<br />
-        • 🕶️ <strong>WebXR-yhteensopivuus:</strong> Kyllä, valmis Oculus Quest / Google Cardboard -katselulle.
-      </div>
-
-      <div style="display: flex; gap: 12px; justify-content: center;">
-        <button class="btn btn-action" style="background: var(--accent-green);" onclick="resetGame()">PELAA UUDELLEEN</button>
-        <button class="btn btn-exit" onclick="exitToLobby()">PALAA PÄÄVALIKKOON</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HUD IN-GAME OVERLAY BANNERI -->
-  <div id="hud-panel">
-    <div class="hud-header">
-      <div class="hud-title">🗝️ ETSI ELITOTEET: KAARTJÄRVI 3D</div>
-      <div class="hud-room-badge" id="hud-room-indicator">Huone 1: Synkkä arkisto</div>
-    </div>
-    <div class="hud-message-box" id="hud-message">
-      Etsi huoneesta sähköinen kytkintaulu ja tutki pöydällä lojuvia vanhoja arkistoasiakirjoja löytääksesi murtokoodin!
-    </div>
-    <div class="hud-controls">
-      <button class="btn btn-action" id="hud-accessibility-btn" onclick="accessibilityAction()">Pika-apua tutkimukseen</button>
-      <button class="btn btn-exit" onclick="exitToLobby()">Keskeytä peli</button>
-    </div>
-  </div>
-
-  <!-- 3D MAAILMAN KOODI - A-FRAME SCENE -->
-  <a-scene embedded vr-mode-ui="enabled: true" style="width: 100%; height: 100%;">
-    
-    <!-- Pimeä ja tyylikäs tähtitaivas kellarin kattoluukuista näkyväksi tunnelmaksi -->
-    <a-sky color="#02040a"></a-sky>
-
-    <!-- MAAILMAN VALOT -->
-    <!-- Yleinen hämärä taustavalo kellaritunnelmaan -->
-    <a-light type="ambient" color="#111827" intensity="1.2"></a-light>
-    
-    <!-- Kohdevalo arkiston huoneelle -->
-    <a-light type="spot" color="#818cf8" intensity="1.5" distance="10" position="0 3.5 0" rotation="-90 0 0" angle="60"></a-light>
-
-    <!-- Kohdevalo kemian laboratoriolle -->
-    <a-light type="spot" color="#34d399" intensity="1.5" distance="10" position="0 3.5 -12" rotation="-90 0 0" angle="60"></a-light>
-
-    <!-- Kohdevalo kultaiselle holville -->
-    <a-light type="spot" color="#fbbf24" intensity="1.8" distance="10" position="0 3.5 -24" rotation="-90 0 0" angle="60"></a-light>
-
-    <!-- YLEINEN LATTIAPINTA -->
-    <a-plane position="0 0 -15" rotation="-90 0 0" width="14" height="40" color="#090d16" material="roughness: 0.9; metalness: 0.1"></a-plane>
-    <a-plane position="0 3.9 -15" rotation="90 0 0" width="14" height="40" color="#04060b"></a-plane>
-
-    <!-- ----------------------------------------------------- -->
-    <!-- HUONE 1 (Synkkä arkisto): Z = [5, -6] -->
-    <!-- ----------------------------------------------------- -->
-    
-    <!-- Sivuseinät huone 1 -->
-    <a-box class="static-wall" position="-4 2 0" width="0.2" height="4" depth="12" color="#1e293b"></a-box>
-    <a-box class="static-wall" position="4 2 0" width="0.2" height="4" depth="12" color="#1e293b"></a-box>
-    <a-box class="static-wall" position="0 2 5.9" width="8" height="4" depth="0.2" color="#111827"></a-box>
-
-    <!-- Arkiston pöytä ja vanha salkku -->
-    <a-box id="h1-desk" position="0 0.45 -2" width="1.6" height="0.9" depth="1" color="#3f2e29" material="roughness: 0.8">
-      <!-- Pöytäpaperit vihjeeksi -->
-      <a-plane id="h1-document" class="clickable" position="0 0.46 0" rotation="-90 0 0" width="1.3" height="0.8" color="#f8fafc">
-        <a-text value="TIETOKIRJA VUODESTA\nREVI LAHJOITUS\nKOODI ON TÄMÄ VUOSI" color="#1e293b" width="1.6" align="center" position="0 0 0.01"></a-text>
-      </a-plane>
+    <!-- Kellarin rosoiset kiviseinät -->
+    <a-box position="0 2 -7" width="14" height="4" depth="0.2" src="#wall-texture" repeat="3 1">
+      <a-text value="MIKAELIN SYNTYMAVUOSI: 1954" color="#fbbf24" position="0 1 0.15" width="5.5" align="center"></a-text>
     </a-box>
+    <a-box position="0 2 7" width="14" height="4" depth="0.2" src="#wall-texture" repeat="3 1"></a-box>
+    <a-box position="7 2 0" rotation="0 -90 0" width="14" height="4" depth="0.2" src="#wall-texture" repeat="3 1"></a-box>
+    <a-box position="-7 2 0" rotation="0 90 0" width="14" height="4" depth="0.2" src="#wall-texture" repeat="3 1"></a-box>
 
-    <!-- 3D Koodilukko seinässä huoneessa 1 -->
-    <a-box id="h1-codebox" position="3.8 1.4 -3" width="0.1" height="1" depth="0.8" color="#334155">
-      <!-- Digitaalinen näyttö paneeli -->
-      <a-box position="-0.06 0.3 0" width="0.02" height="0.2" depth="0.6" color="#020617">
-        <a-text id="h1-screen" value="----" color="#ef4444" position="-0.02 0 0" rotation="0 -90 0" width="2" align="center"></a-text>
+    <!-- REALISTINEN PALAVA TAKKA HEHKULLA -->
+    <a-box position="-6.8 1.1 -2" rotation="0 90 0" width="3" height="2.2" depth="0.4" color="#334155">
+      <a-box position="0 -0.2 0.22" width="1.6" height="1.2" depth="0.1" color="#0f172a"></a-box>
+      <!-- Hiillos ja takkatulen lämmin pistesäteily -->
+      <a-box position="0 -0.5 0.26" width="1.2" height="0.25" depth="0.15" color="#f97316" material="emissive: #f43f5e; emissiveIntensity: 3"></a-box>
+    </a-box>
+    <a-light type="point" color="#fbbf24" intensity="2.5" distance="8" position="-5.5 1.2 -2"></a-light>
+
+    <!-- TAMMINEN ARVOPÖYTÄ JA LUKITTU KIRSTU -->
+    <a-box id="mikael-table" position="0 0.4 -3" width="2.2" height="0.8" depth="1.4" src="#wood-texture">
+      <!-- Kirstu pöydän päällä puutekstuurilla -->
+      <a-box id="mikael-chest" class="clickable" position="0 0.55 0.1" width="0.75" height="0.4" depth="0.45" src="#wood-texture" color="#7f1d1d">
+        <a-box id="chest-padlock" position="0 -0.05 0.24" width="0.08" height="0.1" depth="0.03" color="#d97706"></a-box>
+        <a-text value="KLIKKAA AVAIMELLA" position="0 0.24 0" align="center" width="1.8" color="#ffffff"></a-text>
+        <!-- Arkun sisällä oleva dynaaminen vihjepaperi -->
+        <a-plane id="chest-interior-hint" position="0 0.16 0.05" rotation="-20 0 0" width="0.6" height="0.25" color="#fafaf9" visible="false">
+          <a-text value="KASSAKAAPIN KOODI: 1954" color="#1e293b" position="0 0 0.01" width="1.6" align="center"></a-text>
+        </a-plane>
       </a-box>
-
-      <!-- Painike 0..9, C, E listaus (yksinkertainen 3D-näppäimistö) -->
-      <!-- Painikkeita varten ohjaimet ja elementit -->
-      <a-box id="btn-h1-1" class="clickable" position="-0.06 0.1 0.2" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-2" class="clickable" position="-0.06 0.1 0.1" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-3" class="clickable" position="-0.06 0.1 0" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-4" class="clickable" position="-0.06 0.1 -0.1" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-5" class="clickable" position="-0.06 0.1 -0.2" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-
-      <a-box id="btn-h1-6" class="clickable" position="-0.06 -0.1 0.2" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-7" class="clickable" position="-0.06 -0.1 0.1" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-8" class="clickable" position="-0.06 -0.1 0" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-9" class="clickable" position="-0.06 -0.1 -0.1" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-      <a-box id="btn-h1-0" class="clickable" position="-0.06 -0.1 -0.2" width="0.03" height="0.08" depth="0.08" color="#475569"></a-box>
-
-      <a-box id="btn-h1-C" class="clickable" position="-0.06 -0.3 0.1" width="0.03" height="0.1" depth="0.18" color="#ef4444"></a-box>
-      <a-box id="btn-h1-E" class="clickable" position="-0.06 -0.3 -0.1" width="0.03" height="0.1" depth="0.18" color="#10b981"></a-box>
     </a-box>
 
-    <!-- Tekstiopasteita kytkintaulun luokse -->
-    <a-text value="PAINA KIINNI SEINÄN NÄPPÄIMIÄ" position="3.6 2.1 -3" rotation="0 -90 0" width="2" color="#ffffff" align="center"></a-text>
+    <!-- PNEUMAATTINEN TURVAOVI ETELÄSEINÄLLÄ -->
+    <a-box id="escape-door" class="clickable" position="0 1.5 6.8" width="2.2" height="3" depth="0.12" src="#metal-texture" color="#1e1b4b">
+      <a-text id="door-text" value="SÄHKÖMAGNEETTI LUKITTU" position="0 0.5 0.08" align="center" width="2.4" color="#f43f5e"></a-text>
+    </a-box>
+    <a-sphere position="0.8 1.4 6.65" radius="0.06" color="#d97706"></a-sphere>
 
-    <!-- VÄLI-OVI 1 (LUKITTU ARKISTO-OVI) -->
-    <!-- Ovikehys -->
-    <a-box position="0 2 -5.9" width="3" height="4" depth="0.3" color="#030712"></a-box>
-    <!-- Väliovi joka liikkuu auki syöttämällä koodi -->
-    <a-box id="door-h1" position="0 1.5 -5.85" width="2.4" height="3" depth="0.1" color="#475569"
-           animation="property: position; startEvents: door1-open-event; to: 0 4.8 -5.85; dur: 2000; easing: easeInOutQuad">
-      <!-- Oven lukon statusvalo -->
-      <a-sphere id="door-h1-indicator" position="0 0.8 0.06" radius="0.08" color="#ef4444"></a-sphere>
+    <!-- KYLMÄTERÄKSINEN KASSAKAAPPI SEINÄLLÄ -->
+    <a-box id="mikael-safe-body" position="3 1.5 -6.8" width="1.4" height="1.4" depth="0.3" src="#metal-texture">
+      <!-- Elektroninen digitaalinäyttö koodille -->
+      <a-box position="-0.25 0.35 0.16" width="0.48" height="0.22" depth="0.01" color="#020617">
+        <a-text id="safe-screen" value="CODE?" position="0 0 0.01" color="#f43f5e" width="2.4" align="center" font="monoid"></a-text>
+      </a-box>
+      <a-box id="mikael-safe-door" position="0.25 0 0.17" width="0.55" height="0.85" depth="0.02" color="#0f172a">
+        <a-cylinder position="0 0 0.03" rotation="90 0 0" radius="0.1" height="0.04" color="#94a3b8"></a-cylinder>
+      </a-box>
     </a-box>
 
+    <!-- INTERAKTIIVISET 3D-PAINIKKEET SEINÄLLÄ ILMASSA KASSAKAAPIN VIERESSÄ -->
+    <a-box id="btn-3d-1" class="clickable" position="1.9 1.6 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="1" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-2" class="clickable" position="2.05 1.6 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="2" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-3" class="clickable" position="2.2 1.6 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="3" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-4" class="clickable" position="1.9 1.45 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="4" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-5" class="clickable" position="2.05 1.45 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="5" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-6" class="clickable" position="2.2 1.45 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="6" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-7" class="clickable" position="1.9 1.3 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="7" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-8" class="clickable" position="2.05 1.3 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="8" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-9" class="clickable" position="2.2 1.3 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="9" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-C" class="clickable" position="1.9 1.15 -6.5" width="0.1" height="0.1" depth="0.08" color="#ef4444"><a-text value="C" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-0" class="clickable" position="2.05 1.15 -6.5" width="0.1" height="0.1" depth="0.08" color="#334155"><a-text value="0" align="center" position="0 0 0.05" scale="0.3 0.3 0.3"></a-text></a-box>
+    <a-box id="btn-3d-E" class="clickable" position="2.2 1.15 -6.5" width="0.1" height="0.1" depth="0.08" color="#10b981"><a-text value="OK" align="center" position="0 0 0.05" scale="0.22 0.22 0.22"></a-text></a-box>
 
-    <!-- ----------------------------------------------------- -->
-    <!-- HUONE 2 (Kemiallinen laboratorio): Z = [-6, -18] -->
-    <!-- ----------------------------------------------------- -->
+    <!-- KULTAINEN AVAIN LATTIALLA HEHKUVALLA HALO-EFEKTILLÄ -->
     
-    <!-- Sivuseinät huone 2 -->
-    <a-box class="static-wall" position="-4 2 -12" width="0.2" height="4" depth="12" color="#064e3b"></a-box>
-    <a-box class="static-wall" position="4 2 -12" width="0.2" height="4" depth="12" color="#064e3b"></a-box>
-
-    <!-- Laboratorion kemian koepöytä -->
-    <a-box id="h2-table" position="0 0.45 -12" width="2.2" height="0.9" depth="1.2" color="#0f172a" material="roughness: 0.5; metalness: 0.2">
-      <!-- Koepöydän koristeellinen suojakehys -->
-      <a-box position="0 0.46 0" width="2" height="0.02" depth="1" color="#334155"></a-box>
-    </a-box>
-
-    <!-- Kemialliset koepullot (flasks/cylinders) pöydällä -->
-    <!-- Väärä punainen pullo -->
-    <a-cylinder id="flask-red" class="clickable" position="-0.6 1.05 -12" radius="0.08" height="0.25" color="#ef4444" material="opacity: 0.8; transparent: true; roughness: 0.1">
-      <a-cylinder position="0 0.15 0" radius="0.03" height="0.1" color="#ef4444"></a-cylinder>
-    </a-cylinder>
-    <!-- Väärä vihreä pullo -->
-    <a-cylinder id="flask-green" class="clickable" position="-0.2 1.05 -12" radius="0.08" height="0.25" color="#10b981" material="opacity: 0.8; transparent: true; roughness: 0.1">
-      <a-cylinder position="0 0.15 0" radius="0.03" height="0.1" color="#10b981"></a-cylinder>
-    </a-cylinder>
-    <!-- Oikea dynaaminen loistava purppura pullo -->
-    <a-cylinder id="flask-purple" class="clickable" position="0.3 1.05 -12" radius="0.08" height="0.25" color="#c084fc" material="opacity: 0.9; transparent: true; roughness: 0.1; emissive: #a855f7; emissiveIntensity: 0.5">
-      <a-cylinder position="0 0.15 0" radius="0.03" height="0.1" color="#c084fc"></a-cylinder>
-      <!-- Valokehä pullon ympärille visualisoimaan dynaamisuutta -->
-      <a-sphere position="0 0 0" radius="0.16" color="#a855f7" material="opacity: 0.15; transparent: true; shader: flat"></a-sphere>
-    </a-cylinder>
-    <!-- Väärä keltainen pullo -->
-    <a-cylinder id="flask-yellow" class="clickable" position="0.7 1.05 -12" radius="0.08" height="0.25" color="#fbbf24" material="opacity: 0.8; transparent: true; roughness: 0.1">
-      <a-cylinder position="0 0.15 0" radius="0.03" height="0.1" color="#fbbf24"></a-cylinder>
-    </a-cylinder>
-
-    <!-- Labran koekortti / opasteseinä huoneessa 2 -->
-    <a-box position="-3.8 2.2 -14" rotation="0 90 0" width="2" height="1.4" depth="0.1" color="#022c22">
-      <a-text value="KAAVIO X-44:\nALOITA PURPPURALLA\nREAGENTILLÄ" color="#34d399" align="center" width="2.5" position="0 0 0.06"></a-text>
-    </a-box>
-
-    <!-- VÄLI-OVI 2 (LUKITTU METAL-bulkhead) -->
-    <!-- Ovikehys -->
-    <a-box position="0 2 -17.9" width="3" height="4" depth="0.3" color="#022c22"></a-box>
-    <!-- Ovi joka liukuu sivulle (vasemmalle) purppurapullon klikkauksen jälkeen -->
-    <a-box id="door-h2" position="0 1.5 -17.85" width="2.4" height="3" depth="0.1" color="#115e59"
-           animation="property: position; startEvents: door2-open-event; to: -2.5 1.5 -17.85; dur: 2500; easing: easeInOutSine">
-      <!-- Metalliset salpakaaret -->
-      <a-box position="0 -0.4 0.06" width="1.2" height="0.12" depth="0.04" color="#fbbf24"></a-box>
-      <a-box position="0 0.4 0.06" width="1.2" height="0.12" depth="0.04" color="#fbbf24"></a-box>
-    </a-box>
-
-
-    <!-- ----------------------------------------------------- -->
-    <!-- HUONE 3 (Mikaelin holvi): Z = [-18, -30] -->
-    <!-- ----------------------------------------------------- -->
+      <a-cylinder color="#fbbf24" radius="0.02" height="0.25"></a-cylinder>
+      <a-sphere position="0 0.14 0" radius="0.05" color="#fbbf24"></a-sphere>
+      <a-sphere position="0 0 0" radius="0.22" color="#fbbf24" material="opacity: 0.18; transparent: true; shader: flat"></a-sphere>
     
-    <!-- Sivuseinät huone 3 -->
-    <a-box class="static-wall" position="-4 2 -24" width="0.2" height="4" depth="12" color="#451a03"></a-box>
-    <a-box class="static-wall" position="4 2 -24" width="0.2" height="4" depth="12" color="#451a03"></a-box>
-    <a-box class="static-wall" position="0 2 -29.9" width="8" height="4" depth="0.2" color="#1c1917"></a-box>
 
-    <!-- Turvapilaristo ja ratkaiseva perintökassakaappi -->
-    <a-box id="h3-pillar" position="0 0.5 -25" width="1.2" height="1" depth="1.2" color="#292524" material="roughness: 0.9">
-      <a-box position="0 0.51 0" width="1.1" height="0.04" depth="1.1" color="#fbbf24"></a-box>
-    </a-box>
-
-    <!-- Salainen metalliriipus holvikassakaappi -->
-    <a-box id="h3-vault" class="clickable" position="0 1.25 -25" width="0.55" height="0.55" depth="0.55" color="#1c1917" material="roughness: 0.2">
-      <!-- Pyöritettävä kullanvärinen yhdistelmälukon ratas -->
-      <a-cylinder id="vault-wheel" position="0 0 0.28" rotation="90 0 0" radius="0.16" height="0.05" color="#d97706"
-                  animation="property: rotation; startEvents: spin-vault-wheel; to: 90 360 0; dur: 1500; easing: linear"></a-cylinder>
-      <!-- Salalaatikko tila joka loistaa keltaista -->
-      <a-sphere position="0 0 0" radius="0.2" color="#fbbf24" material="opacity: 0.1; transparent: true; shader: flat"></a-sphere>
-    </a-box>
-
-    <!-- Kohdeteksti perälompakolle -->
-    <a-text value="TIEDOTUSTILI:\nKLIKKAA HOLVIN RATAS-LAATIKKOA" position="0 2.2 -25.2" rotation="0 0 0" width="3" color="#ffffff" align="center"></a-text>
-
-
-    <!-- ----------------------------------------------------- -->
-    <!-- KAMERAT JA LASER-OHJAIMET -->
-    <!-- ----------------------------------------------------- -->
-    <a-camera id="main-camera" position="0 1.6 4" wasd-controls="acceleration: 45">
-      <a-cursor 
-        id="camera-cursor"
-        color="#f43f5e" 
-        animation__click="property: scale; startEvents: click; easing: easeInCubic; durability: 100; from: 0.1 0.1 0.1; to: 1 1 1"
-        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; durability: 1200; from: 1 1 1; to: 0.1 0.1 0.1"
-        event-set__mouseenter="_event: mouseenter; color: #fbbf24"
-        event-set__mouseleave="_event: mouseleave; color: #f43f5e"
-        position="0 0 -1" 
-        geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
-        material="color: #f43f5e; shader: flat; opacity: 0.8"
-        raycaster="objects: .clickable"
-      ></a-cursor>
+    <!-- KATSEKURSORI TAVALLISELLE RUUDULLE JA LIIKKUMISMOOTTORI (WASD / TATEILLA) -->
+    <a-camera position="0 1.6 3" wasd-controls="acceleration: 45">
+      <a-cursor color="#f43f5e" position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.01" material="shader: flat" raycaster="objects: .clickable"></a-cursor>
     </a-camera>
 
-    <!-- Ohjaimet Meta Quest / WebXR varten virtuaalilasitunnistuksella -->
-    <a-entity laser-controls="hand: left" raycaster="objects: .clickable; far: 18"></a-entity>
-    <a-entity laser-controls="hand: right" raycaster="objects: .clickable; far: 18"></a-entity>
-
+    <!-- NYKYAIKAISET REALISTISET VR-OHJAINKÄDET LIIPIASIMEN TUNNISTUKSELLA META QUESTILLE -->
+    
+    
   </a-scene>
+  <!-- REAALIAIKAINEN INFOBANNERI OVERLAYNA ALALAIDASSA -->
+  <div id="hud-banner">
+    <div class="hud-indicator"></div>
+    <div class="hud-text" id="hud-message">Etsi kultainen avain lattialta (keltainen hehku) tai tutki pöydän päällä olevaa rauta-arkkua punaisella tähtäimellä / VR-käsilläsi!</div>
+  </div>
 
-  <!-- PELILOGIIKKA JA ÄÄNETTÄJÄ -->
+  <!-- ALOITUSIKKUNA -->
+  <div id="intro-overlay" class="screen-overlay">
+    <div class="overlay-card">
+      <div style="font-size: 40px; margin-bottom: 12px;">🥽🏚️</div>
+      <h2>Mikaelin Salakellari: Next-Gen VR</h2>
+      <p>
+        Tervetuloa valokuvatekstuureilla varustettuun, aidon näköiseen 3D-VR-maailmaan! 
+        Liikuta hiirtä katsoaksesi ympärillesi ja käytä WASD-näppäimiä liikkumiseen (VR-laseilla käännä päätäsi ja liiku tateilla). 
+        Osoita ja klikkaa esineitä punaiseksi muuttuvalla tähtäimellä tai VR-käsiohjaimesi liipaisimella.
+      </p>
+      <button class="btn-action" onclick="startGame()">KÄYNNISTÄ 3D-PAKOPELI</button>
+    </div>
+  </div>
+
+  <!-- VOITTORUUTU -->
+  <div id="win-overlay" class="screen-overlay" style="display: none;">
+    <div class="overlay-card" style="border-color: #10b981;">
+      <div style="font-size: 40px; margin-bottom: 12px;">🏆🔓</div>
+      <h2 style="color: #10b981;">Arvoitus Ratkaistu!</h2>
+      <p>Mursit sähkölukon koodilla 1954 ja löysit perintöpaperit! Sähkömagneettinen ovi on nyt avattu ja olet vapaa.</p>
+      <button class="btn-action" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);" onclick="window.location.href = '/'">PALAA PÄÄVALIKKOON</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT-PELIMOOTTORI -->
   <script>
-    // --- Pelin sisäinen tila ---
-    let state = {
-      currentRoom: 1,      // 1: Arkisto, 2: Labra, 3: Holvi
-      enteredCode: "",     // Arkistokoodisyöte
-      correctCode: "2026", // Oikea koodi murtamiseen (nykyinen vuosi)
-      isDoor1Open: false,
-      isDoor2Open: false,
-      isVaultSolved: false
-    };
+    let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
 
-    // --- Kevyt Web Audio API sfx syntetisaattori unlukkaäänille ---
-    function playSfx(type) {
+    function playSfx(freq, duration, type = 'sine') {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        
-        osc.connect(gain);
-        gain.connect(ctx.destination);
+        const ctx = new AudioCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination); osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(0.04, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.start(); osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
 
-        if (type === 'click') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(700, ctx.currentTime);
-          gain.gain.setValueAtTime(0.04, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.08);
-        } else if (type === 'success') {
-          // Iloinen nouseva duuriasiatunnus
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-          osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
-          osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
-          osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3); // C6
-          gain.gain.setValueAtTime(0.06, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.45);
-        } else if (type === 'chem-mix') {
-          // Sihahtava hapon tai kemikaalin ääni
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(250, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.5);
-          gain.gain.setValueAtTime(0.06, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.5);
-        } else if (type === 'error') {
-          // Virhesignaali
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(180, ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.25);
-          gain.gain.setValueAtTime(0.08, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.25);
-        }
-      } catch (err) {
-        console.warn("Automaattista ääntä ei voitu toistaa selaimessa ilman kanssakäymistä:", err);
+    function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
+
+    function startGame() {
+      document.getElementById('intro-overlay').style.display = 'none';
+      playSfx(523, 0.3, 'sine');
+    }
+
+    function grabKey() {
+      if (state.hasKey) return;
+      state.hasKey = true; playSfx(440, 0.2, 'triangle');
+      const keyEntity = document.getElementById('mikael-key');
+      if (keyEntity) keyEntity.setAttribute('visible', 'false');
+      updateHudMessage("🎒 Sait kultaisen avaimen! Vie se työpöydän päällä olevan punaisen rauta-arkun luo ja klikkaa arkun lukkoa.");
+    }
+
+    function triggerOpenChest() {
+      if (state.isChestOpen) return;
+      if (state.hasKey) {
+        state.isChestOpen = true; playSfx(587, 0.4, 'sine');
+        const hintPaper = document.getElementById('chest-interior-hint');
+        if (hintPaper) hintPaper.setAttribute('visible', 'true');
+        const chestObj = document.getElementById('mikael-chest');
+        if (chestObj) chestObj.setAttribute('color', '#14532d');
+        updateHudMessage("🔓 Arkku aukesi! Sisällä lukee: 'KASSAKAAPIN KOODI ON 1954'. Mene kassakaapille ja näppäile koodi seinän 3D-painikkeista.");
+      } else {
+        playSfx(150, 0.2, 'sawtooth');
+        updateHudMessage("🔒 Rauta-arkku on lukossa! Tarvitset avaimen. Etsi lattialta keltainen hohtava pallo ja klikkaa sitä.");
       }
     }
 
-    // --- Muuta HUD viesti ---
-    function updateMessage(text, isAlert = false) {
-      const box = document.getElementById('hud-message');
-      box.innerText = text;
-      box.style.borderLeftColor = isAlert ? 'var(--accent-rose)' : 'var(--accent-amber)';
-    }
-
-    function updateRoomIndicator(text) {
-      document.getElementById('hud-room-indicator').innerText = text;
-    }
-
-    // --- Aloita peli ---
-    function startMazeGame() {
-      playSfx('success');
-      document.getElementById('intro-overlay').style.display = 'none';
-      updateMessage("Synkkä arkisto: Etsi koodi ja syötä se keltaisena loistavaan 3D-kytkintauluun.");
-    }
-
-    // --- Poistu pääpeliin ---
-    function exitToLobby() {
-      // Jos pyörii iframe-rakenteessa tai React-applikaatiossa, palataan taaksepäin
-      window.location.href = "/";
-    }
-
-    // --- Resetointi ---
-    function resetGame() {
-      state.currentRoom = 1;
-      state.enteredCode = "";
-      state.isDoor1Open = false;
-      state.isDoor2Open = false;
-      state.isVaultSolved = false;
-
-      // Nollataan 3D-maailman elementtien paikat ja värit
-      const d1 = document.getElementById('door-h1');
-      if (d1) d1.setAttribute('position', '0 1.5 -5.85');
+    function pressKey(val) {
+      if (state.isSafeSolved) return;
+      playSfx(600, 0.08, 'sine');
+      const safeText3d = document.getElementById('safe-screen');
       
-      const ind1 = document.getElementById('door-h1-indicator');
-      if (ind1) ind1.setAttribute('color', '#ef4444');
-
-      const d2 = document.getElementById('door-h2');
-      if (d2) d2.setAttribute('position', '0 1.5 -17.85');
-
-      const scr = document.getElementById('h1-screen');
-      if (scr) scr.setAttribute('value', '----');
-
-      document.getElementById('win-overlay').style.display = 'none';
-      updateRoomIndicator("Huone 1: Synkkä arkisto");
-      updateMessage("Labyrintti alustettu uudelleen! Etsi koodi pöydän asiakirjoista.");
-      playSfx('success');
-    }
-
-    // --- HUONE 1: Painonäppäilyn hallinta ---
-    function pressH1Key(val) {
-      if (state.isDoor1Open) return;
-      playSfx('click');
-
-      const scr = document.getElementById('h1-screen');
-
       if (val === 'C') {
-        state.enteredCode = "";
-        if (scr) scr.setAttribute('value', '----');
+        state.enteredCode = ""; if (safeText3d) safeText3d.setAttribute('value', 'CODE?');
       } else if (val === 'E') {
-        if (state.enteredCode === state.correctCode) {
-          state.isDoor1Open = true;
-          state.currentRoom = 2;
-          playSfx('success');
-          
-          if (scr) scr.setAttribute('value', "OPEN");
-          
-          const ind1 = document.getElementById('door-h1-indicator');
-          if (ind1) ind1.setAttribute('color', '#10b981');
-
-          // Käynnistetään A-Framen dynaaminen siirtoanimaatio oveen
-          const d1 = document.getElementById('door-h1');
-          if (d1) d1.emit('door1-open-event');
-
-          updateRoomIndicator("Huone 2: Kemiallinen laboratorio");
-          updateMessage("Oikea koodi (2026)! Ensimmäinen ristikkoääni naksahtaa auki. Voit nyt astua eteenpäin kemiallisen laboratorion huoneeseen!");
+        if (state.enteredCode === "1954") {
+          state.isSafeSolved = true; playSfx(880, 0.5, 'sine');
+          if (safeText3d) { safeText3d.setAttribute('value', 'OPEN'); safeText3d.setAttribute('color', '#10b981'); }
+          const safeDoor = document.getElementById('mikael-safe-door');
+          if (safeDoor) { safeDoor.setAttribute('rotation', '0 90 0'); safeDoor.setAttribute('position', '0.5 0 0.2'); }
+          const escapeDoor = document.getElementById('escape-door');
+          const doorText = document.getElementById('door-text');
+          if (escapeDoor) escapeDoor.setAttribute('color', '#10b981');
+          if (doorText) { doorText.setAttribute('value', 'AVATTU - KLIKKAA PAETAKSESI'); doorText.setAttribute('color', '#ffffff'); }
+          updateHudMessage("🏆 Kassakaappi auki! Sähkömagneettinen ovi eteläseinällä on nyt vapautettu. Klikkaa ovea paetaksesi!");
         } else {
-          playSfx('error');
-          updateMessage("Syötit väärän lukukoodin! Kokeile toista yhdistelmää pöydän vihjeen pohjalta.", true);
-          state.enteredCode = "";
-          if (scr) scr.setAttribute('value', "ERR");
+          playSfx(120, 0.3, 'sawtooth'); state.enteredCode = "";
+          if (safeText3d) safeText3d.setAttribute('value', 'ERROR');
         }
       } else {
         if (state.enteredCode.length < 4) {
-          state.enteredCode += val;
-          if (scr) scr.setAttribute('value', state.enteredCode);
+          state.enteredCode += val; if (safeText3d) safeText3d.setAttribute('value', state.enteredCode);
         }
       }
     }
 
-    // --- HUONE 2: Koepullojen selaus ---
-    function clickFlask(color) {
-      if (state.isDoor2Open) return;
-      
-      if (color === 'purple') {
-        state.isDoor2Open = true;
-        state.currentRoom = 3;
-        playSfx('chem-mix');
-        setTimeout(() => playSfx('success'), 600);
-
-        // Käynnistetään toisen oven siirtovasemmalle animaatio
-        const d2 = document.getElementById('door-h2');
-        if (d2) d2.emit('door2-open-event');
-
-        // Muutetaan pullo vihree-neoniksi loisteeksi onnistumisesta
-        document.getElementById('flask-purple').setAttribute('color', '#22c55e');
-
-        updateRoomIndicator("Huone 3: Mikaelin holvi");
-        updateMessage("Loistavaa! Purppurapullon salakaava laukaisee kemiallisen lukitusmekanismin sulattaen toisen jousitetun oven! Kulku Mikaelin holviin on vapaa!");
+    function triggerEscape() {
+      if (state.isSafeSolved) {
+        playSfx(1046, 0.6, 'sine'); document.getElementById('win-overlay').style.display = 'flex';
       } else {
-        playSfx('error');
-        if (color === 'red') {
-          updateMessage("Punainen murtoseos kuplii kitkeränä kuivajäänä, mutta ei avaa salaisuuksia. Etsi toinen ratkaisu!", true);
-        } else if (color === 'green') {
-          updateMessage("Vihreä koeputki sihahtaa voimakkaasti... Mutta ovi pysyy tiiviisti teljettynä.", true);
-        } else {
-          updateMessage("Keltainen nestemäinen reagenssi haisee liian vahvalta, älä hengitä sen huuruja!", true);
-        }
+        playSfx(150, 0.2, 'sawtooth'); updateHudMessage("⚠️ Sähköovi vaatii magneettivirran sammuttamisen! Ratkaise ensin kassakaapin koodi.");
       }
     }
 
-    // --- HUONE 3: Viimeinen holviluukku ---
-    function clickVault() {
-      if (!state.isDoor2Open) {
-        updateMessage("Holvi häämöttää kaukaisuudessa, mutta et ole vielä päässyt toisesta ovesta läpi!", true);
-        return;
-      }
-      if (state.isVaultSolved) return;
-
-      state.isVaultSolved = true;
-      playSfx('click');
-
-      // Pyöritetään isoa yhdistelmäratasta
-      const wheel = document.getElementById('vault-wheel');
-      if (wheel) wheel.emit('spin-vault-wheel');
-
-      setTimeout(() => {
-        playSfx('success');
-        // Avataan voittoikkuna
-        document.getElementById('win-overlay').style.display = 'flex';
-        updateMessage("Onneksi olkoon! Mikaelin salainen holvi on murrettu ja lopulliset perintötodisteet ovat turvassa!");
-      }, 1600);
-    }
-
-    // --- Kaksitasoinen pikatoiminto 2D-konsolille (accessibility) ---
-    function accessibilityAction() {
-      if (state.currentRoom === 1) {
-        updateMessage("Esteettömyysvihje: Asiakirjassa lukee 'nykyinen vuosi'. Vuosi on tällä hetkellä 2026. Syötetään valmiiksi kytkintauluun.");
-        state.enteredCode = "2026";
-        const scr = document.getElementById('h1-screen');
-        if (scr) scr.setAttribute('value', "2026");
-        pressH1Key('E');
-      } else if (state.currentRoom === 2) {
-        updateMessage("Esteettömyysvihje: Klikataan purppuraa dynaamista pulloa koepöydällä siirtääksemme oven auki.");
-        clickFlask('purple');
-      } else {
-        updateMessage("Esteettömyysvihje: Klikataan Mikaelin holvissa olevaa pientä kassakaappilaatikkoa.");
-        clickVault();
-      }
-    }
-
-    // --- Kuuntelijoiden rekisteröinti ---
     document.addEventListener("DOMContentLoaded", () => {
-      // Pöydän asiakirjan klikkaus huoneessa 1
-      const doc = document.getElementById('h1-document');
-      if (doc) {
-        doc.addEventListener('click', () => {
-          playSfx('click');
-          updateMessage("Luit paperia: 'TIETOKIRJA VUODESTA - REVI LAHJOITUS - KOODI ON TÄMÄ VUOSI (2026)'.");
-        });
-      }
+      const key3d = document.getElementById('mikael-key'); if (key3d) key3d.addEventListener('click', grabKey);
+      const chest3d = document.getElementById('mikael-chest'); if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
+      const door3d = document.getElementById('escape-door'); if (door3d) door3d.addEventListener('click', triggerEscape);
 
-      // Painonäppäimet Arkisto-koodille
       for (let i = 0; i <= 9; i++) {
-        const btn = document.getElementById(`btn-h1-${i}`);
-        if (btn) btn.addEventListener('click', () => pressH1Key(i.toString()));
+        const btn = document.getElementById(`btn-3d-${i}`);
+        if (btn) btn.addEventListener('click', () => pressKey(i.toString()));
       }
-      const btnC = document.getElementById('btn-h1-C');
-      if (btnC) btnC.addEventListener('click', () => pressH1Key('C'));
-
-      const btnE = document.getElementById('btn-h1-E');
-      if (btnE) btnE.addEventListener('click', () => pressH1Key('E'));
-
-      // Kemikaalipullot huoneessa 2
-      const fRed = document.getElementById('flask-red');
-      const fGreen = document.getElementById('flask-green');
-      const fPurple = document.getElementById('flask-purple');
-      const fYellow = document.getElementById('flask-yellow');
-
-      if (fRed) fRed.addEventListener('click', () => clickFlask('red'));
-      if (fGreen) fGreen.addEventListener('click', () => clickFlask('green'));
-      if (fPurple) fPurple.addEventListener('click', () => clickFlask('purple'));
-      if (fYellow) fYellow.addEventListener('click', () => clickFlask('yellow'));
-
-      // Holvikassakaappi huoneessa 3
-      const vault = document.getElementById('h3-vault');
-      if (vault) vault.addEventListener('click', clickVault);
+      const btnC = document.getElementById('btn-3d-C'); if (btnC) btnC.addEventListener('click', () => pressKey('C'));
+      const btnE = document.getElementById('btn-3d-E'); if (btnE) btnE.addEventListener('click', () => pressKey('E'));
     });
   </script>
 </body>
