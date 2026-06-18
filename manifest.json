@@ -1,0 +1,6 @@
+{
+  "name": "Murhamysteeri Mökillä",
+  "description": "Puhelimella pelattava moninpelimysteeri mökillä, jossa ratkaistaan rikos käyttämällä vihjeitä, rooleja ja salaisia äänestyksiä synkronoituna livenä Firebase Realtime Databasella.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
