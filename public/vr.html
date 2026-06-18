@@ -158,7 +158,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT-PELIMOOTTORI -->
+   <!-- JAVASCRIPT-PELIMOOTTORI AUTOMAATTISELLA 3D-KOON PAKOTUKSELLA -->
   <script>
     let state = { hasKey: false, isChestOpen: false, isSafeSolved: false, enteredCode: "" };
 
@@ -176,9 +176,25 @@
 
     function updateHudMessage(text) { document.getElementById('hud-message').innerText = text; }
 
+    // KORJAUS: Pakotetaan A-Frame-moottori heräämään unestaan ja venymään koko ruudun kokoiseksi
+    function force3DResize() {
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        scene.resize();
+        if (scene.canvas) {
+          scene.canvas.style.width = '100vw';
+          scene.canvas.style.height = '100vh';
+        }
+      }
+    }
+
     function startGame() {
       document.getElementById('intro-overlay').style.display = 'none';
-      playSfx(523, 0.3, 'sine');
+      // Pakotetaan kokopäivitys dynaamisesti 100 millisekunnin päästä aloituksesta
+      setTimeout(() => {
+        force3DResize();
+        playSfx(523, 0.3, 'sine');
+      }, 100);
     }
 
     function grabKey() {
@@ -242,6 +258,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      // Pakotetaan kokopäivitys heti kun sivu dynaamisesti latautuu ensimmäisen kerran
+      setTimeout(force3DResize, 300);
+
       const key3d = document.getElementById('mikael-key'); if (key3d) key3d.addEventListener('click', grabKey);
       const chest3d = document.getElementById('mikael-chest'); if (chest3d) chest3d.addEventListener('click', triggerOpenChest);
       const door3d = document.getElementById('escape-door'); if (door3d) door3d.addEventListener('click', triggerEscape);
